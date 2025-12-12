@@ -435,7 +435,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...defaultState(), ...parsed };
+        const state = { ...defaultState(), ...parsed };
+        // Normalize monthBackgrounds keys to numbers
+        if (state.monthBackgrounds && typeof state.monthBackgrounds === 'object') {
+          const normalized = {};
+          for (const key in state.monthBackgrounds) {
+            const numKey = parseInt(key);
+            if (!isNaN(numKey)) {
+              normalized[numKey] = state.monthBackgrounds[key];
+            }
+          }
+          state.monthBackgrounds = normalized;
+        }
+        return state;
       }
     } catch (e) {
       console.warn('Failed to load state from localStorage:', e);
@@ -617,8 +629,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    const monthBg = state.monthBackgrounds[month] || {};
-    const hasBg = !!monthBg.url;
+    const monthNum = parseInt(month);
+    const monthBg = state.monthBackgrounds[monthNum] || {};
+    const hasBg = !!(monthBg && monthBg.url);
+    console.log('Generating HTML for month', monthNum, 'hasBg:', hasBg, 'monthBg:', monthBg);
     const bgStyle = hasBg ? `background-image: url("${monthBg.url}"); background-size: ${monthBg.zoom || 100}%; background-position: ${monthBg.posX || 50}% ${monthBg.posY || 50}%; background-repeat: no-repeat; opacity: ${(monthBg.opacity || 100) / 100}; filter: brightness(${(monthBg.brightness || 100) / 100}) saturate(${(monthBg.saturation || 100) / 100});` : '';
     
     const { monthFontSize, monthFontWeight, monthTextTransform, yearFontSize, yearFontWeight, monthYearLayout } = state;
@@ -742,10 +756,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (files.length > 0 && files[0].type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (ev) => {
-            if (!state.monthBackgrounds[month]) {
-              state.monthBackgrounds[month] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+            const monthNum = parseInt(month);
+            if (!state.monthBackgrounds[monthNum]) {
+              state.monthBackgrounds[monthNum] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
             }
-            state.monthBackgrounds[month].url = ev.target.result;
+            state.monthBackgrounds[monthNum].url = ev.target.result;
+            console.log('Image dropped for month', monthNum, 'State after:', JSON.stringify(state.monthBackgrounds[monthNum]));
             saveState();
             render();
           };
@@ -764,10 +780,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (file) {
               const reader = new FileReader();
               reader.onload = (ev2) => {
-                if (!state.monthBackgrounds[month]) {
-                  state.monthBackgrounds[month] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+                const monthNum = parseInt(month);
+                if (!state.monthBackgrounds[monthNum]) {
+                  state.monthBackgrounds[monthNum] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
                 }
-                state.monthBackgrounds[month].url = ev2.target.result;
+                state.monthBackgrounds[monthNum].url = ev2.target.result;
+                console.log('Image uploaded for month', monthNum, 'State after:', JSON.stringify(state.monthBackgrounds[monthNum]));
                 saveState();
                 render();
               };
@@ -787,7 +805,8 @@ document.addEventListener('DOMContentLoaded', () => {
       let isShiftPressed = false;
       
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Shift' && state.monthBackgrounds[month]?.url) {
+        const monthNum = parseInt(month);
+        if (e.key === 'Shift' && state.monthBackgrounds[monthNum]?.url) {
           isShiftPressed = true;
           overlay.style.display = 'block';
           overlay.style.pointerEvents = 'all';
@@ -810,11 +829,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       overlay.addEventListener('mousedown', (e) => {
-        if (!state.monthBackgrounds[month]?.url) return;
+        const monthNum = parseInt(month);
+        const bg = state.monthBackgrounds[monthNum];
+        if (!bg?.url) return;
         isDragging = true;
         dragStartX = e.clientX;
         dragStartY = e.clientY;
-        const bg = state.monthBackgrounds[month];
         startPosX = bg.posX || 50;
         startPosY = bg.posY || 50;
         e.preventDefault();
@@ -822,12 +842,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       document.addEventListener('mousemove', (e) => {
-        if (!isDragging || !state.monthBackgrounds[month]?.url) return;
+        if (!isDragging) return;
+        const monthNum = parseInt(month);
+        const bg = state.monthBackgrounds[monthNum];
+        if (!bg?.url) return;
         const rect = monthEl.getBoundingClientRect();
         const deltaX = ((e.clientX - dragStartX) / rect.width) * 100;
         const deltaY = ((e.clientY - dragStartY) / rect.height) * 100;
         
-        const bg = state.monthBackgrounds[month];
         bg.posX = Math.max(0, Math.min(100, startPosX + deltaX));
         bg.posY = Math.max(0, Math.min(100, startPosY + deltaY));
         bgDiv.style.backgroundPosition = `${bg.posX}% ${bg.posY}%`;
@@ -836,16 +858,19 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('mouseup', () => {
         if (isDragging) {
           isDragging = false;
-          overlay.style.cursor = 'move';
+          const monthNum = parseInt(month);
+          const overlay = monthEl.querySelector('.month-bg-overlay');
+          if (overlay) overlay.style.cursor = 'move';
           saveState();
         }
       });
       
       monthEl.addEventListener('wheel', (e) => {
-        if (!state.monthBackgrounds[month]?.url || e.ctrlKey || e.metaKey) return;
+        const monthNum = parseInt(month);
+        const bg = state.monthBackgrounds[monthNum];
+        if (!bg?.url || e.ctrlKey || e.metaKey) return;
         e.preventDefault();
         const delta = e.deltaY > 0 ? -5 : 5;
-        const bg = state.monthBackgrounds[month];
         bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
         bgDiv.style.backgroundSize = `${bg.zoom}%`;
         saveState();
@@ -853,12 +878,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Right-click to remove image
       monthEl.addEventListener('contextmenu', (e) => {
-        if (state.monthBackgrounds[month]?.url) {
+        const monthNum = parseInt(month);
+        const bg = state.monthBackgrounds[monthNum];
+        if (bg?.url) {
           e.preventDefault();
           if (confirm('Xóa ảnh nền cho tháng này?')) {
-            delete state.monthBackgrounds[month].url;
-            if (Object.keys(state.monthBackgrounds[month]).length === 1 && state.monthBackgrounds[month].url === null) {
-              delete state.monthBackgrounds[month];
+            delete bg.url;
+            if (!bg.url && Object.keys(bg).every(k => k !== 'url' || bg[k] === null)) {
+              delete state.monthBackgrounds[monthNum];
             }
             saveState();
             render();
