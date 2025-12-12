@@ -17,7 +17,8 @@
   <script src="https://cdn.jsdelivr.net/npm/date-holidays@3.26.5/dist/umd.min.js"></script>
 
   <style>
-    body { font-family: 'Be Vietnam Pro', sans-serif; background: #f3f4f6; min-height: 100vh; }
+    body { font-family: 'Be Vietnam Pro', sans-serif; background: #f3f4f6; min-height: 100vh; margin: 0; padding: 0; overflow-x: hidden; }
+    * { box-sizing: border-box; }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -49,6 +50,40 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
+    }
+    @media (max-width: 1024px) {
+      aside { max-height: none !important; }
+      .color-picker-presets { justify-content: flex-start; }
+    }
+    @media (max-width: 640px) {
+      main { padding: 1rem !important; }
+      aside { padding: 0.5rem !important; }
+      .calendar-month-export { max-width: 100% !important; }
+    }
+    .color-picker-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .color-preset {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .color-preset:hover {
+      transform: scale(1.1);
+      border-color: #3b82f6;
+    }
+    .color-preset.active {
+      border-color: #1f2937;
+      border-width: 3px;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px #1f2937;
     }
 
     /* Accordion Styles */
@@ -97,10 +132,10 @@
 </head>
 <body class="bg-gray-100">
 
-<div class="flex flex-col lg:flex-row h-screen antialiased text-gray-800">
+<div class="flex flex-col lg:flex-row min-h-screen antialiased text-gray-800">
 
   <!-- === Controls Sidebar === -->
-  <aside class="w-full lg:w-96 bg-white p-2 shadow-lg lg:h-screen lg:overflow-y-auto">
+  <aside class="w-full lg:w-96 bg-white p-2 shadow-lg lg:min-h-screen lg:max-h-screen lg:overflow-y-auto lg:sticky lg:top-0">
     <h1 class="text-lg font-bold text-gray-800 mb-1">Tạo Lịch Việt</h1>
     <p class="text-xs text-gray-600 mb-3">Tạo lịch 12 tháng với hình nền tùy chỉnh, in khổ A4</p>
     <div class="space-y-1">
@@ -112,7 +147,7 @@
         </button>
         <div data-content="basic" class="accordion-content active">
           <div class="p-1.5 space-y-1.5 text-xs">
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label for="month-select" class="block text-xs font-medium text-gray-600 mb-0.5">Tháng</label>
                 <select id="month-select" class="w-full p-1 border border-gray-300 rounded text-xs"></select>
@@ -150,7 +185,7 @@
             <div><label class="text-xs">Cỡ chữ ngày (<span data-label="dateSize">24</span>px)</label><input type="range" data-state="dateSize" min="1" max="100"></div>
             <div><label class="text-xs">Cỡ chữ Âm lịch (<span data-label="lunarDateFontSize">12</span>px)</label><input type="range" data-state="lunarDateFontSize" min="5" max="30"></div>
             <div><label class="text-xs">Cỡ chữ Lễ (<span data-label="holidayFontSize">11.2</span>px)</label><input type="range" data-state="holidayFontSize" min="5" max="30"></div>
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div><label class="text-xs">Độ dày Tháng</label><select data-state="monthFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option><option value="900">Rất Đậm</option></select></div>
               <div><label class="text-xs">Độ dày Năm</label><select data-state="yearFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
               <div><label class="text-xs">Độ dày Thứ</label><select data-state="weekdayFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="600">Vừa</option><option value="700">Đậm</option></select></div>
@@ -181,84 +216,124 @@
                 <option value="cool">Mát mẻ</option>
               </select>
             </div>
-            <div class="grid grid-cols-2 gap-1.5 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
               <div>
                 <label class="block mb-0.5 text-xs">Ngày thường</label>
-                <select data-state="dateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#374151">Xám đậm</option>
-                  <option value="#1F2937">Đen</option>
-                  <option value="#111827">Đen đậm</option>
-                  <option value="#2563EB">Xanh dương</option>
-                  <option value="#059669">Xanh lá</option>
-                </select>
+                <div class="color-picker-presets" data-state="dateColor">
+                  <div class="color-preset" data-color="#000000" style="background-color: #000000;" title="Đen"></div>
+                  <div class="color-preset" data-color="#1A1A1A" style="background-color: #1A1A1A;" title="Đen đậm"></div>
+                  <div class="color-preset" data-color="#003366" style="background-color: #003366;" title="Xanh dương rất đậm"></div>
+                  <div class="color-preset" data-color="#004080" style="background-color: #004080;" title="Xanh dương đậm"></div>
+                  <div class="color-preset" data-color="#0066CC" style="background-color: #0066CC;" title="Xanh dương"></div>
+                  <div class="color-preset" data-color="#003300" style="background-color: #003300;" title="Xanh lá rất đậm"></div>
+                  <div class="color-preset" data-color="#006600" style="background-color: #006600;" title="Xanh lá đậm"></div>
+                  <div class="color-preset" data-color="#008000" style="background-color: #008000;" title="Xanh lá"></div>
+                  <div class="color-preset" data-color="#660033" style="background-color: #660033;" title="Tím đỏ đậm"></div>
+                  <div class="color-preset" data-color="#800040" style="background-color: #800040;" title="Tím đỏ"></div>
+                  <div class="color-preset" data-color="#4B0082" style="background-color: #4B0082;" title="Tím đậm"></div>
+                  <div class="color-preset" data-color="#6A0DAD" style="background-color: #6A0DAD;" title="Tím"></div>
+                  <div class="color-preset" data-color="#8B0000" style="background-color: #8B0000;" title="Đỏ đậm"></div>
+                  <div class="color-preset" data-color="#CC0000" style="background-color: #CC0000;" title="Đỏ"></div>
+                  <div class="color-preset" data-color="#CC3300" style="background-color: #CC3300;" title="Đỏ cam"></div>
+                  <div class="color-preset" data-color="#993300" style="background-color: #993300;" title="Nâu đỏ"></div>
+                  <div class="color-preset" data-color="#663300" style="background-color: #663300;" title="Nâu"></div>
+                  <div class="color-preset" data-color="#006666" style="background-color: #006666;" title="Xanh lơ đậm"></div>
+                  <div class="color-preset" data-color="#008080" style="background-color: #008080;" title="Xanh lơ"></div>
+                  <div class="color-preset" data-color="#333333" style="background-color: #333333;" title="Xám đậm"></div>
+                </div>
               </div>
               <div>
                 <label class="block mb-0.5 text-xs">Ngày tháng khác</label>
-                <select data-state="otherMonthDateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#9CA3AF">Xám nhạt</option>
-                  <option value="#D1D5DB">Xám rất nhạt</option>
-                  <option value="#6B7280">Xám vừa</option>
-                </select>
+                <div class="color-picker-presets" data-state="otherMonthDateColor">
+                  <div class="color-preset" data-color="#666666" style="background-color: #666666;" title="Xám vừa"></div>
+                  <div class="color-preset" data-color="#808080" style="background-color: #808080;" title="Xám"></div>
+                  <div class="color-preset" data-color="#999999" style="background-color: #999999;" title="Xám nhạt"></div>
+                  <div class="color-preset" data-color="#B3B3B3" style="background-color: #B3B3B3;" title="Xám rất nhạt"></div>
+                  <div class="color-preset" data-color="#CCCCCC" style="background-color: #CCCCCC;" title="Xám cực nhạt"></div>
+                  <div class="color-preset" data-color="#4A90E2" style="background-color: #4A90E2;" title="Xanh dương nhạt"></div>
+                  <div class="color-preset" data-color="#5CB85C" style="background-color: #5CB85C;" title="Xanh lá nhạt"></div>
+                  <div class="color-preset" data-color="#E67E22" style="background-color: #E67E22;" title="Cam nhạt"></div>
+                  <div class="color-preset" data-color="#9B59B6" style="background-color: #9B59B6;" title="Tím nhạt"></div>
+                </div>
               </div>
               <div>
                 <label class="block mb-0.5 text-xs">Thứ</label>
-                <select data-state="weekdayColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#4B5563">Xám đậm</option>
-                  <option value="#1F2937">Đen</option>
-                  <option value="#2563EB">Xanh dương</option>
-                  <option value="#7C3AED">Tím</option>
-                </select>
+                <div class="color-picker-presets" data-state="weekdayColor">
+                  <div class="color-preset" data-color="#000000" style="background-color: #000000;" title="Đen"></div>
+                  <div class="color-preset" data-color="#1A1A1A" style="background-color: #1A1A1A;" title="Đen đậm"></div>
+                  <div class="color-preset" data-color="#003366" style="background-color: #003366;" title="Xanh dương rất đậm"></div>
+                  <div class="color-preset" data-color="#004080" style="background-color: #004080;" title="Xanh dương đậm"></div>
+                  <div class="color-preset" data-color="#0066CC" style="background-color: #0066CC;" title="Xanh dương"></div>
+                  <div class="color-preset" data-color="#4B0082" style="background-color: #4B0082;" title="Tím đậm"></div>
+                  <div class="color-preset" data-color="#6A0DAD" style="background-color: #6A0DAD;" title="Tím"></div>
+                  <div class="color-preset" data-color="#800080" style="background-color: #800080;" title="Tím sáng"></div>
+                  <div class="color-preset" data-color="#003300" style="background-color: #003300;" title="Xanh lá rất đậm"></div>
+                  <div class="color-preset" data-color="#006600" style="background-color: #006600;" title="Xanh lá đậm"></div>
+                  <div class="color-preset" data-color="#008000" style="background-color: #008000;" title="Xanh lá"></div>
+                  <div class="color-preset" data-color="#006666" style="background-color: #006666;" title="Xanh lơ đậm"></div>
+                  <div class="color-preset" data-color="#008080" style="background-color: #008080;" title="Xanh lơ"></div>
+                  <div class="color-preset" data-color="#663300" style="background-color: #663300;" title="Nâu"></div>
+                  <div class="color-preset" data-color="#333333" style="background-color: #333333;" title="Xám đậm"></div>
+                </div>
               </div>
               <div>
                 <label class="block mb-0.5 text-xs">Ngày Âm lịch</label>
-                <select data-state="lunarDateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#6B7280">Xám</option>
-                  <option value="#9CA3AF">Xám nhạt</option>
-                  <option value="#059669">Xanh lá</option>
-                  <option value="#0891B2">Xanh lơ</option>
-                </select>
+                <div class="color-picker-presets" data-state="lunarDateColor">
+                  <div class="color-preset" data-color="#333333" style="background-color: #333333;" title="Xám đậm"></div>
+                  <div class="color-preset" data-color="#4A4A4A" style="background-color: #4A4A4A;" title="Xám"></div>
+                  <div class="color-preset" data-color="#003300" style="background-color: #003300;" title="Xanh lá rất đậm"></div>
+                  <div class="color-preset" data-color="#006600" style="background-color: #006600;" title="Xanh lá đậm"></div>
+                  <div class="color-preset" data-color="#008000" style="background-color: #008000;" title="Xanh lá"></div>
+                  <div class="color-preset" data-color="#006666" style="background-color: #006666;" title="Xanh lơ đậm"></div>
+                  <div class="color-preset" data-color="#008080" style="background-color: #008080;" title="Xanh lơ"></div>
+                  <div class="color-preset" data-color="#0099CC" style="background-color: #0099CC;" title="Xanh lơ sáng"></div>
+                  <div class="color-preset" data-color="#4B0082" style="background-color: #4B0082;" title="Tím đậm"></div>
+                  <div class="color-preset" data-color="#6A0DAD" style="background-color: #6A0DAD;" title="Tím"></div>
+                  <div class="color-preset" data-color="#800080" style="background-color: #800080;" title="Tím sáng"></div>
+                  <div class="color-preset" data-color="#663300" style="background-color: #663300;" title="Nâu"></div>
+                  <div class="color-preset" data-color="#804000" style="background-color: #804000;" title="Cam nâu"></div>
+                  <div class="color-preset" data-color="#003366" style="background-color: #003366;" title="Xanh dương rất đậm"></div>
+                  <div class="color-preset" data-color="#004080" style="background-color: #004080;" title="Xanh dương đậm"></div>
+                  <div class="color-preset" data-color="#0066CC" style="background-color: #0066CC;" title="Xanh dương"></div>
+                </div>
               </div>
               <div>
                 <label class="block mb-0.5 text-xs">Ngày Lễ</label>
-                <select data-state="holidayColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#DC2626">Đỏ</option>
-                  <option value="#EA580C">Cam đỏ</option>
-                  <option value="#C026D3">Hồng</option>
-                  <option value="#7C2D12">Nâu đỏ</option>
-                </select>
+                <div class="color-picker-presets" data-state="holidayColor">
+                  <div class="color-preset" data-color="#800000" style="background-color: #800000;" title="Đỏ rất đậm"></div>
+                  <div class="color-preset" data-color="#990000" style="background-color: #990000;" title="Đỏ đậm"></div>
+                  <div class="color-preset" data-color="#CC0000" style="background-color: #CC0000;" title="Đỏ"></div>
+                  <div class="color-preset" data-color="#FF0000" style="background-color: #FF0000;" title="Đỏ sáng"></div>
+                  <div class="color-preset" data-color="#660000" style="background-color: #660000;" title="Nâu đỏ đậm"></div>
+                  <div class="color-preset" data-color="#800020" style="background-color: #800020;" title="Nâu đỏ"></div>
+                  <div class="color-preset" data-color="#CC3300" style="background-color: #CC3300;" title="Cam đỏ đậm"></div>
+                  <div class="color-preset" data-color="#FF3300" style="background-color: #FF3300;" title="Cam đỏ"></div>
+                  <div class="color-preset" data-color="#FF6600" style="background-color: #FF6600;" title="Cam"></div>
+                  <div class="color-preset" data-color="#800080" style="background-color: #800080;" title="Tím đỏ đậm"></div>
+                  <div class="color-preset" data-color="#CC0066" style="background-color: #CC0066;" title="Hồng đậm"></div>
+                  <div class="color-preset" data-color="#FF0066" style="background-color: #FF0066;" title="Hồng"></div>
+                  <div class="color-preset" data-color="#4B0082" style="background-color: #4B0082;" title="Tím đậm"></div>
+                  <div class="color-preset" data-color="#6A0DAD" style="background-color: #6A0DAD;" title="Tím"></div>
+                  <div class="color-preset" data-color="#8B008B" style="background-color: #8B008B;" title="Tím sáng"></div>
+                </div>
               </div>
               <div>
                 <label class="block mb-0.5 text-xs">Viền</label>
-                <select data-state="borderColor" class="w-full p-1 border border-gray-300 rounded text-xs">
-                  <option value="#E5E7EB">Xám rất nhạt</option>
-                  <option value="#D1D5DB">Xám nhạt</option>
-                  <option value="#9CA3AF">Xám</option>
-                  <option value="#000000">Đen</option>
-                </select>
-              </div>
-            </div>
-            <div class="pt-1.5 border-t border-gray-200 mt-1.5">
-              <label class="block mb-1.5 text-xs font-medium text-gray-600">Loại ngày lễ hiển thị</label>
-              <div class="space-y-1">
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="holiday-public" data-state="showHolidayPublic" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" checked>
-                  <label for="holiday-public" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ công cộng</label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="holiday-bank" data-state="showHolidayBank" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                  <label for="holiday-bank" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ ngân hàng</label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="holiday-school" data-state="showHolidaySchool" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                  <label for="holiday-school" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ trường học</label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="holiday-optional" data-state="showHolidayOptional" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                  <label for="holiday-optional" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ tùy chọn</label>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <input type="checkbox" id="holiday-observance" data-state="showHolidayObservance" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                  <label for="holiday-observance" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày kỷ niệm</label>
+                <div class="color-picker-presets" data-state="borderColor">
+                  <div class="color-preset" data-color="#FFFFFF" style="background-color: #FFFFFF; border: 1px solid #E5E7EB;" title="Trắng"></div>
+                  <div class="color-preset" data-color="#F9FAFB" style="background-color: #F9FAFB; border: 1px solid #E5E7EB;" title="Trắng xám"></div>
+                  <div class="color-preset" data-color="#F3F4F6" style="background-color: #F3F4F6; border: 1px solid #E5E7EB;" title="Xám nhạt nhất"></div>
+                  <div class="color-preset" data-color="#E5E7EB" style="background-color: #E5E7EB;" title="Xám rất nhạt"></div>
+                  <div class="color-preset" data-color="#D1D5DB" style="background-color: #D1D5DB;" title="Xám nhạt"></div>
+                  <div class="color-preset" data-color="#9CA3AF" style="background-color: #9CA3AF;" title="Xám"></div>
+                  <div class="color-preset" data-color="#6B7280" style="background-color: #6B7280;" title="Xám vừa"></div>
+                  <div class="color-preset" data-color="#4B5563" style="background-color: #4B5563;" title="Xám đậm"></div>
+                  <div class="color-preset" data-color="#374151" style="background-color: #374151;" title="Xám rất đậm"></div>
+                  <div class="color-preset" data-color="#1F2937" style="background-color: #1F2937;" title="Đen xám"></div>
+                  <div class="color-preset" data-color="#000000" style="background-color: #000000;" title="Đen"></div>
+                  <div class="color-preset" data-color="#3B82F6" style="background-color: #3B82F6;" title="Xanh dương"></div>
+                  <div class="color-preset" data-color="#10B981" style="background-color: #10B981;" title="Xanh lá"></div>
+                  <div class="color-preset" data-color="#DC2626" style="background-color: #DC2626;" title="Đỏ"></div>
                 </div>
               </div>
             </div>
@@ -313,8 +388,8 @@
   </aside>
 
   <!-- === Calendar Preview Area === -->
-  <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 overflow-auto">
-    <div id="calendars-container" class="max-w-6xl mx-auto space-y-6 pb-6" style="display: flex; flex-direction: column; align-items: stretch;"></div>
+  <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 overflow-auto min-h-screen">
+    <div id="calendars-container" class="w-full max-w-6xl mx-auto space-y-6 pb-6"></div>
   </main>
 </div>
 
@@ -347,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isLandscape: false, showAllMonths: false,
       // Holiday Types
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false, 
-      showHolidayOptional: false, showHolidayObservance: false,
+      showHolidayOptional: false, showHolidayObservance: true,
       // Background per month (1-12)
       monthBackgrounds: {},
       // UI State
@@ -544,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const monthBg = state.monthBackgrounds[month] || {};
     const hasBg = !!monthBg.url;
-    const bgStyle = hasBg ? `background-image: url(${monthBg.url}); background-size: ${monthBg.zoom || 100}%; background-position: ${monthBg.posX || 50}% ${monthBg.posY || 50}%; opacity: ${(monthBg.opacity || 100) / 100}; filter: brightness(${(monthBg.brightness || 100) / 100}) saturate(${(monthBg.saturation || 100) / 100});` : '';
+    const bgStyle = hasBg ? `background-image: url("${monthBg.url}"); background-size: ${monthBg.zoom || 100}%; background-position: ${monthBg.posX || 50}% ${monthBg.posY || 50}%; background-repeat: no-repeat; opacity: ${(monthBg.opacity || 100) / 100}; filter: brightness(${(monthBg.brightness || 100) / 100}) saturate(${(monthBg.saturation || 100) / 100});` : '';
     
     const { monthFontSize, monthFontWeight, monthTextTransform, yearFontSize, yearFontWeight, monthYearLayout } = state;
     const headerTextColor = state.weekdayColor || state.dateColor || '#374151';
@@ -586,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     return `
       <div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="${month}" style="width: 100%; aspect-ratio: ${aspectRatio}; max-width: 100%; max-height: calc(100vh - 4rem); height: auto;">
-        <div class="month-bg-image absolute inset-0 bg-center bg-no-repeat rounded-lg" style="${bgStyle} cursor: ${hasBg ? 'move' : 'default'}; z-index: 1; user-select: none;"></div>
+        <div class="month-bg-image absolute inset-0 rounded-lg" style="${bgStyle} cursor: ${hasBg ? 'move' : 'default'}; z-index: 1; user-select: none; pointer-events: ${hasBg ? 'auto' : 'none'};"></div>
         <div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>
         <div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ${state.selectedFont}; background-color: ${state.backgroundColor};">
           <header class="relative text-center pb-4 flex items-center justify-center">
@@ -672,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             state.monthBackgrounds[month].url = ev.target.result;
             saveState();
-            renderAllMonths();
+            render();
           };
           reader.readAsDataURL(files[0]);
         }
@@ -694,7 +769,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 state.monthBackgrounds[month].url = ev2.target.result;
                 saveState();
-                renderAllMonths();
+                render();
               };
               reader.readAsDataURL(file);
             }
@@ -786,7 +861,7 @@ document.addEventListener('DOMContentLoaded', () => {
               delete state.monthBackgrounds[month];
             }
             saveState();
-            renderAllMonths();
+            render();
           }
         }
       });
@@ -890,6 +965,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (state[key] !== undefined) {
         if (el.type === 'checkbox') {
           el.checked = state[key];
+        } else if (el.classList && el.classList.contains('color-picker-presets')) {
+          // Update color picker active state
+          el.querySelectorAll('.color-preset').forEach(preset => {
+            preset.classList.remove('active');
+            if (preset.dataset.color === state[key]) {
+              preset.classList.add('active');
+            }
+          });
         } else {
           el.value = state[key];
         }
@@ -978,6 +1061,34 @@ document.addEventListener('DOMContentLoaded', () => {
             state[key] = e.target.checked;
             saveState();
             render();
+        });
+    });
+    
+    // Color picker presets
+    document.querySelectorAll('.color-picker-presets').forEach(picker => {
+        const key = picker.dataset.state;
+        const currentColor = state[key];
+        
+        // Mark active color
+        picker.querySelectorAll('.color-preset').forEach(preset => {
+            if (preset.dataset.color === currentColor) {
+                preset.classList.add('active');
+            }
+        });
+        
+        // Add click handlers
+        picker.querySelectorAll('.color-preset').forEach(preset => {
+            preset.addEventListener('click', () => {
+                const color = preset.dataset.color;
+                state[key] = color;
+                
+                // Update active state
+                picker.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+                
+                saveState();
+                render();
+            });
         });
     });
     
