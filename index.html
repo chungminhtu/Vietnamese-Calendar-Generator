@@ -11,12 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lato:wght@400;700&family=Lexend+Deca:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Nunito+Sans:wght@400;700;900&family=Open+Sans:wght@400;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.4/lunar.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.4/lunar.min.js" integrity="sha512-B/tey06yuqPVphjK3i4RAoSqy8aRtR22jxdYpPXRLdD74mgUazviLmu+1HSJvPBgXi9zFd8InZIWKnYMcHYJfg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/date-holidays@3.26.5/dist/umd.min.js"></script>
 
   <style>
-    body { font-family: 'Lexend Deca', sans-serif; }
+    body { font-family: 'Lexend Deca', sans-serif; background: #f3f4f6; min-height: 100vh; }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -24,12 +25,17 @@
       flex-grow: 1;
     }
     .is-exporting .nav-button { display: none; }
+    .is-exporting #calendar-export-area { 
+      transform: none !important;
+      position: relative !important;
+    }
     .holiday-name {
-      line-height: 1;
+      line-height: normal;
       font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      word-wrap: break-word;
     }
 
     /* Accordion Styles */
@@ -81,38 +87,35 @@
 <div class="flex flex-col lg:flex-row h-screen antialiased text-gray-800">
 
   <!-- === Controls Sidebar === -->
-  <aside class="w-full lg:w-96 bg-white p-[5px] shadow-2xl lg:h-screen lg:overflow-y-auto">
-    <header class="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 mb-1">
-      <h1 class="text-xl font-bold text-white">Tạo Lịch Việt</h1>
-      <p class="text-xs text-indigo-200">Tùy chỉnh và xuất lịch của bạn.</p>
-    </header>
-
-    <div class="mt-1 space-y-1">
+  <aside class="w-full lg:w-96 bg-white p-2 shadow-lg lg:h-screen lg:overflow-y-auto">
+    <h1 class="text-lg font-bold text-gray-800 mb-1">Tạo Lịch Việt</h1>
+    <p class="text-xs text-gray-600 mb-3">Tạo lịch 12 tháng với hình nền tùy chỉnh, in khổ A4</p>
+    <div class="space-y-1">
       <!-- Accordion Item: Basic -->
-      <div class="rounded-lg border border-gray-200">
-        <button data-panel="basic" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+      <div class="border-2 border-blue-300 rounded shadow-sm">
+        <button data-panel="basic" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-xs rounded transition-all">
           <span>Cơ bản</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div data-content="basic" class="accordion-content active">
-          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+          <div class="p-1.5 space-y-1.5 text-xs">
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label for="month-select" class="block text-xs font-medium text-gray-600 mb-0.5">Tháng</label>
-                <select id="month-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+                <select id="month-select" class="w-full p-1 border border-gray-300 rounded text-xs"></select>
               </div>
               <div>
                 <label for="year-select" class="block text-xs font-medium text-gray-600 mb-0.5">Năm</label>
-                <select id="year-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+                <select id="year-select" class="w-full p-1 border border-gray-300 rounded text-xs"></select>
               </div>
             </div>
             <div>
               <label for="font-select" class="block text-xs font-medium text-gray-600 mb-0.5">Phông chữ</label>
-              <select id="font-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+              <select id="font-select" class="w-full p-1 border border-gray-300 rounded text-xs"></select>
             </div>
             <div>
               <label for="start-of-week-select" class="block text-xs font-medium text-gray-600 mb-0.5">Bắt đầu tuần</label>
-              <select id="start-of-week-select" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+              <select id="start-of-week-select" class="w-full p-1 border border-gray-300 rounded text-xs">
                 <option value="1">Thứ Hai</option> <option value="0">Chủ Nhật</option>
               </select>
             </div>
@@ -121,13 +124,13 @@
       </div>
 
       <!-- Accordion Item: Typography -->
-      <div class="rounded-lg border border-gray-200">
-        <button data-panel="typography" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+      <div class="border-2 border-purple-300 rounded shadow-sm">
+        <button data-panel="typography" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xs rounded transition-all">
           <span>Kích thước & Kiểu chữ</span>
-           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div data-content="typography" class="accordion-content active">
-          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+          <div class="p-1.5 space-y-1.5 text-xs">
              <div><label class="text-xs">Cỡ chữ tháng (<span data-label="monthFontSize">48</span>px)</label><input type="range" data-state="monthFontSize" min="10" max="100"></div>
             <div><label class="text-xs">Cỡ chữ năm (<span data-label="yearFontSize">24</span>px)</label><input type="range" data-state="yearFontSize" min="8" max="80"></div>
             <div><label class="text-xs">Cỡ chữ thứ (<span data-label="weekdayFontSize">14</span>px)</label><input type="range" data-state="weekdayFontSize" min="6" max="40"></div>
@@ -135,51 +138,40 @@
             <div><label class="text-xs">Cỡ chữ Âm lịch (<span data-label="lunarDateFontSize">12</span>px)</label><input type="range" data-state="lunarDateFontSize" min="5" max="30"></div>
             <div><label class="text-xs">Cỡ chữ Lễ (<span data-label="holidayFontSize">11.2</span>px)</label><input type="range" data-state="holidayFontSize" min="5" max="30"></div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="text-xs">Độ dày Tháng</label><select data-state="monthFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option><option value="900">Rất Đậm</option></select></div>
-              <div><label class="text-xs">Độ dày Năm</label><select data-state="yearFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
-              <div><label class="text-xs">Độ dày Thứ</label><select data-state="weekdayFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="600">Vừa</option><option value="700">Đậm</option></select></div>
-              <div><label class="text-xs">Độ dày Ngày</label><select data-state="dateFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
-              <div><label class="text-xs">Kiểu chữ Tháng</label><select data-state="monthTextTransform" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
-              <div><label class="text-xs">Kiểu chữ Thứ</label><select data-state="weekdayTextTransform" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
+              <div><label class="text-xs">Độ dày Tháng</label><select data-state="monthFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option><option value="900">Rất Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Năm</label><select data-state="yearFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Thứ</label><select data-state="weekdayFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="600">Vừa</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Ngày</label><select data-state="dateFontWeight" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Kiểu chữ Tháng</label><select data-state="monthTextTransform" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
+              <div><label class="text-xs">Kiểu chữ Thứ</label><select data-state="weekdayTextTransform" class="w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
             </div>
           </div>
         </div>
       </div>
       
       <!-- Accordion Item: Colors -->
-       <div class="rounded-lg border border-gray-200">
-        <button data-panel="colors" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+       <div class="border-2 border-orange-300 rounded shadow-sm">
+        <button data-panel="colors" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-xs rounded transition-all">
           <span>Màu sắc</span>
-           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div data-content="colors" class="accordion-content active">
-          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+          <div class="p-1.5 space-y-1.5 text-xs">
             <div>
-              <label class="block mb-1 font-medium text-gray-600">Bảng màu</label>
-              <select data-state="colorPalette" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+              <label class="block mb-1 text-xs font-medium text-gray-600">Bảng màu</label>
+              <select data-state="colorPalette" class="w-full p-1 border border-gray-300 rounded text-xs">
                 <option value="default">Mặc định</option>
                 <option value="professional">Chuyên nghiệp</option>
                 <option value="minimal">Tối giản</option>
                 <option value="vibrant">Sống động</option>
-                <option value="dark">Tối</option>
                 <option value="warm">Ấm áp</option>
                 <option value="cool">Mát mẻ</option>
               </select>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
               <div>
-                <label class="block mb-1">Nền Lịch</label>
-                <select data-state="backgroundColor" class="w-full p-1.5 border border-gray-300 rounded">
-                  <option value="#FFFFFF">Trắng</option>
-                  <option value="#F9FAFB">Xám nhạt</option>
-                  <option value="#F3F4F6">Xám</option>
-                  <option value="#1F2937">Xám đen</option>
-                  <option value="#111827">Đen</option>
-                </select>
-              </div>
-              <div>
-                <label class="block mb-1">Ngày thường</label>
-                <select data-state="dateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Ngày thường</label>
+                <select data-state="dateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#374151">Xám đậm</option>
                   <option value="#1F2937">Đen</option>
                   <option value="#111827">Đen đậm</option>
@@ -188,16 +180,16 @@
                 </select>
               </div>
               <div>
-                <label class="block mb-1">Ngày tháng khác</label>
-                <select data-state="otherMonthDateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Ngày tháng khác</label>
+                <select data-state="otherMonthDateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#9CA3AF">Xám nhạt</option>
                   <option value="#D1D5DB">Xám rất nhạt</option>
                   <option value="#6B7280">Xám vừa</option>
                 </select>
               </div>
               <div>
-                <label class="block mb-1">Thứ</label>
-                <select data-state="weekdayColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Thứ</label>
+                <select data-state="weekdayColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#4B5563">Xám đậm</option>
                   <option value="#1F2937">Đen</option>
                   <option value="#2563EB">Xanh dương</option>
@@ -205,8 +197,8 @@
                 </select>
               </div>
               <div>
-                <label class="block mb-1">Ngày Âm lịch</label>
-                <select data-state="lunarDateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Ngày Âm lịch</label>
+                <select data-state="lunarDateColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#6B7280">Xám</option>
                   <option value="#9CA3AF">Xám nhạt</option>
                   <option value="#059669">Xanh lá</option>
@@ -214,8 +206,8 @@
                 </select>
               </div>
               <div>
-                <label class="block mb-1">Ngày Lễ</label>
-                <select data-state="holidayColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Ngày Lễ</label>
+                <select data-state="holidayColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#DC2626">Đỏ</option>
                   <option value="#EA580C">Cam đỏ</option>
                   <option value="#C026D3">Hồng</option>
@@ -223,8 +215,8 @@
                 </select>
               </div>
               <div>
-                <label class="block mb-1">Viền</label>
-                <select data-state="borderColor" class="w-full p-1.5 border border-gray-300 rounded">
+                <label class="block mb-0.5 text-xs">Viền</label>
+                <select data-state="borderColor" class="w-full p-1 border border-gray-300 rounded text-xs">
                   <option value="#E5E7EB">Xám rất nhạt</option>
                   <option value="#D1D5DB">Xám nhạt</option>
                   <option value="#9CA3AF">Xám</option>
@@ -232,30 +224,64 @@
                 </select>
               </div>
             </div>
+            <div class="pt-1.5 border-t border-gray-200 mt-1.5">
+              <label class="block mb-1.5 text-xs font-medium text-gray-600">Loại ngày lễ hiển thị</label>
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2">
+                  <input type="checkbox" id="holiday-public" data-state="showHolidayPublic" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" checked>
+                  <label for="holiday-public" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ công cộng</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="checkbox" id="holiday-bank" data-state="showHolidayBank" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  <label for="holiday-bank" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ ngân hàng</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="checkbox" id="holiday-school" data-state="showHolidaySchool" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  <label for="holiday-school" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ trường học</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="checkbox" id="holiday-optional" data-state="showHolidayOptional" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  <label for="holiday-optional" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày lễ tùy chọn</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="checkbox" id="holiday-observance" data-state="showHolidayObservance" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  <label for="holiday-observance" class="text-xs font-medium text-gray-700 cursor-pointer">Ngày kỷ niệm</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
       <!-- Accordion Item: Layout -->
-      <div class="rounded-lg border border-gray-200">
-        <button data-panel="layout" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+      <div class="border-2 border-green-300 rounded shadow-sm">
+        <button data-panel="layout" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-xs rounded transition-all">
           <span>Bố cục & Viền</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div data-content="layout" class="accordion-content active">
-          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+          <div class="p-1.5 space-y-1.5 text-xs">
             <div>
               <label class="block text-xs mb-0.5">Vị trí số ngày</label>
-              <select data-state="datePosition" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+              <select data-state="datePosition" class="w-full p-1 border border-gray-300 rounded text-xs">
                 <option value="top-right">Trên-phải</option><option value="top-left">Trên-trái</option>
                 <option value="bottom-right">Dưới-phải</option><option value="bottom-left">Dưới-trái</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs mb-0.5">Hiển thị Tháng/Năm</label>
-              <select data-state="monthYearLayout" class="w-full p-1.5 border border-gray-300 rounded text-xs">
-                <option value="double">2 Dòng</option><option value="single">1 Dòng</option>
+              <label class="block text-xs mb-0.5 font-medium text-gray-700">Hiển thị Tháng/Năm</label>
+              <select data-state="monthYearLayout" class="w-full p-1 border-2 border-gray-400 rounded text-xs font-medium">
+                <option value="double">2 Dòng</option>
+                <option value="single">1 Dòng</option>
               </select>
+            </div>
+            <div class="flex items-center space-x-2 pt-1">
+              <input type="checkbox" id="show-other-month-dates" data-state="showOtherMonthDates" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              <label for="show-other-month-dates" class="text-xs font-medium text-gray-700 cursor-pointer">Hiển thị ngày tháng khác</label>
+            </div>
+            <div class="flex items-center space-x-2 pt-1">
+              <input type="checkbox" id="orientation-landscape" data-state="isLandscape" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              <label for="orientation-landscape" class="text-xs font-medium text-gray-700 cursor-pointer">Khổ ngang (Landscape)</label>
             </div>
             <div><label class="text-xs">Độ dày viền (<span data-label="borderWidth">1</span>px)</label><input type="range" data-state="borderWidth" min="0" max="10" step="0.5"></div>
           </div>
@@ -263,20 +289,20 @@
       </div>
 
       <!-- Accordion Item: Background -->
-      <div class="rounded-lg border border-gray-200">
-        <button data-panel="background" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+      <div class="border-2 border-indigo-300 rounded shadow-sm">
+        <button data-panel="background" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-xs rounded transition-all">
           <span>Hình Nền</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div data-content="background" class="accordion-content active">
-          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
-            <label for="image-upload-input" class="w-full cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-gray-300 shadow-sm font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">
-              <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>
+          <div class="p-1.5 space-y-1.5 text-xs">
+            <label for="image-upload-input" class="w-full cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-gray-300 font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">
+              <svg class="w-3 h-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>
               <span>Tải ảnh lên</span>
             </label>
             <input id="image-upload-input" type="file" class="hidden" accept="image/*">
             <div id="background-controls-wrapper" class="hidden">
-              <button id="remove-image-btn" class="w-full mt-1 cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-transparent shadow-sm font-medium rounded text-xs text-white bg-red-600 hover:bg-red-700">Xóa ảnh</button>
+              <button id="remove-image-btn" class="w-full mt-1 px-2 py-1.5 border border-gray-300 font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">Xóa ảnh</button>
               <h3 class="font-semibold text-gray-600 pt-1 text-xs">Điều Chỉnh Nền</h3>
               <div><label class="text-xs">Độ mờ (<span data-label="bgOpacity">100</span>%)</label><input type="range" data-state="bgOpacity"></div>
               <div><label class="text-xs">Độ sáng (<span data-label="bgBrightness">100</span>%)</label><input type="range" data-state="bgBrightness" min="0" max="200"></div>
@@ -290,17 +316,15 @@
       </div>
       
       <!-- Export Button -->
-      <div class="pt-1">
-        <button id="export-btn" class="w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400">
-           <span>Xuất file PNG</span>
-        </button>
-      </div>
+      <button id="export-btn" class="w-full mt-2 px-3 py-2 text-xs font-semibold rounded border border-transparent text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50">
+        <span>Xuất file PDF</span>
+      </button>
     </div>
   </aside>
 
   <!-- === Calendar Preview Area === -->
   <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 flex items-center justify-center">
-    <div id="calendar-export-area" class="relative w-full max-w-6xl aspect-[16/11] shadow-2xl rounded-lg overflow-hidden transition-all duration-300">
+    <div id="calendar-export-area" class="relative w-full max-w-6xl shadow-2xl rounded-lg overflow-hidden transition-all duration-300">
       <div id="background-image-div" class="absolute inset-0 bg-center bg-no-repeat rounded-lg"></div>
       <div class="relative w-full h-full flex flex-col p-4 sm:p-6">
         <header class="relative text-center pb-4 flex items-center justify-center">
@@ -342,7 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
       weekdayColor: '#4B5563', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
       borderColor: '#E5E7EB', colorPalette: 'default',
       // Layout
-      datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1,
+      datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1, showOtherMonthDates: true,
+      isLandscape: false,
+      // Holiday Types
+      showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false, 
+      showHolidayOptional: false, showHolidayObservance: false,
       // Background
       backgroundImageUrl: null, bgOpacity: 100, bgBrightness: 100, bgSaturation: 100,
       bgZoom: 100, bgPosX: 50, bgPosY: 50,
@@ -380,37 +408,32 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const colorPalettes = {
     default: {
-      backgroundColor: '#FFFFFF', dateColor: '#374151', otherMonthDateColor: '#9CA3AF',
+      dateColor: '#374151', otherMonthDateColor: '#9CA3AF',
       weekdayColor: '#4B5563', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
       borderColor: '#E5E7EB'
     },
     professional: {
-      backgroundColor: '#F9FAFB', dateColor: '#1F2937', otherMonthDateColor: '#D1D5DB',
+      dateColor: '#1F2937', otherMonthDateColor: '#D1D5DB',
       weekdayColor: '#111827', lunarDateColor: '#4B5563', holidayColor: '#DC2626',
       borderColor: '#E5E7EB'
     },
     minimal: {
-      backgroundColor: '#FFFFFF', dateColor: '#000000', otherMonthDateColor: '#9CA3AF',
+      dateColor: '#000000', otherMonthDateColor: '#9CA3AF',
       weekdayColor: '#374151', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
       borderColor: '#E5E7EB'
     },
     vibrant: {
-      backgroundColor: '#FFFFFF', dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
+      dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
       weekdayColor: '#2563EB', lunarDateColor: '#059669', holidayColor: '#EA580C',
       borderColor: '#D1D5DB'
     },
-    dark: {
-      backgroundColor: '#1F2937', dateColor: '#F9FAFB', otherMonthDateColor: '#6B7280',
-      weekdayColor: '#E5E7EB', lunarDateColor: '#9CA3AF', holidayColor: '#F87171',
-      borderColor: '#374151'
-    },
     warm: {
-      backgroundColor: '#FEF3C7', dateColor: '#78350F', otherMonthDateColor: '#D97706',
+      dateColor: '#78350F', otherMonthDateColor: '#D97706',
       weekdayColor: '#92400E', lunarDateColor: '#B45309', holidayColor: '#DC2626',
       borderColor: '#FCD34D'
     },
     cool: {
-      backgroundColor: '#E0F2FE', dateColor: '#0C4A6E', otherMonthDateColor: '#0284C7',
+      dateColor: '#0C4A6E', otherMonthDateColor: '#0284C7',
       weekdayColor: '#0369A1', lunarDateColor: '#075985', holidayColor: '#DC2626',
       borderColor: '#BAE6FD'
     }
@@ -421,6 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (palette) {
       Object.assign(state, palette);
       state.colorPalette = paletteName;
+      state.backgroundColor = '#FFFFFF';
       saveState();
       render();
     }
@@ -459,12 +483,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let holidayService;
   const getLunarDate = (day, month, year) => {
     try {
-      const LunarLib = window.lunar || window.Lunar || lunar;
-      if (!LunarLib || !LunarLib.Solar) {
-        console.warn('lunar-javascript library not loaded');
+      const SolarClass = window.Solar || Solar;
+      if (!SolarClass || typeof SolarClass.fromYmd !== 'function') {
+        console.warn('Solar class not available');
         return { lunarDay: 0, lunarMonth: 0 };
       }
-      const solar = LunarLib.Solar.fromYmd(year, month, day);
+      const solar = SolarClass.fromYmd(year, month, day);
       if (!solar) {
         return { lunarDay: 0, lunarMonth: 0 };
       }
@@ -472,10 +496,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!lunarDate) {
         return { lunarDay: 0, lunarMonth: 0 };
       }
+      
       const lunarDay = lunarDate.getDay();
       const lunarMonth = lunarDate.getMonth();
-      if (lunarDay && lunarMonth) {
-        return { lunarDay, lunarMonth: Math.abs(lunarMonth) };
+      
+      if (lunarDay > 0 && lunarMonth > 0) {
+        return { lunarDay: Number(lunarDay), lunarMonth: Math.abs(Number(lunarMonth)) };
       }
       return { lunarDay: 0, lunarMonth: 0 };
     } catch (e) {
@@ -491,10 +517,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (lunarMonth === 3 && lunarDay === 10) return 'Giỗ Tổ Hùng Vương';
     }
     if (!holidayService) return null;
+    
+    const enabledTypes = [];
+    if (state.showHolidayPublic) enabledTypes.push('public');
+    if (state.showHolidayBank) enabledTypes.push('bank');
+    if (state.showHolidaySchool) enabledTypes.push('school');
+    if (state.showHolidayOptional) enabledTypes.push('optional');
+    if (state.showHolidayObservance) enabledTypes.push('observance');
+    
+    if (enabledTypes.length === 0) return null;
+    
     try {
-      const holidays = holidayService.isHoliday(date);
-      if (holidays && holidays.length > 0) {
-        return holidays[0].name;
+      const allHolidays = holidayService.isHoliday(date);
+      if (allHolidays) {
+        let holidaysArray = Array.isArray(allHolidays) ? allHolidays : [allHolidays];
+        const matchingHoliday = holidaysArray.find(h => h && h.type && enabledTypes.includes(h.type));
+        return matchingHoliday ? matchingHoliday.name : null;
       }
       return null;
     } catch (e) {
@@ -528,8 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
         continue;
       }
       const { lunarDay, lunarMonth } = getLunarDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
-      if (i === 1 && lunarDay === 0 && lunarMonth === 0) {
-        console.warn('Lunar date calculation returned 0 for date:', date, 'Check if lunar library is loaded');
+      if (i === 1 && (lunarDay === 0 || lunarMonth === 0)) {
+        console.warn('Lunar date calculation returned 0 for date:', date, 'Lunar values:', lunarDay, lunarMonth, 'Check if lunar library is loaded');
       }
       const holidayName = getHoliday(date, lunarDay, lunarMonth);
       const isCurrentMonth = date.getMonth() === selectedMonth - 1;
@@ -538,7 +576,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let html = '';
     grid.forEach(day => {
-      html += generateDayCellHTML(day);
+      if (!state.showOtherMonthDates && !day.isCurrentMonth) {
+        html += '<div class="border-r border-b" style="border-color: ' + (state.backgroundImageUrl ? 'rgba(255, 255, 255, 0.3)' : state.borderColor) + '; border-right-width: ' + state.borderWidth + 'px; border-bottom-width: ' + state.borderWidth + 'px;"></div>';
+      } else {
+        html += generateDayCellHTML(day);
+      }
     });
     
     if (!html) {
@@ -573,12 +615,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="w-full flex-1 flex ${datePositionClasses}">
             <div class="text-center leading-none">
               <p style="font-size: ${dateSize}px; font-weight: ${dateFontWeight}; color: ${finalDateColor}; text-shadow: ${shadowStyle};">${date.getDate()}</p>
-              ${isCurrentMonth && lunarDay > 0 && lunarMonth > 0 ? `<p style="font-size: ${lunarDateFontSize}px; color: ${lunarColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.5)' : 'none'};">${lunarDay}/${lunarMonth}</p>` : ''}
+              ${lunarDay > 0 && lunarMonth > 0 ? `<p style="font-size: ${lunarDateFontSize}px; color: ${lunarColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.5)' : 'none'}; line-height: 1.2;">${lunarDay}/${lunarMonth}</p>` : ''}
             </div>
           </div>
           ${(holidayName && isCurrentMonth) ? `
             <div class="text-center pb-1 mt-auto">
-              <p class="holiday-name" style="font-size: ${holidayFontSize}px; color: ${holidayColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.7)' : 'none'};">${holidayName}</p>
+              <p class="holiday-name" style="font-size: ${holidayFontSize}px; color: ${holidayColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.7)' : 'none'}; line-height: normal; padding: 2px 0;">${holidayName}</p>
             </div>` : ''}
         </div>
       `;
@@ -593,8 +635,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const { 
       selectedFont, backgroundColor, monthFontSize, monthFontWeight, monthTextTransform, 
       yearFontSize, yearFontWeight, weekdayFontSize, weekdayFontWeight, weekdayTextTransform,
-      borderWidth, monthYearLayout, selectedMonth, selectedYear
+      borderWidth, monthYearLayout, selectedMonth, selectedYear, isLandscape
     } = state;
+    
+    // Apply orientation - A4 dimensions: 210mm x 297mm
+    // Portrait: 210/297 = 0.707, Landscape: 297/210 = 1.414
+    if (isLandscape) {
+      DOMElements.calendarExportArea.style.aspectRatio = '297/210';
+      DOMElements.calendarExportArea.style.maxWidth = '100%';
+    } else {
+      DOMElements.calendarExportArea.style.aspectRatio = '210/297';
+      DOMElements.calendarExportArea.style.maxWidth = '100%';
+    }
 
     // Calendar container styles
     DOMElements.calendarExportArea.style.fontFamily = selectedFont;
@@ -614,15 +666,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const subHeaderTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.5)' : 'none';
 
     // Month/Year Header
+    const monthText = 'tháng';
     if (monthYearLayout === 'double') {
         DOMElements.calendarHeaderText.innerHTML = `
-          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor}; text-shadow: ${headerTextShadow};">THÁNG ${selectedMonth}</h1>
+          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor}; text-shadow: ${headerTextShadow};">${monthText} ${selectedMonth}</h1>
           <p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor}; text-shadow: ${subHeaderTextShadow};">${selectedYear}</p>
         `;
     } else {
         DOMElements.calendarHeaderText.innerHTML = `
            <h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor}; text-shadow: ${headerTextShadow};">
-                <span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">THÁNG ${selectedMonth}</span>
+                <span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">${monthText} ${selectedMonth}</span>
                 <span style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight};" class="ml-4">${selectedYear}</span>
            </h1>
         `;
@@ -633,13 +686,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Weekday Header
-    const weekdays = state.startOfWeek === 1 
-      ? ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'] 
-      : ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const weekdayLabels = state.startOfWeek === 1 
+      ? ['thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy', 'chủ nhật'] 
+      : ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
     const weekdayColor = hasBg ? '#FFFFFF' : state.weekdayColor;
     const weekdayTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.7)' : 'none';
     
-    DOMElements.weekdayHeader.innerHTML = weekdays.map(day => `
+    DOMElements.weekdayHeader.innerHTML = weekdayLabels.map(day => `
       <div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor}; text-shadow: ${weekdayTextShadow};">${day}</div>
     `).join('');
 
@@ -692,7 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-state]').forEach(el => {
       const key = el.dataset.state;
       if (state[key] !== undefined) {
-        el.value = state[key];
+        if (el.type === 'checkbox') {
+          el.checked = state[key];
+        } else {
+          el.value = state[key];
+        }
       }
     });
   }
@@ -730,24 +787,44 @@ document.addEventListener('DOMContentLoaded', () => {
     DOMElements.fontSelect.addEventListener('change', (e) => { state.selectedFont = e.target.value; saveState(); render(); });
     DOMElements.startOfWeekSelect.addEventListener('change', (e) => { state.startOfWeek = parseInt(e.target.value); saveState(); render(); });
 
-    // Slider and select controls
-    document.querySelectorAll('input[type="range"], select[data-state]').forEach(input => {
+    // Slider controls (use 'input' event for real-time updates)
+    document.querySelectorAll('input[type="range"][data-state]').forEach(input => {
         input.addEventListener('input', (e) => {
+            const key = e.target.dataset.state;
+            const isFloat = e.target.step && e.target.step.includes('.');
+            let value = isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
+            state[key] = value;
+            const label = document.querySelector(`[data-label="${key}"]`);
+            if (label) label.textContent = value;
+            saveState();
+            render();
+        });
+    });
+    
+    // Select controls (use 'change' event for better compatibility)
+    document.querySelectorAll('select[data-state]').forEach(select => {
+        select.addEventListener('change', (e) => {
             const key = e.target.dataset.state;
             if (key === 'colorPalette') {
               applyColorPalette(e.target.value);
               return;
             }
-            const isNumber = e.target.type === 'range' || e.target.type === 'number' || !isNaN(parseFloat(e.target.options[0]?.value));
-            const isFloat = e.target.step && e.target.step.includes('.');
-            
+            const isNumber = !isNaN(parseFloat(e.target.options[0]?.value));
             let value = e.target.value;
             if (isNumber) {
-                value = isFloat ? parseFloat(value) : parseInt(value, 10);
+                value = parseFloat(value) || parseInt(value, 10);
             }
             state[key] = value;
-            const label = document.querySelector(`[data-label="${key}"]`);
-            if (label) label.textContent = value;
+            saveState();
+            render();
+        });
+    });
+    
+    // Checkbox controls
+    document.querySelectorAll('input[type="checkbox"][data-state]').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const key = e.target.dataset.state;
+            state[key] = e.target.checked;
             saveState();
             render();
         });
@@ -812,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.dataTransfer.files[0]) processImageFile(e.dataTransfer.files[0]);
     });
     
-    // Export PNG
+    // Export PDF
     DOMElements.exportBtn.addEventListener('click', async () => {
         if (state.isExporting) return;
         state.isExporting = true;
@@ -822,26 +899,77 @@ document.addEventListener('DOMContentLoaded', () => {
             <span>Đang xuất...</span>`;
         document.body.classList.add('is-exporting');
 
-        await new Promise(resolve => setTimeout(resolve, 50)); // Allow UI to update
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         try {
-            const canvas = await html2canvas(DOMElements.calendarExportArea, {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            const element = DOMElements.calendarExportArea;
+            const rect = element.getBoundingClientRect();
+            const elementWidth = Math.round(rect.width);
+            const elementHeight = Math.round(rect.height);
+            
+            const scale = 3;
+            
+            const canvas = await html2canvas(element, {
                 useCORS: true,
-                scale: 2,
+                scale: scale,
                 logging: false,
-                backgroundColor: state.backgroundImageUrl ? null : state.backgroundColor
+                backgroundColor: state.backgroundImageUrl ? null : state.backgroundColor,
+                allowTaint: true,
+                removeContainer: false,
+                imageTimeout: 15000,
+                width: elementWidth,
+                height: elementHeight,
+                x: 0,
+                y: 0,
+                scrollX: 0,
+                scrollY: 0,
+                onclone: (clonedDoc) => {
+                    const clonedElement = clonedDoc.getElementById('calendar-export-area');
+                    if (clonedElement) {
+                        clonedElement.style.transform = 'none';
+                        clonedElement.style.position = 'static';
+                        clonedElement.style.width = elementWidth + 'px';
+                        clonedElement.style.height = elementHeight + 'px';
+                        clonedElement.style.margin = '0';
+                        clonedElement.style.padding = '0';
+                        clonedElement.style.boxSizing = 'border-box';
+                        clonedElement.style.aspectRatio = state.isLandscape ? '297/210' : '210/297';
+                    }
+                    const navButtons = clonedDoc.querySelectorAll('.nav-button');
+                    navButtons.forEach(btn => btn.style.display = 'none');
+                }
             });
-            const link = document.createElement('a');
-            link.download = `calendar-${state.selectedYear}-${state.selectedMonth}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            const jsPDFLib = window.jspdf || jspdf;
+            const { jsPDF } = jsPDFLib;
+            
+            const dpi = 96;
+            const mmPerInch = 25.4;
+            const pixelsPerMm = (dpi * scale) / mmPerInch;
+            
+            const mmWidth = canvas.width / pixelsPerMm;
+            const mmHeight = canvas.height / pixelsPerMm;
+            
+            const pdf = new jsPDF({
+                orientation: state.isLandscape ? 'landscape' : 'portrait',
+                unit: 'mm',
+                format: [mmWidth, mmHeight],
+                precision: 16,
+                compress: false
+            });
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, mmWidth, mmHeight, undefined, 'FAST');
+            pdf.save(`lich-viet-${state.selectedYear}-${state.selectedMonth}.pdf`);
         } catch (error) {
             console.error('Failed to export calendar:', error);
-            alert('An error occurred while exporting the calendar.');
+            alert('An error occurred while exporting the calendar: ' + error.message);
         } finally {
             state.isExporting = false;
             DOMElements.exportBtn.disabled = false;
-            DOMElements.exportBtn.innerHTML = `<span>Xuất file PNG</span>`;
+            DOMElements.exportBtn.innerHTML = `<span>Xuất file PDF</span>`;
             document.body.classList.remove('is-exporting');
         }
     });
@@ -854,36 +982,32 @@ document.addEventListener('DOMContentLoaded', () => {
   function startApp() {
     initAttempts++;
     
-    if (typeof dayjs === 'undefined') {
+    if (typeof dayjs === 'undefined' || typeof html2canvas === 'undefined' || (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined')) {
       if (initAttempts < MAX_INIT_ATTEMPTS) {
         setTimeout(startApp, 100);
       } else {
-        console.error('dayjs failed to load');
-        alert('Required library (dayjs) failed to load. Please refresh the page.');
+        console.error('Required libraries failed to load');
+        if (typeof dayjs === 'undefined') alert('Required library (dayjs) failed to load. Please refresh the page.');
+        if (typeof html2canvas === 'undefined') alert('Required library (html2canvas) failed to load. Please refresh the page.');
+        if (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined') alert('Required library (jsPDF) failed to load. Please refresh the page.');
       }
       return;
     }
     
-    // Check if lunar library is loaded
-    const LunarLib = window.lunar || window.Lunar;
-    if (LunarLib) {
-      console.log('lunar-javascript library loaded:', LunarLib);
-      if (LunarLib.Solar) {
-        console.log('Solar class available');
-        // Test the library
+      // Check if lunar library is loaded
+      const SolarClass = window.Solar || Solar;
+      if (SolarClass && typeof SolarClass.fromYmd === 'function') {
+        console.log('lunar-javascript library loaded, Solar class available');
         try {
-          const testSolar = LunarLib.Solar.fromYmd(2024, 1, 1);
+          const testSolar = SolarClass.fromYmd(2024, 1, 1);
           const testLunar = testSolar.getLunar();
-          console.log('Lunar library test successful:', testLunar.getDay(), testLunar.getMonth());
+          console.log('Lunar library test successful - Day:', testLunar.getDay(), 'Month:', testLunar.getMonth());
         } catch (e) {
           console.error('Lunar library test failed:', e);
         }
       } else {
-        console.warn('Solar class not found in lunar library');
+        console.warn('Solar class not found - lunar library may not be loaded');
       }
-    } else {
-      console.warn('lunar-javascript library not found in window object');
-    }
     
     try {
       const HolidaysLib = window.Holidays || window.dateHolidays || Holidays;
