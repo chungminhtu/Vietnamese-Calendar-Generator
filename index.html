@@ -304,6 +304,7 @@
             <div id="background-controls-wrapper" class="hidden">
               <button id="remove-image-btn" class="w-full mt-1 px-2 py-1.5 border border-gray-300 font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">Xóa ảnh</button>
               <h3 class="font-semibold text-gray-600 pt-1 text-xs">Điều Chỉnh Nền</h3>
+              <p class="text-xs text-gray-500 mb-1">Giữ phím Shift và kéo để di chuyển ảnh. Cuộn chuột để zoom.</p>
               <div><label class="text-xs">Độ mờ (<span data-label="bgOpacity">100</span>%)</label><input type="range" data-state="bgOpacity"></div>
               <div><label class="text-xs">Độ sáng (<span data-label="bgBrightness">100</span>%)</label><input type="range" data-state="bgBrightness" min="0" max="200"></div>
               <div><label class="text-xs">Bão hòa (<span data-label="bgSaturation">100</span>%)</label><input type="range" data-state="bgSaturation" min="0" max="200"></div>
@@ -325,8 +326,9 @@
   <!-- === Calendar Preview Area === -->
   <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 flex items-center justify-center">
     <div id="calendar-export-area" class="relative w-full max-w-6xl shadow-2xl rounded-lg overflow-hidden transition-all duration-300">
-      <div id="background-image-div" class="absolute inset-0 bg-center bg-no-repeat rounded-lg"></div>
-      <div class="relative w-full h-full flex flex-col p-4 sm:p-6">
+      <div id="background-image-div" class="absolute inset-0 bg-center bg-no-repeat rounded-lg" style="cursor: move; z-index: 1;"></div>
+      <div id="background-drag-overlay" class="absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>
+      <div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2;">
         <header class="relative text-center pb-4 flex items-center justify-center">
           <button id="prev-month-btn" class="nav-button absolute left-0 p-2 rounded-full hover:bg-black/10 transition-colors"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
           <div id="calendar-header-text" class="flex-1"></div>
@@ -465,6 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calendarMain: document.getElementById('calendar-main'),
     calendarExportArea: document.getElementById('calendar-export-area'),
     backgroundImageDiv: document.getElementById('background-image-div'),
+    backgroundDragOverlay: document.getElementById('background-drag-overlay'),
     calendarHeaderText: document.getElementById('calendar-header-text'),
     weekdayHeader: document.getElementById('weekday-header'),
     calendarGridContainer: document.getElementById('calendar-grid-container'),
@@ -577,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let html = '';
     grid.forEach(day => {
       if (!state.showOtherMonthDates && !day.isCurrentMonth) {
-        html += '<div class="border-r border-b" style="border-color: ' + (state.backgroundImageUrl ? 'rgba(255, 255, 255, 0.3)' : state.borderColor) + '; border-right-width: ' + state.borderWidth + 'px; border-bottom-width: ' + state.borderWidth + 'px;"></div>';
+        html += '<div class="border-r border-b" style="border-color: ' + state.borderColor + '; border-right-width: ' + state.borderWidth + 'px; border-bottom-width: ' + state.borderWidth + 'px;"></div>';
       } else {
         html += generateDayCellHTML(day);
       }
@@ -596,15 +599,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const { datePosition, borderWidth, dateSize, dateFontWeight, lunarDateFontSize, holidayFontSize } = state;
 
       const hasBg = !!state.backgroundImageUrl;
-      const otherMonthColor = hasBg ? 'rgba(255, 255, 255, 0.6)' : state.otherMonthDateColor;
+      const otherMonthColor = state.otherMonthDateColor;
       const dateColor = isCurrentMonth ? (holidayName ? state.holidayColor : state.dateColor) : otherMonthColor;
-      const finalDateColor = hasBg && isCurrentMonth ? '#FFFFFF' : dateColor;
-      const lunarColor = hasBg ? '#E5E7EB' : state.lunarDateColor;
-      const holidayColor = hasBg ? '#FFFFFF' : state.holidayColor;
-      const borderColor = hasBg ? 'rgba(255, 255, 255, 0.3)' : state.borderColor;
+      const finalDateColor = dateColor;
+      const lunarColor = state.lunarDateColor;
+      const holidayColor = state.holidayColor;
+      const borderColor = state.borderColor;
       
-      const shadowStyle = (hasBg && isCurrentMonth) ? (holidayName ? `0 1px 4px ${state.holidayColor}E6` : '0 1px 3px rgba(0,0,0,0.5)') : 'none';
-
       const datePositionClasses = {
           'top-left': 'items-start justify-start', 'top-right': 'items-start justify-end',
           'bottom-left': 'items-end justify-start', 'bottom-right': 'items-end justify-end',
@@ -614,13 +615,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="border-r border-b p-1 flex flex-col" style="border-color: ${borderColor}; border-right-width: ${borderWidth}px; border-bottom-width: ${borderWidth}px;">
           <div class="w-full flex-1 flex ${datePositionClasses}">
             <div class="text-center leading-none">
-              <p style="font-size: ${dateSize}px; font-weight: ${dateFontWeight}; color: ${finalDateColor}; text-shadow: ${shadowStyle};">${date.getDate()}</p>
-              ${lunarDay > 0 && lunarMonth > 0 ? `<p style="font-size: ${lunarDateFontSize}px; color: ${lunarColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.5)' : 'none'}; line-height: 1.2;">${lunarDay}/${lunarMonth}</p>` : ''}
+              <p style="font-size: ${dateSize}px; font-weight: ${dateFontWeight}; color: ${finalDateColor};">${date.getDate()}</p>
+              ${lunarDay > 0 && lunarMonth > 0 ? `<p style="font-size: ${lunarDateFontSize}px; color: ${lunarColor}; line-height: 1.2;">${lunarDay}/${lunarMonth}</p>` : ''}
             </div>
           </div>
           ${(holidayName && isCurrentMonth) ? `
             <div class="text-center pb-1 mt-auto">
-              <p class="holiday-name" style="font-size: ${holidayFontSize}px; color: ${holidayColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.7)' : 'none'}; line-height: normal; padding: 2px 0;">${holidayName}</p>
+              <p class="holiday-name" style="font-size: ${holidayFontSize}px; color: ${holidayColor}; line-height: normal; padding: 2px 0;">${holidayName}</p>
             </div>` : ''}
         </div>
       `;
@@ -658,30 +659,29 @@ document.addEventListener('DOMContentLoaded', () => {
     DOMElements.backgroundImageDiv.style.backgroundPosition = hasBg ? `${state.bgPosX}% ${state.bgPosY}%` : 'center';
     DOMElements.backgroundImageDiv.style.opacity = hasBg ? `${state.bgOpacity / 100}` : '1';
     DOMElements.backgroundImageDiv.style.filter = hasBg ? `brightness(${state.bgBrightness / 100}) saturate(${state.bgSaturation / 100})` : 'none';
+    DOMElements.backgroundImageDiv.style.cursor = hasBg ? 'move' : 'default';
+    DOMElements.backgroundImageDiv.style.userSelect = 'none';
     
-    // Header text color
-    const headerTextColor = hasBg ? '#FFFFFF' : '#374151';
-    const subHeaderTextColor = hasBg ? '#E5E7EB' : '#6B7280';
-    const headerTextShadow = hasBg ? '0 2px 4px rgba(0,0,0,0.5)' : 'none';
-    const subHeaderTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.5)' : 'none';
-
+    // Header text color - use custom colors with shadow if background exists
+    const headerTextColor = state.weekdayColor || state.dateColor || '#374151';
+    const subHeaderTextColor = state.lunarDateColor || '#6B7280';
     // Month/Year Header
     const monthText = 'tháng';
     if (monthYearLayout === 'double') {
         DOMElements.calendarHeaderText.innerHTML = `
-          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor}; text-shadow: ${headerTextShadow};">${monthText} ${selectedMonth}</h1>
-          <p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor}; text-shadow: ${subHeaderTextShadow};">${selectedYear}</p>
+          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor};">${monthText} ${selectedMonth}</h1>
+          <p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor};">${selectedYear}</p>
         `;
     } else {
         DOMElements.calendarHeaderText.innerHTML = `
-           <h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor}; text-shadow: ${headerTextShadow};">
+           <h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor};">
                 <span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">${monthText} ${selectedMonth}</span>
                 <span style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight};" class="ml-4">${selectedYear}</span>
            </h1>
         `;
     }
     document.querySelectorAll('#calendar-export-area .nav-button').forEach(btn => {
-      btn.style.color = hasBg ? '#FFFFFF' : '#4B5563';
+      btn.style.color = state.weekdayColor || '#4B5563';
     });
 
 
@@ -689,16 +689,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const weekdayLabels = state.startOfWeek === 1 
       ? ['thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy', 'chủ nhật'] 
       : ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
-    const weekdayColor = hasBg ? '#FFFFFF' : state.weekdayColor;
-    const weekdayTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.7)' : 'none';
+    const weekdayColor = state.weekdayColor;
     
     DOMElements.weekdayHeader.innerHTML = weekdayLabels.map(day => `
-      <div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor}; text-shadow: ${weekdayTextShadow};">${day}</div>
+      <div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor};">${day}</div>
     `).join('');
 
     // Grid Borders
-    const borderColor = hasBg ? 'rgba(255, 255, 255, 0.3)' : state.borderColor;
-    DOMElements.calendarGridContainer.style.borderColor = borderColor;
+    DOMElements.calendarGridContainer.style.borderColor = state.borderColor;
     DOMElements.calendarGridContainer.style.borderTopWidth = `${borderWidth}px`;
     DOMElements.calendarGridContainer.style.borderLeftWidth = `${borderWidth}px`;
   }
@@ -888,6 +886,98 @@ document.addEventListener('DOMContentLoaded', () => {
       DOMElements.calendarExportArea.classList.remove('ring-4', 'ring-indigo-500');
       if (e.dataTransfer.files[0]) processImageFile(e.dataTransfer.files[0]);
     });
+    
+    // Background image drag and zoom
+    let isDraggingBg = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let startBgPosX = 0;
+    let startBgPosY = 0;
+    let isShiftPressed = false;
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Shift' && state.backgroundImageUrl) {
+        isShiftPressed = true;
+        if (DOMElements.backgroundDragOverlay) {
+          DOMElements.backgroundDragOverlay.style.display = 'block';
+          DOMElements.backgroundDragOverlay.style.pointerEvents = 'all';
+          DOMElements.backgroundDragOverlay.style.cursor = 'move';
+        }
+        DOMElements.calendarExportArea.style.cursor = 'move';
+      }
+    });
+    
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Shift') {
+        isShiftPressed = false;
+        if (DOMElements.backgroundDragOverlay) {
+          DOMElements.backgroundDragOverlay.style.display = 'none';
+          DOMElements.backgroundDragOverlay.style.pointerEvents = 'none';
+        }
+        DOMElements.calendarExportArea.style.cursor = 'default';
+        if (isDraggingBg) {
+          isDraggingBg = false;
+          saveState();
+        }
+      }
+    });
+    
+    if (DOMElements.backgroundDragOverlay) {
+      DOMElements.backgroundDragOverlay.addEventListener('mousedown', (e) => {
+        if (!state.backgroundImageUrl) return;
+        isDraggingBg = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        startBgPosX = state.bgPosX;
+        startBgPosY = state.bgPosY;
+        e.preventDefault();
+        DOMElements.backgroundDragOverlay.style.cursor = 'grabbing';
+      });
+    }
+    
+    document.addEventListener('mousemove', (e) => {
+      if (!isDraggingBg || !state.backgroundImageUrl) return;
+      const rect = DOMElements.calendarExportArea.getBoundingClientRect();
+      const deltaX = ((e.clientX - dragStartX) / rect.width) * 100;
+      const deltaY = ((e.clientY - dragStartY) / rect.height) * 100;
+      
+      state.bgPosX = Math.max(0, Math.min(100, startBgPosX + deltaX));
+      state.bgPosY = Math.max(0, Math.min(100, startBgPosY + deltaY));
+      
+      DOMElements.backgroundImageDiv.style.backgroundPosition = `${state.bgPosX}% ${state.bgPosY}%`;
+      
+      const posXLabel = document.querySelector('[data-label="bgPosX"]');
+      if (posXLabel) posXLabel.textContent = Math.round(state.bgPosX);
+      const posYLabel = document.querySelector('[data-label="bgPosY"]');
+      if (posYLabel) posYLabel.textContent = Math.round(state.bgPosY);
+      const posXSlider = document.querySelector('[data-state="bgPosX"]');
+      if (posXSlider) posXSlider.value = state.bgPosX;
+      const posYSlider = document.querySelector('[data-state="bgPosY"]');
+      if (posYSlider) posYSlider.value = state.bgPosY;
+    });
+    
+    document.addEventListener('mouseup', () => {
+      if (isDraggingBg) {
+        isDraggingBg = false;
+        if (DOMElements.backgroundDragOverlay) {
+          DOMElements.backgroundDragOverlay.style.cursor = 'move';
+        }
+        saveState();
+      }
+    });
+    
+    DOMElements.calendarExportArea.addEventListener('wheel', (e) => {
+      if (!state.backgroundImageUrl || e.ctrlKey || e.metaKey) return;
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -5 : 5;
+      state.bgZoom = Math.max(50, Math.min(200, state.bgZoom + delta));
+      DOMElements.backgroundImageDiv.style.backgroundSize = `${state.bgZoom}%`;
+      const zoomLabel = document.querySelector('[data-label="bgZoom"]');
+      if (zoomLabel) zoomLabel.textContent = Math.round(state.bgZoom);
+      const zoomSlider = document.querySelector('[data-state="bgZoom"]');
+      if (zoomSlider) zoomSlider.value = state.bgZoom;
+      saveState();
+    }, { passive: false });
     
     // Export PDF
     DOMElements.exportBtn.addEventListener('click', async () => {
