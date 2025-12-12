@@ -1,0 +1,929 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vietnamese Calendar Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lato:wght@400;700&family=Lexend+Deca:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Nunito+Sans:wght@400;700;900&family=Open+Sans:wght@400;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.4/lunar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-holidays@3.26.5/dist/umd.min.js"></script>
+
+  <style>
+    body { font-family: 'Lexend Deca', sans-serif; }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: 1fr;
+      flex-grow: 1;
+    }
+    .is-exporting .nav-button { display: none; }
+    .holiday-name {
+      line-height: 1;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Accordion Styles */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out;
+    }
+    .accordion-content.active {
+      max-height: 1000px; /* Large enough to not clip content */
+    }
+
+    /* Custom vibrant range sliders */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb; /* gray-200 */
+      border-radius: 5px;
+      outline: none;
+      opacity: 0.9;
+      transition: opacity .2s;
+    }
+    input[type=range]:hover { opacity: 1; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #4f46e5; /* indigo-600 */
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #4f46e5; /* indigo-600 */
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+<div class="flex flex-col lg:flex-row h-screen antialiased text-gray-800">
+
+  <!-- === Controls Sidebar === -->
+  <aside class="w-full lg:w-96 bg-white p-[5px] shadow-2xl lg:h-screen lg:overflow-y-auto">
+    <header class="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 mb-1">
+      <h1 class="text-xl font-bold text-white">Tạo Lịch Việt</h1>
+      <p class="text-xs text-indigo-200">Tùy chỉnh và xuất lịch của bạn.</p>
+    </header>
+
+    <div class="mt-1 space-y-1">
+      <!-- Accordion Item: Basic -->
+      <div class="rounded-lg border border-gray-200">
+        <button data-panel="basic" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+          <span>Cơ bản</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="basic" class="accordion-content active">
+          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="month-select" class="block text-xs font-medium text-gray-600 mb-0.5">Tháng</label>
+                <select id="month-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+              </div>
+              <div>
+                <label for="year-select" class="block text-xs font-medium text-gray-600 mb-0.5">Năm</label>
+                <select id="year-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+              </div>
+            </div>
+            <div>
+              <label for="font-select" class="block text-xs font-medium text-gray-600 mb-0.5">Phông chữ</label>
+              <select id="font-select" class="w-full p-1.5 border border-gray-300 rounded text-xs"></select>
+            </div>
+            <div>
+              <label for="start-of-week-select" class="block text-xs font-medium text-gray-600 mb-0.5">Bắt đầu tuần</label>
+              <select id="start-of-week-select" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+                <option value="1">Thứ Hai</option> <option value="0">Chủ Nhật</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Item: Typography -->
+      <div class="rounded-lg border border-gray-200">
+        <button data-panel="typography" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+          <span>Kích thước & Kiểu chữ</span>
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="typography" class="accordion-content active">
+          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+             <div><label class="text-xs">Cỡ chữ tháng (<span data-label="monthFontSize">48</span>px)</label><input type="range" data-state="monthFontSize" min="10" max="100"></div>
+            <div><label class="text-xs">Cỡ chữ năm (<span data-label="yearFontSize">24</span>px)</label><input type="range" data-state="yearFontSize" min="8" max="80"></div>
+            <div><label class="text-xs">Cỡ chữ thứ (<span data-label="weekdayFontSize">14</span>px)</label><input type="range" data-state="weekdayFontSize" min="6" max="40"></div>
+            <div><label class="text-xs">Cỡ chữ ngày (<span data-label="dateSize">24</span>px)</label><input type="range" data-state="dateSize" min="1" max="100"></div>
+            <div><label class="text-xs">Cỡ chữ Âm lịch (<span data-label="lunarDateFontSize">12</span>px)</label><input type="range" data-state="lunarDateFontSize" min="5" max="30"></div>
+            <div><label class="text-xs">Cỡ chữ Lễ (<span data-label="holidayFontSize">11.2</span>px)</label><input type="range" data-state="holidayFontSize" min="5" max="30"></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="text-xs">Độ dày Tháng</label><select data-state="monthFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option><option value="900">Rất Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Năm</label><select data-state="yearFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Thứ</label><select data-state="weekdayFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="600">Vừa</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Độ dày Ngày</label><select data-state="dateFontWeight" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="400">Thường</option><option value="700">Đậm</option></select></div>
+              <div><label class="text-xs">Kiểu chữ Tháng</label><select data-state="monthTextTransform" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
+              <div><label class="text-xs">Kiểu chữ Thứ</label><select data-state="weekdayTextTransform" class="mt-0.5 w-full p-1 border border-gray-300 rounded text-xs"><option value="uppercase">IN HOA</option><option value="capitalize">Viết Hoa Chữ Đầu</option><option value="none">Thường</option></select></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Accordion Item: Colors -->
+       <div class="rounded-lg border border-gray-200">
+        <button data-panel="colors" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+          <span>Màu sắc</span>
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="colors" class="accordion-content active">
+          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+            <div>
+              <label class="block mb-1 font-medium text-gray-600">Bảng màu</label>
+              <select data-state="colorPalette" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+                <option value="default">Mặc định</option>
+                <option value="professional">Chuyên nghiệp</option>
+                <option value="minimal">Tối giản</option>
+                <option value="vibrant">Sống động</option>
+                <option value="dark">Tối</option>
+                <option value="warm">Ấm áp</option>
+                <option value="cool">Mát mẻ</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block mb-1">Nền Lịch</label>
+                <select data-state="backgroundColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#FFFFFF">Trắng</option>
+                  <option value="#F9FAFB">Xám nhạt</option>
+                  <option value="#F3F4F6">Xám</option>
+                  <option value="#1F2937">Xám đen</option>
+                  <option value="#111827">Đen</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Ngày thường</label>
+                <select data-state="dateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#374151">Xám đậm</option>
+                  <option value="#1F2937">Đen</option>
+                  <option value="#111827">Đen đậm</option>
+                  <option value="#2563EB">Xanh dương</option>
+                  <option value="#059669">Xanh lá</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Ngày tháng khác</label>
+                <select data-state="otherMonthDateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#9CA3AF">Xám nhạt</option>
+                  <option value="#D1D5DB">Xám rất nhạt</option>
+                  <option value="#6B7280">Xám vừa</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Thứ</label>
+                <select data-state="weekdayColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#4B5563">Xám đậm</option>
+                  <option value="#1F2937">Đen</option>
+                  <option value="#2563EB">Xanh dương</option>
+                  <option value="#7C3AED">Tím</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Ngày Âm lịch</label>
+                <select data-state="lunarDateColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#6B7280">Xám</option>
+                  <option value="#9CA3AF">Xám nhạt</option>
+                  <option value="#059669">Xanh lá</option>
+                  <option value="#0891B2">Xanh lơ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Ngày Lễ</label>
+                <select data-state="holidayColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#DC2626">Đỏ</option>
+                  <option value="#EA580C">Cam đỏ</option>
+                  <option value="#C026D3">Hồng</option>
+                  <option value="#7C2D12">Nâu đỏ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block mb-1">Viền</label>
+                <select data-state="borderColor" class="w-full p-1.5 border border-gray-300 rounded">
+                  <option value="#E5E7EB">Xám rất nhạt</option>
+                  <option value="#D1D5DB">Xám nhạt</option>
+                  <option value="#9CA3AF">Xám</option>
+                  <option value="#000000">Đen</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Accordion Item: Layout -->
+      <div class="rounded-lg border border-gray-200">
+        <button data-panel="layout" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+          <span>Bố cục & Viền</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="layout" class="accordion-content active">
+          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+            <div>
+              <label class="block text-xs mb-0.5">Vị trí số ngày</label>
+              <select data-state="datePosition" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+                <option value="top-right">Trên-phải</option><option value="top-left">Trên-trái</option>
+                <option value="bottom-right">Dưới-phải</option><option value="bottom-left">Dưới-trái</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs mb-0.5">Hiển thị Tháng/Năm</label>
+              <select data-state="monthYearLayout" class="w-full p-1.5 border border-gray-300 rounded text-xs">
+                <option value="double">2 Dòng</option><option value="single">1 Dòng</option>
+              </select>
+            </div>
+            <div><label class="text-xs">Độ dày viền (<span data-label="borderWidth">1</span>px)</label><input type="range" data-state="borderWidth" min="0" max="10" step="0.5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Item: Background -->
+      <div class="rounded-lg border border-gray-200">
+        <button data-panel="background" class="accordion-toggle w-full flex justify-between items-center p-2 font-semibold text-gray-700 hover:bg-gray-50 text-sm">
+          <span>Hình Nền</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="background" class="accordion-content active">
+          <div class="p-2 border-t border-gray-200 space-y-2 text-xs">
+            <label for="image-upload-input" class="w-full cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-gray-300 shadow-sm font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">
+              <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>
+              <span>Tải ảnh lên</span>
+            </label>
+            <input id="image-upload-input" type="file" class="hidden" accept="image/*">
+            <div id="background-controls-wrapper" class="hidden">
+              <button id="remove-image-btn" class="w-full mt-1 cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-transparent shadow-sm font-medium rounded text-xs text-white bg-red-600 hover:bg-red-700">Xóa ảnh</button>
+              <h3 class="font-semibold text-gray-600 pt-1 text-xs">Điều Chỉnh Nền</h3>
+              <div><label class="text-xs">Độ mờ (<span data-label="bgOpacity">100</span>%)</label><input type="range" data-state="bgOpacity"></div>
+              <div><label class="text-xs">Độ sáng (<span data-label="bgBrightness">100</span>%)</label><input type="range" data-state="bgBrightness" min="0" max="200"></div>
+              <div><label class="text-xs">Bão hòa (<span data-label="bgSaturation">100</span>%)</label><input type="range" data-state="bgSaturation" min="0" max="200"></div>
+              <div><label class="text-xs">Phóng to (<span data-label="bgZoom">100</span>%)</label><input type="range" data-state="bgZoom" min="50" max="200"></div>
+              <div><label class="text-xs">Vị trí ngang (<span data-label="bgPosX">50</span>%)</label><input type="range" data-state="bgPosX"></div>
+              <div><label class="text-xs">Vị trí dọc (<span data-label="bgPosY">50</span>%)</label><input type="range" data-state="bgPosY"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Export Button -->
+      <div class="pt-1">
+        <button id="export-btn" class="w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400">
+           <span>Xuất file PNG</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- === Calendar Preview Area === -->
+  <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 flex items-center justify-center">
+    <div id="calendar-export-area" class="relative w-full max-w-6xl aspect-[16/11] shadow-2xl rounded-lg overflow-hidden transition-all duration-300">
+      <div id="background-image-div" class="absolute inset-0 bg-center bg-no-repeat rounded-lg"></div>
+      <div class="relative w-full h-full flex flex-col p-4 sm:p-6">
+        <header class="relative text-center pb-4 flex items-center justify-center">
+          <button id="prev-month-btn" class="nav-button absolute left-0 p-2 rounded-full hover:bg-black/10 transition-colors"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+          <div id="calendar-header-text" class="flex-1"></div>
+          <button id="next-month-btn" class="nav-button absolute right-0 p-2 rounded-full hover:bg-black/10 transition-colors"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+        </header>
+        <div class="flex flex-col flex-grow">
+          <div id="weekday-header" class="grid grid-cols-7"></div>
+          <div id="calendar-grid-container" class="calendar-grid border-t border-l"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, starting initialization...');
+
+  // --- STATE MANAGEMENT ---
+  const STORAGE_KEY = 'vietnamese-calendar-settings';
+  
+  const defaultState = () => {
+    const now = new Date();
+    return {
+      // Basic
+      selectedMonth: now.getMonth() + 1,
+      selectedYear: now.getFullYear(),
+      selectedFont: "'Lexend Deca', sans-serif",
+      startOfWeek: 1,
+      // Typography
+      monthFontSize: 48, yearFontSize: 24, weekdayFontSize: 14, dateSize: 24,
+      lunarDateFontSize: 12, holidayFontSize: 11.2, monthFontWeight: 700,
+      yearFontWeight: 400, weekdayFontWeight: 600, dateFontWeight: 400,
+      monthTextTransform: 'uppercase', weekdayTextTransform: 'uppercase',
+      // Colors
+      backgroundColor: '#FFFFFF', dateColor: '#374151', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#4B5563', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
+      borderColor: '#E5E7EB', colorPalette: 'default',
+      // Layout
+      datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1,
+      // Background
+      backgroundImageUrl: null, bgOpacity: 100, bgBrightness: 100, bgSaturation: 100,
+      bgZoom: 100, bgPosX: 50, bgPosY: 50,
+      // UI State
+      isExporting: false, isDragging: false
+    };
+  };
+
+  const loadState = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...defaultState(), ...parsed };
+      }
+    } catch (e) {
+      console.warn('Failed to load state from localStorage:', e);
+    }
+    return defaultState();
+  };
+
+  const saveState = () => {
+    try {
+      const toSave = { ...state };
+      delete toSave.isExporting;
+      delete toSave.isDragging;
+      delete toSave.backgroundImageUrl;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch (e) {
+      console.warn('Failed to save state to localStorage:', e);
+    }
+  };
+
+  const state = loadState();
+  
+  const colorPalettes = {
+    default: {
+      backgroundColor: '#FFFFFF', dateColor: '#374151', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#4B5563', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
+      borderColor: '#E5E7EB'
+    },
+    professional: {
+      backgroundColor: '#F9FAFB', dateColor: '#1F2937', otherMonthDateColor: '#D1D5DB',
+      weekdayColor: '#111827', lunarDateColor: '#4B5563', holidayColor: '#DC2626',
+      borderColor: '#E5E7EB'
+    },
+    minimal: {
+      backgroundColor: '#FFFFFF', dateColor: '#000000', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#374151', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
+      borderColor: '#E5E7EB'
+    },
+    vibrant: {
+      backgroundColor: '#FFFFFF', dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#2563EB', lunarDateColor: '#059669', holidayColor: '#EA580C',
+      borderColor: '#D1D5DB'
+    },
+    dark: {
+      backgroundColor: '#1F2937', dateColor: '#F9FAFB', otherMonthDateColor: '#6B7280',
+      weekdayColor: '#E5E7EB', lunarDateColor: '#9CA3AF', holidayColor: '#F87171',
+      borderColor: '#374151'
+    },
+    warm: {
+      backgroundColor: '#FEF3C7', dateColor: '#78350F', otherMonthDateColor: '#D97706',
+      weekdayColor: '#92400E', lunarDateColor: '#B45309', holidayColor: '#DC2626',
+      borderColor: '#FCD34D'
+    },
+    cool: {
+      backgroundColor: '#E0F2FE', dateColor: '#0C4A6E', otherMonthDateColor: '#0284C7',
+      weekdayColor: '#0369A1', lunarDateColor: '#075985', holidayColor: '#DC2626',
+      borderColor: '#BAE6FD'
+    }
+  };
+
+  const applyColorPalette = (paletteName) => {
+    const palette = colorPalettes[paletteName];
+    if (palette) {
+      Object.assign(state, palette);
+      state.colorPalette = paletteName;
+      saveState();
+      render();
+    }
+  };
+
+  // --- DOM ELEMENT REFERENCES ---
+  const DOMElements = {
+    // Controls
+    monthSelect: document.getElementById('month-select'),
+    yearSelect: document.getElementById('year-select'),
+    fontSelect: document.getElementById('font-select'),
+    startOfWeekSelect: document.getElementById('start-of-week-select'),
+    imageUploadInput: document.getElementById('image-upload-input'),
+    removeImageBtn: document.getElementById('remove-image-btn'),
+    backgroundControlsWrapper: document.getElementById('background-controls-wrapper'),
+    exportBtn: document.getElementById('export-btn'),
+    // Calendar Preview
+    calendarMain: document.getElementById('calendar-main'),
+    calendarExportArea: document.getElementById('calendar-export-area'),
+    backgroundImageDiv: document.getElementById('background-image-div'),
+    calendarHeaderText: document.getElementById('calendar-header-text'),
+    weekdayHeader: document.getElementById('weekday-header'),
+    calendarGridContainer: document.getElementById('calendar-grid-container'),
+    prevMonthBtn: document.getElementById('prev-month-btn'),
+    nextMonthBtn: document.getElementById('next-month-btn'),
+  };
+  
+  const missingElements = Object.entries(DOMElements)
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+  if (missingElements.length > 0) {
+    console.error('Missing DOM elements:', missingElements);
+  }
+
+  // --- SERVICES / HELPERS ---
+  let holidayService;
+  const getLunarDate = (day, month, year) => {
+    try {
+      const LunarLib = window.lunar || window.Lunar || lunar;
+      if (!LunarLib || !LunarLib.Solar) {
+        console.warn('lunar-javascript library not loaded');
+        return { lunarDay: 0, lunarMonth: 0 };
+      }
+      const solar = LunarLib.Solar.fromYmd(year, month, day);
+      if (!solar) {
+        return { lunarDay: 0, lunarMonth: 0 };
+      }
+      const lunarDate = solar.getLunar();
+      if (!lunarDate) {
+        return { lunarDay: 0, lunarMonth: 0 };
+      }
+      const lunarDay = lunarDate.getDay();
+      const lunarMonth = lunarDate.getMonth();
+      if (lunarDay && lunarMonth) {
+        return { lunarDay, lunarMonth: Math.abs(lunarMonth) };
+      }
+      return { lunarDay: 0, lunarMonth: 0 };
+    } catch (e) {
+      console.error('Error getting lunar date:', e, 'for date:', year, month, day);
+      return { lunarDay: 0, lunarMonth: 0 };
+    }
+  };
+  const getHoliday = (date, lunarDay, lunarMonth) => {
+    if (lunarDay > 0 && lunarMonth > 0) {
+      if (lunarMonth === 1 && lunarDay === 1) return 'Tết Nguyên Đán';
+      if (lunarMonth === 1 && lunarDay === 2) return 'Tết Nguyên Đán';
+      if (lunarMonth === 1 && lunarDay === 3) return 'Tết Nguyên Đán';
+      if (lunarMonth === 3 && lunarDay === 10) return 'Giỗ Tổ Hùng Vương';
+    }
+    if (!holidayService) return null;
+    try {
+      const holidays = holidayService.isHoliday(date);
+      if (holidays && holidays.length > 0) {
+        return holidays[0].name;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  // --- RENDER FUNCTIONS ---
+  function renderCalendarGrid() {
+    if (!DOMElements.calendarGridContainer) {
+      console.error('Calendar grid container not found');
+      return;
+    }
+    if (typeof dayjs === 'undefined') {
+      console.error('dayjs not loaded');
+      return;
+    }
+    const { selectedYear, selectedMonth, startOfWeek } = state;
+    const firstDayOfMonth = dayjs(`${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`);
+    let startOffset = firstDayOfMonth.day() - startOfWeek;
+    if (startOffset < 0) startOffset += 7;
+    
+    const grid = [];
+    const daysInMonth = firstDayOfMonth.daysInMonth();
+    
+    for (let i = 1 - startOffset; i <= daysInMonth + (6 - (firstDayOfMonth.endOf('month').day() - startOfWeek + 7) % 7); i++) {
+      if (i > daysInMonth && grid.length % 7 === 0) break;
+      const date = firstDayOfMonth.add(i - 1, 'day').toDate();
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date created:', i, date);
+        continue;
+      }
+      const { lunarDay, lunarMonth } = getLunarDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
+      if (i === 1 && lunarDay === 0 && lunarMonth === 0) {
+        console.warn('Lunar date calculation returned 0 for date:', date, 'Check if lunar library is loaded');
+      }
+      const holidayName = getHoliday(date, lunarDay, lunarMonth);
+      const isCurrentMonth = date.getMonth() === selectedMonth - 1;
+      grid.push({ date, lunarDay, lunarMonth, holidayName, isCurrentMonth });
+    }
+
+    let html = '';
+    grid.forEach(day => {
+      html += generateDayCellHTML(day);
+    });
+    
+    if (!html) {
+      console.error('No HTML generated for calendar grid');
+      return;
+    }
+    
+    DOMElements.calendarGridContainer.innerHTML = html;
+  }
+
+  function generateDayCellHTML(day) {
+      const { date, lunarDay, lunarMonth, holidayName, isCurrentMonth } = day;
+      const { datePosition, borderWidth, dateSize, dateFontWeight, lunarDateFontSize, holidayFontSize } = state;
+
+      const hasBg = !!state.backgroundImageUrl;
+      const otherMonthColor = hasBg ? 'rgba(255, 255, 255, 0.6)' : state.otherMonthDateColor;
+      const dateColor = isCurrentMonth ? (holidayName ? state.holidayColor : state.dateColor) : otherMonthColor;
+      const finalDateColor = hasBg && isCurrentMonth ? '#FFFFFF' : dateColor;
+      const lunarColor = hasBg ? '#E5E7EB' : state.lunarDateColor;
+      const holidayColor = hasBg ? '#FFFFFF' : state.holidayColor;
+      const borderColor = hasBg ? 'rgba(255, 255, 255, 0.3)' : state.borderColor;
+      
+      const shadowStyle = (hasBg && isCurrentMonth) ? (holidayName ? `0 1px 4px ${state.holidayColor}E6` : '0 1px 3px rgba(0,0,0,0.5)') : 'none';
+
+      const datePositionClasses = {
+          'top-left': 'items-start justify-start', 'top-right': 'items-start justify-end',
+          'bottom-left': 'items-end justify-start', 'bottom-right': 'items-end justify-end',
+      }[datePosition];
+      
+      return `
+        <div class="border-r border-b p-1 flex flex-col" style="border-color: ${borderColor}; border-right-width: ${borderWidth}px; border-bottom-width: ${borderWidth}px;">
+          <div class="w-full flex-1 flex ${datePositionClasses}">
+            <div class="text-center leading-none">
+              <p style="font-size: ${dateSize}px; font-weight: ${dateFontWeight}; color: ${finalDateColor}; text-shadow: ${shadowStyle};">${date.getDate()}</p>
+              ${isCurrentMonth && lunarDay > 0 && lunarMonth > 0 ? `<p style="font-size: ${lunarDateFontSize}px; color: ${lunarColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.5)' : 'none'};">${lunarDay}/${lunarMonth}</p>` : ''}
+            </div>
+          </div>
+          ${(holidayName && isCurrentMonth) ? `
+            <div class="text-center pb-1 mt-auto">
+              <p class="holiday-name" style="font-size: ${holidayFontSize}px; color: ${holidayColor}; text-shadow: ${hasBg ? '0 1px 2px rgba(0,0,0,0.7)' : 'none'};">${holidayName}</p>
+            </div>` : ''}
+        </div>
+      `;
+  }
+
+  function renderStylesAndText() {
+    if (!DOMElements.calendarExportArea || !DOMElements.calendarHeaderText || !DOMElements.weekdayHeader) {
+      console.error('Required DOM elements not found');
+      return;
+    }
+    const hasBg = !!state.backgroundImageUrl;
+    const { 
+      selectedFont, backgroundColor, monthFontSize, monthFontWeight, monthTextTransform, 
+      yearFontSize, yearFontWeight, weekdayFontSize, weekdayFontWeight, weekdayTextTransform,
+      borderWidth, monthYearLayout, selectedMonth, selectedYear
+    } = state;
+
+    // Calendar container styles
+    DOMElements.calendarExportArea.style.fontFamily = selectedFont;
+    DOMElements.calendarExportArea.style.backgroundColor = backgroundColor;
+
+    // Background image
+    DOMElements.backgroundImageDiv.style.backgroundImage = hasBg ? `url(${state.backgroundImageUrl})` : 'none';
+    DOMElements.backgroundImageDiv.style.backgroundSize = hasBg ? `${state.bgZoom}%` : 'cover';
+    DOMElements.backgroundImageDiv.style.backgroundPosition = hasBg ? `${state.bgPosX}% ${state.bgPosY}%` : 'center';
+    DOMElements.backgroundImageDiv.style.opacity = hasBg ? `${state.bgOpacity / 100}` : '1';
+    DOMElements.backgroundImageDiv.style.filter = hasBg ? `brightness(${state.bgBrightness / 100}) saturate(${state.bgSaturation / 100})` : 'none';
+    
+    // Header text color
+    const headerTextColor = hasBg ? '#FFFFFF' : '#374151';
+    const subHeaderTextColor = hasBg ? '#E5E7EB' : '#6B7280';
+    const headerTextShadow = hasBg ? '0 2px 4px rgba(0,0,0,0.5)' : 'none';
+    const subHeaderTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.5)' : 'none';
+
+    // Month/Year Header
+    if (monthYearLayout === 'double') {
+        DOMElements.calendarHeaderText.innerHTML = `
+          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor}; text-shadow: ${headerTextShadow};">THÁNG ${selectedMonth}</h1>
+          <p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor}; text-shadow: ${subHeaderTextShadow};">${selectedYear}</p>
+        `;
+    } else {
+        DOMElements.calendarHeaderText.innerHTML = `
+           <h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor}; text-shadow: ${headerTextShadow};">
+                <span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">THÁNG ${selectedMonth}</span>
+                <span style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight};" class="ml-4">${selectedYear}</span>
+           </h1>
+        `;
+    }
+    document.querySelectorAll('#calendar-export-area .nav-button').forEach(btn => {
+      btn.style.color = hasBg ? '#FFFFFF' : '#4B5563';
+    });
+
+
+    // Weekday Header
+    const weekdays = state.startOfWeek === 1 
+      ? ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'] 
+      : ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const weekdayColor = hasBg ? '#FFFFFF' : state.weekdayColor;
+    const weekdayTextShadow = hasBg ? '0 1px 3px rgba(0,0,0,0.7)' : 'none';
+    
+    DOMElements.weekdayHeader.innerHTML = weekdays.map(day => `
+      <div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor}; text-shadow: ${weekdayTextShadow};">${day}</div>
+    `).join('');
+
+    // Grid Borders
+    const borderColor = hasBg ? 'rgba(255, 255, 255, 0.3)' : state.borderColor;
+    DOMElements.calendarGridContainer.style.borderColor = borderColor;
+    DOMElements.calendarGridContainer.style.borderTopWidth = `${borderWidth}px`;
+    DOMElements.calendarGridContainer.style.borderLeftWidth = `${borderWidth}px`;
+  }
+  
+  function render() {
+    try {
+      renderStylesAndText();
+      renderCalendarGrid();
+    } catch (e) {
+      console.error('Render error:', e);
+    }
+  }
+
+  // --- INITIALIZATION ---
+  function initializeControls() {
+    if (!DOMElements.monthSelect || !DOMElements.yearSelect || !DOMElements.fontSelect) {
+      console.error('Required DOM elements not found');
+      return;
+    }
+    // Populate dropdowns
+    DOMElements.monthSelect.innerHTML = Array.from({length: 12}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+    DOMElements.yearSelect.innerHTML = Array.from({length: 201}, (_, i) => `<option value="${2100 - i}">${2100 - i}</option>`).join('');
+    const fonts = [
+        { name: 'Lexend Deca', family: "'Lexend Deca', sans-serif" },
+        { name: 'Roboto', family: "'Roboto', sans-serif" },
+        { name: 'Open Sans', family: "'Open Sans', sans-serif" },
+        { name: 'Montserrat', family: "'Montserrat', sans-serif" },
+        { name: 'Lato', family: "'Lato', sans-serif" },
+        { name: 'Nunito Sans', family: "'Nunito Sans', sans-serif" },
+        { name: 'Inter', family: "'Inter', sans-serif" }
+    ];
+    DOMElements.fontSelect.innerHTML = fonts.map(f => `<option value="${f.family}" style="font-family:${f.family}">${f.name}</option>`).join('');
+
+    // Set initial values from state
+    if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
+    if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
+    if (DOMElements.startOfWeekSelect) DOMElements.startOfWeekSelect.value = state.startOfWeek;
+    if (DOMElements.fontSelect) DOMElements.fontSelect.value = state.selectedFont;
+    
+    if (state.backgroundImageUrl && DOMElements.backgroundControlsWrapper) {
+      DOMElements.backgroundControlsWrapper.classList.remove('hidden');
+    }
+    
+    document.querySelectorAll('[data-state]').forEach(el => {
+      const key = el.dataset.state;
+      if (state[key] !== undefined) {
+        el.value = state[key];
+      }
+    });
+  }
+
+  // --- EVENT LISTENERS ---
+  function setupEventListeners() {
+    if (!DOMElements.monthSelect || !DOMElements.yearSelect) {
+      console.error('Cannot setup event listeners - DOM elements missing');
+      return;
+    }
+    // Accordion - all expanded by default
+    document.querySelectorAll('.accordion-content').forEach(content => {
+      content.classList.add('active');
+    });
+    document.querySelectorAll('.accordion-toggle svg').forEach(svg => {
+      svg.classList.add('rotate-180');
+    });
+    
+    document.querySelectorAll('.accordion-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const panel = button.dataset.panel;
+            const content = document.querySelector(`[data-content="${panel}"]`);
+            const isActive = content.classList.contains('active');
+            content.classList.toggle('active', !isActive);
+            const svg = button.querySelector('svg');
+            if (svg) {
+              svg.classList.toggle('rotate-180', !isActive);
+            }
+        });
+    });
+
+    // Basic Controls
+    DOMElements.monthSelect.addEventListener('change', (e) => { state.selectedMonth = parseInt(e.target.value); saveState(); render(); });
+    DOMElements.yearSelect.addEventListener('change', (e) => { state.selectedYear = parseInt(e.target.value); saveState(); render(); });
+    DOMElements.fontSelect.addEventListener('change', (e) => { state.selectedFont = e.target.value; saveState(); render(); });
+    DOMElements.startOfWeekSelect.addEventListener('change', (e) => { state.startOfWeek = parseInt(e.target.value); saveState(); render(); });
+
+    // Slider and select controls
+    document.querySelectorAll('input[type="range"], select[data-state]').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const key = e.target.dataset.state;
+            if (key === 'colorPalette') {
+              applyColorPalette(e.target.value);
+              return;
+            }
+            const isNumber = e.target.type === 'range' || e.target.type === 'number' || !isNaN(parseFloat(e.target.options[0]?.value));
+            const isFloat = e.target.step && e.target.step.includes('.');
+            
+            let value = e.target.value;
+            if (isNumber) {
+                value = isFloat ? parseFloat(value) : parseInt(value, 10);
+            }
+            state[key] = value;
+            const label = document.querySelector(`[data-label="${key}"]`);
+            if (label) label.textContent = value;
+            saveState();
+            render();
+        });
+    });
+    
+    // Month navigation
+    DOMElements.prevMonthBtn.addEventListener('click', () => {
+      const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).subtract(1, 'month');
+      state.selectedMonth = date.month() + 1;
+      state.selectedYear = date.year();
+      DOMElements.monthSelect.value = state.selectedMonth;
+      DOMElements.yearSelect.value = state.selectedYear;
+      saveState();
+      render();
+    });
+    DOMElements.nextMonthBtn.addEventListener('click', () => {
+      const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).add(1, 'month');
+      state.selectedMonth = date.month() + 1;
+      state.selectedYear = date.year();
+      DOMElements.monthSelect.value = state.selectedMonth;
+      DOMElements.yearSelect.value = state.selectedYear;
+      saveState();
+      render();
+    });
+    
+    // Image Upload
+    const processImageFile = (file) => {
+      if (!file || !file.type.startsWith('image/')) return alert('Vui lòng chỉ chọn file hình ảnh.');
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.backgroundImageUrl = e.target.result;
+        if (DOMElements.backgroundControlsWrapper) {
+          DOMElements.backgroundControlsWrapper.classList.remove('hidden');
+        }
+        saveState();
+        render();
+      };
+      reader.readAsDataURL(file);
+    };
+
+    DOMElements.imageUploadInput.addEventListener('change', (e) => processImageFile(e.target.files[0]));
+    DOMElements.removeImageBtn.addEventListener('click', () => {
+      state.backgroundImageUrl = null;
+      if (DOMElements.imageUploadInput) DOMElements.imageUploadInput.value = '';
+      if (DOMElements.backgroundControlsWrapper) DOMElements.backgroundControlsWrapper.classList.add('hidden');
+      saveState();
+      render();
+    });
+
+    // Drag and Drop
+    DOMElements.calendarMain.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      DOMElements.calendarExportArea.classList.add('ring-4', 'ring-indigo-500');
+    });
+    DOMElements.calendarMain.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      DOMElements.calendarExportArea.classList.remove('ring-4', 'ring-indigo-500');
+    });
+    DOMElements.calendarMain.addEventListener('drop', (e) => {
+      e.preventDefault();
+      DOMElements.calendarExportArea.classList.remove('ring-4', 'ring-indigo-500');
+      if (e.dataTransfer.files[0]) processImageFile(e.dataTransfer.files[0]);
+    });
+    
+    // Export PNG
+    DOMElements.exportBtn.addEventListener('click', async () => {
+        if (state.isExporting) return;
+        state.isExporting = true;
+        DOMElements.exportBtn.disabled = true;
+        DOMElements.exportBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>Đang xuất...</span>`;
+        document.body.classList.add('is-exporting');
+
+        await new Promise(resolve => setTimeout(resolve, 50)); // Allow UI to update
+        
+        try {
+            const canvas = await html2canvas(DOMElements.calendarExportArea, {
+                useCORS: true,
+                scale: 2,
+                logging: false,
+                backgroundColor: state.backgroundImageUrl ? null : state.backgroundColor
+            });
+            const link = document.createElement('a');
+            link.download = `calendar-${state.selectedYear}-${state.selectedMonth}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error('Failed to export calendar:', error);
+            alert('An error occurred while exporting the calendar.');
+        } finally {
+            state.isExporting = false;
+            DOMElements.exportBtn.disabled = false;
+            DOMElements.exportBtn.innerHTML = `<span>Xuất file PNG</span>`;
+            document.body.classList.remove('is-exporting');
+        }
+    });
+  }
+
+  // --- START THE APP ---
+  let initAttempts = 0;
+  const MAX_INIT_ATTEMPTS = 100;
+  
+  function startApp() {
+    initAttempts++;
+    
+    if (typeof dayjs === 'undefined') {
+      if (initAttempts < MAX_INIT_ATTEMPTS) {
+        setTimeout(startApp, 100);
+      } else {
+        console.error('dayjs failed to load');
+        alert('Required library (dayjs) failed to load. Please refresh the page.');
+      }
+      return;
+    }
+    
+    // Check if lunar library is loaded
+    const LunarLib = window.lunar || window.Lunar;
+    if (LunarLib) {
+      console.log('lunar-javascript library loaded:', LunarLib);
+      if (LunarLib.Solar) {
+        console.log('Solar class available');
+        // Test the library
+        try {
+          const testSolar = LunarLib.Solar.fromYmd(2024, 1, 1);
+          const testLunar = testSolar.getLunar();
+          console.log('Lunar library test successful:', testLunar.getDay(), testLunar.getMonth());
+        } catch (e) {
+          console.error('Lunar library test failed:', e);
+        }
+      } else {
+        console.warn('Solar class not found in lunar library');
+      }
+    } else {
+      console.warn('lunar-javascript library not found in window object');
+    }
+    
+    try {
+      const HolidaysLib = window.Holidays || window.dateHolidays || Holidays;
+      if (HolidaysLib) {
+        try {
+          if (HolidaysLib.default) {
+            holidayService = new HolidaysLib.default('VN');
+          } else if (typeof HolidaysLib === 'function') {
+            holidayService = new HolidaysLib('VN');
+          } else if (HolidaysLib.Holidays) {
+            holidayService = new HolidaysLib.Holidays('VN');
+          }
+          console.log('Holiday service initialized');
+        } catch (e) {
+          console.warn('Holidays library initialization failed, continuing without it:', e);
+        }
+      } else {
+        console.warn('Holidays library not found, continuing without holiday service');
+      }
+    } catch (e) {
+      console.warn('Holidays service not available:', e);
+    }
+    
+    try {
+      console.log('Initializing controls and event listeners...');
+      initializeControls();
+      setupEventListeners();
+      console.log('Rendering calendar...');
+      render();
+      console.log('Calendar initialized successfully');
+    } catch (e) {
+      console.error('Failed to initialize app:', e);
+      console.error('Stack trace:', e.stack);
+      alert('Failed to initialize calendar. Please check console for errors: ' + e.message);
+    }
+  }
+  
+  setTimeout(startApp, 100);
+});
+</script>
+
+</body>
+</html>
