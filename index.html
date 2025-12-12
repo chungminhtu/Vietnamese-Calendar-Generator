@@ -293,6 +293,10 @@
               <label for="show-other-month-dates" class="text-xs font-medium text-gray-700 cursor-pointer">Hiển thị ngày tháng khác</label>
             </div>
             <div class="flex items-center space-x-2 pt-1">
+              <input type="checkbox" id="show-all-months" data-state="showAllMonths" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              <label for="show-all-months" class="text-xs font-medium text-gray-700 cursor-pointer">Hiển thị 12 tháng</label>
+            </div>
+            <div class="flex items-center space-x-2 pt-1">
               <input type="checkbox" id="orientation-landscape" data-state="isLandscape" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
               <label for="orientation-landscape" class="text-xs font-medium text-gray-700 cursor-pointer">Khổ ngang (Landscape)</label>
             </div>
@@ -340,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
       borderColor: '#E5E7EB', colorPalette: 'default',
       // Layout
       datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1, showOtherMonthDates: true,
-      isLandscape: false,
+      isLandscape: false, showAllMonths: false,
       // Holiday Types
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false, 
       showHolidayOptional: false, showHolidayObservance: false,
@@ -566,7 +570,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const a4PortraitRatio = 210 / 297;
     const a4LandscapeRatio = 297 / 210;
     const aspectRatio = state.isLandscape ? a4LandscapeRatio : a4PortraitRatio;
-    const monthNames = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+    const showNavButtons = !state.showAllMonths;
+    const navButtonsHTML = showNavButtons ? `
+      <button class="nav-button prev-month-btn absolute left-0 p-2 rounded-full hover:bg-black/10 transition-colors" style="color: ${headerTextColor};">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button class="nav-button next-month-btn absolute right-0 p-2 rounded-full hover:bg-black/10 transition-colors" style="color: ${headerTextColor};">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    ` : '';
     
     return `
       <div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="${month}" style="width: 100%; aspect-ratio: ${aspectRatio}; max-width: 100%; max-height: calc(100vh - 4rem); height: auto;">
@@ -574,6 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>
         <div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ${state.selectedFont}; background-color: ${state.backgroundColor};">
           <header class="relative text-center pb-4 flex items-center justify-center">
+            ${navButtonsHTML}
             <div class="flex-1">${headerHTML}</div>
           </header>
           <div class="flex flex-col flex-grow">
@@ -581,7 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="calendar-grid border-t border-l" style="border-color: ${state.borderColor}; border-top-width: ${state.borderWidth}px; border-left-width: ${state.borderWidth}px;">${gridHTML}</div>
           </div>
         </div>
-        <div class="absolute top-2 right-2 z-20 bg-black/50 text-white text-xs px-2 py-1 rounded pointer-events-none">${monthNames[month]}</div>
       </div>
     `;
   }
@@ -601,6 +617,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function setupMonthInteractions() {
+    // Navigation buttons for single month view
+    if (!state.showAllMonths) {
+      const prevBtn = document.querySelector('.prev-month-btn');
+      const nextBtn = document.querySelector('.next-month-btn');
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          if (typeof dayjs === 'undefined') return;
+          const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).subtract(1, 'month');
+          state.selectedMonth = date.month() + 1;
+          state.selectedYear = date.year();
+          if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
+          if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
+          saveState();
+          render();
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          if (typeof dayjs === 'undefined') return;
+          const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).add(1, 'month');
+          state.selectedMonth = date.month() + 1;
+          state.selectedYear = date.year();
+          if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
+          if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
+          saveState();
+          render();
+        });
+      }
+    }
+    
     document.querySelectorAll('.calendar-month-export').forEach(monthEl => {
       const month = parseInt(monthEl.dataset.month);
       const bgDiv = monthEl.querySelector('.month-bg-image');
@@ -780,9 +826,24 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
   }
 
+  function renderSingleMonth() {
+    if (!DOMElements.calendarsContainer) {
+      console.error('Calendars container not found');
+      return;
+    }
+    const { selectedYear, selectedMonth } = state;
+    const html = generateMonthCalendarHTML(selectedMonth, selectedYear);
+    DOMElements.calendarsContainer.innerHTML = html;
+    setupMonthInteractions();
+  }
+  
   function render() {
     try {
-      renderAllMonths();
+      if (state.showAllMonths) {
+        renderAllMonths();
+      } else {
+        renderSingleMonth();
+      }
     } catch (e) {
       console.error('Render error:', e);
     }
@@ -953,9 +1014,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const monthEl = monthElements[i];
                 const month = parseInt(monthEl.dataset.month);
                 
-                // Hide month label for export
-                const labelEl = monthEl.querySelector('.absolute.top-2.right-2');
-                if (labelEl) labelEl.style.display = 'none';
                 
                 const rect = monthEl.getBoundingClientRect();
                 const elementWidth = Math.round(rect.width);
@@ -991,8 +1049,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             const a4LandscapeRatio = 297 / 210;
                             clonedMonth.style.aspectRatio = state.isLandscape ? a4LandscapeRatio : a4PortraitRatio;
                         }
-                        const label = clonedDoc.querySelector(`[data-month="${month}"] .absolute.top-2.right-2`);
-                        if (label) label.style.display = 'none';
                     }
                 });
                 
