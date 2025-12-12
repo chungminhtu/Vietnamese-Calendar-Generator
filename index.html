@@ -9,7 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lato:wght@400;700&family=Lexend+Deca:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Nunito+Sans:wght@400;700;900&family=Open+Sans:wght@400;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;700&family=Lato:wght@400;700&family=Lexend+Deca:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Nunito+Sans:wght@400;700;900&family=Open+Sans:wght@400;700&family=Quicksand:wght@400;500;700&family=Roboto:wght@400;500;700;900&family=Source+Sans+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.4/lunar.min.js" integrity="sha512-B/tey06yuqPVphjK3i4RAoSqy8aRtR22jxdYpPXRLdD74mgUazviLmu+1HSJvPBgXi9zFd8InZIWKnYMcHYJfg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/date-holidays@3.26.5/dist/umd.min.js"></script>
 
   <style>
-    body { font-family: 'Lexend Deca', sans-serif; background: #f3f4f6; min-height: 100vh; }
+    body { font-family: 'Be Vietnam Pro', sans-serif; background: #f3f4f6; min-height: 100vh; }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -36,6 +36,19 @@
       text-overflow: clip;
       white-space: normal;
       word-wrap: break-word;
+    }
+    .calendar-month-export {
+      box-sizing: border-box;
+      flex-shrink: 0;
+      margin: 0 auto;
+    }
+    .calendar-month-export > * {
+      box-sizing: border-box;
+    }
+    #calendars-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* Accordion Styles */
@@ -288,34 +301,6 @@
         </div>
       </div>
 
-      <!-- Accordion Item: Background -->
-      <div class="border-2 border-indigo-300 rounded shadow-sm">
-        <button data-panel="background" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-xs rounded transition-all">
-          <span>Hình Nền</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-        </button>
-        <div data-content="background" class="accordion-content active">
-          <div class="p-1.5 space-y-1.5 text-xs">
-            <label for="image-upload-input" class="w-full cursor-pointer inline-flex items-center justify-center px-2 py-1.5 border border-gray-300 font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">
-              <svg class="w-3 h-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>
-              <span>Tải ảnh lên</span>
-            </label>
-            <input id="image-upload-input" type="file" class="hidden" accept="image/*">
-            <div id="background-controls-wrapper" class="hidden">
-              <button id="remove-image-btn" class="w-full mt-1 px-2 py-1.5 border border-gray-300 font-medium rounded text-xs text-gray-700 bg-white hover:bg-gray-50">Xóa ảnh</button>
-              <h3 class="font-semibold text-gray-600 pt-1 text-xs">Điều Chỉnh Nền</h3>
-              <p class="text-xs text-gray-500 mb-1">Giữ phím Shift và kéo để di chuyển ảnh. Cuộn chuột để zoom.</p>
-              <div><label class="text-xs">Độ mờ (<span data-label="bgOpacity">100</span>%)</label><input type="range" data-state="bgOpacity"></div>
-              <div><label class="text-xs">Độ sáng (<span data-label="bgBrightness">100</span>%)</label><input type="range" data-state="bgBrightness" min="0" max="200"></div>
-              <div><label class="text-xs">Bão hòa (<span data-label="bgSaturation">100</span>%)</label><input type="range" data-state="bgSaturation" min="0" max="200"></div>
-              <div><label class="text-xs">Phóng to (<span data-label="bgZoom">100</span>%)</label><input type="range" data-state="bgZoom" min="50" max="200"></div>
-              <div><label class="text-xs">Vị trí ngang (<span data-label="bgPosX">50</span>%)</label><input type="range" data-state="bgPosX"></div>
-              <div><label class="text-xs">Vị trí dọc (<span data-label="bgPosY">50</span>%)</label><input type="range" data-state="bgPosY"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
       <!-- Export Button -->
       <button id="export-btn" class="w-full mt-2 px-3 py-2 text-xs font-semibold rounded border border-transparent text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50">
         <span>Xuất file PDF</span>
@@ -324,22 +309,8 @@
   </aside>
 
   <!-- === Calendar Preview Area === -->
-  <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 flex items-center justify-center">
-    <div id="calendar-export-area" class="relative w-full max-w-6xl shadow-2xl rounded-lg overflow-hidden transition-all duration-300">
-      <div id="background-image-div" class="absolute inset-0 bg-center bg-no-repeat rounded-lg" style="cursor: move; z-index: 1;"></div>
-      <div id="background-drag-overlay" class="absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>
-      <div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2;">
-        <header class="relative text-center pb-4 flex items-center justify-center">
-          <button id="prev-month-btn" class="nav-button absolute left-0 p-2 rounded-full hover:bg-black/10 transition-colors"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-          <div id="calendar-header-text" class="flex-1"></div>
-          <button id="next-month-btn" class="nav-button absolute right-0 p-2 rounded-full hover:bg-black/10 transition-colors"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-        </header>
-        <div class="flex flex-col flex-grow">
-          <div id="weekday-header" class="grid grid-cols-7"></div>
-          <div id="calendar-grid-container" class="calendar-grid border-t border-l"></div>
-        </div>
-      </div>
-    </div>
+  <main id="calendar-main" class="flex-1 p-4 lg:p-8 bg-gray-100 overflow-auto">
+    <div id="calendars-container" class="max-w-6xl mx-auto space-y-6 pb-6" style="display: flex; flex-direction: column; align-items: stretch;"></div>
   </main>
 </div>
 
@@ -356,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Basic
       selectedMonth: now.getMonth() + 1,
       selectedYear: now.getFullYear(),
-      selectedFont: "'Lexend Deca', sans-serif",
+      selectedFont: "'Be Vietnam Pro', sans-serif",
       startOfWeek: 1,
       // Typography
       monthFontSize: 48, yearFontSize: 24, weekdayFontSize: 14, dateSize: 24,
@@ -373,9 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Holiday Types
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false, 
       showHolidayOptional: false, showHolidayObservance: false,
-      // Background
-      backgroundImageUrl: null, bgOpacity: 100, bgBrightness: 100, bgSaturation: 100,
-      bgZoom: 100, bgPosX: 50, bgPosY: 50,
+      // Background per month (1-12)
+      monthBackgrounds: {},
       // UI State
       isExporting: false, isDragging: false
     };
@@ -399,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const toSave = { ...state };
       delete toSave.isExporting;
       delete toSave.isDragging;
-      delete toSave.backgroundImageUrl;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     } catch (e) {
       console.warn('Failed to save state to localStorage:', e);
@@ -459,20 +428,10 @@ document.addEventListener('DOMContentLoaded', () => {
     yearSelect: document.getElementById('year-select'),
     fontSelect: document.getElementById('font-select'),
     startOfWeekSelect: document.getElementById('start-of-week-select'),
-    imageUploadInput: document.getElementById('image-upload-input'),
-    removeImageBtn: document.getElementById('remove-image-btn'),
-    backgroundControlsWrapper: document.getElementById('background-controls-wrapper'),
     exportBtn: document.getElementById('export-btn'),
     // Calendar Preview
     calendarMain: document.getElementById('calendar-main'),
-    calendarExportArea: document.getElementById('calendar-export-area'),
-    backgroundImageDiv: document.getElementById('background-image-div'),
-    backgroundDragOverlay: document.getElementById('background-drag-overlay'),
-    calendarHeaderText: document.getElementById('calendar-header-text'),
-    weekdayHeader: document.getElementById('weekday-header'),
-    calendarGridContainer: document.getElementById('calendar-grid-container'),
-    prevMonthBtn: document.getElementById('prev-month-btn'),
-    nextMonthBtn: document.getElementById('next-month-btn'),
+    calendarsContainer: document.getElementById('calendars-container'),
   };
   
   const missingElements = Object.entries(DOMElements)
@@ -544,17 +503,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- RENDER FUNCTIONS ---
-  function renderCalendarGrid() {
-    if (!DOMElements.calendarGridContainer) {
-      console.error('Calendar grid container not found');
-      return;
-    }
+  function generateMonthCalendarHTML(month, year) {
     if (typeof dayjs === 'undefined') {
       console.error('dayjs not loaded');
-      return;
+      return '';
     }
-    const { selectedYear, selectedMonth, startOfWeek } = state;
-    const firstDayOfMonth = dayjs(`${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`);
+    const { startOfWeek } = state;
+    const firstDayOfMonth = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
     let startOffset = firstDayOfMonth.day() - startOfWeek;
     if (startOffset < 0) startOffset += 7;
     
@@ -569,29 +524,227 @@ document.addEventListener('DOMContentLoaded', () => {
         continue;
       }
       const { lunarDay, lunarMonth } = getLunarDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
-      if (i === 1 && (lunarDay === 0 || lunarMonth === 0)) {
-        console.warn('Lunar date calculation returned 0 for date:', date, 'Lunar values:', lunarDay, lunarMonth, 'Check if lunar library is loaded');
-      }
       const holidayName = getHoliday(date, lunarDay, lunarMonth);
-      const isCurrentMonth = date.getMonth() === selectedMonth - 1;
+      const isCurrentMonth = date.getMonth() === month - 1;
       grid.push({ date, lunarDay, lunarMonth, holidayName, isCurrentMonth });
     }
 
-    let html = '';
+    let gridHTML = '';
     grid.forEach(day => {
       if (!state.showOtherMonthDates && !day.isCurrentMonth) {
-        html += '<div class="border-r border-b" style="border-color: ' + state.borderColor + '; border-right-width: ' + state.borderWidth + 'px; border-bottom-width: ' + state.borderWidth + 'px;"></div>';
+        gridHTML += '<div class="border-r border-b" style="border-color: ' + state.borderColor + '; border-right-width: ' + state.borderWidth + 'px; border-bottom-width: ' + state.borderWidth + 'px;"></div>';
       } else {
-        html += generateDayCellHTML(day);
+        gridHTML += generateDayCellHTML(day);
       }
     });
+
+    const monthBg = state.monthBackgrounds[month] || {};
+    const hasBg = !!monthBg.url;
+    const bgStyle = hasBg ? `background-image: url(${monthBg.url}); background-size: ${monthBg.zoom || 100}%; background-position: ${monthBg.posX || 50}% ${monthBg.posY || 50}%; opacity: ${(monthBg.opacity || 100) / 100}; filter: brightness(${(monthBg.brightness || 100) / 100}) saturate(${(monthBg.saturation || 100) / 100});` : '';
     
-    if (!html) {
-      console.error('No HTML generated for calendar grid');
+    const { monthFontSize, monthFontWeight, monthTextTransform, yearFontSize, yearFontWeight, monthYearLayout } = state;
+    const headerTextColor = state.weekdayColor || state.dateColor || '#374151';
+    const subHeaderTextColor = state.lunarDateColor || '#6B7280';
+    const monthText = 'tháng';
+    
+    let headerHTML = '';
+    if (monthYearLayout === 'double') {
+      headerHTML = `<h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor};">${monthText} ${month}</h1><p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor};">${year}</p>`;
+    } else {
+      headerHTML = `<h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor};"><span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">${monthText} ${month}</span><span style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight};" class="ml-4">${year}</span></h1>`;
+    }
+
+    const weekdayLabels = startOfWeek === 1 
+      ? ['thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy', 'chủ nhật'] 
+      : ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
+    const weekdayColor = state.weekdayColor;
+    const { weekdayFontSize, weekdayFontWeight, weekdayTextTransform } = state;
+    const weekdayHTML = weekdayLabels.map(day => 
+      `<div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor};">${day}</div>`
+    ).join('');
+
+    const a4PortraitRatio = 210 / 297;
+    const a4LandscapeRatio = 297 / 210;
+    const aspectRatio = state.isLandscape ? a4LandscapeRatio : a4PortraitRatio;
+    const monthNames = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+    
+    return `
+      <div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="${month}" style="width: 100%; aspect-ratio: ${aspectRatio}; max-width: 100%; max-height: calc(100vh - 4rem); height: auto;">
+        <div class="month-bg-image absolute inset-0 bg-center bg-no-repeat rounded-lg" style="${bgStyle} cursor: ${hasBg ? 'move' : 'default'}; z-index: 1; user-select: none;"></div>
+        <div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>
+        <div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ${state.selectedFont}; background-color: ${state.backgroundColor};">
+          <header class="relative text-center pb-4 flex items-center justify-center">
+            <div class="flex-1">${headerHTML}</div>
+          </header>
+          <div class="flex flex-col flex-grow">
+            <div class="weekday-header grid grid-cols-7">${weekdayHTML}</div>
+            <div class="calendar-grid border-t border-l" style="border-color: ${state.borderColor}; border-top-width: ${state.borderWidth}px; border-left-width: ${state.borderWidth}px;">${gridHTML}</div>
+          </div>
+        </div>
+        <div class="absolute top-2 right-2 z-20 bg-black/50 text-white text-xs px-2 py-1 rounded pointer-events-none">${monthNames[month]}</div>
+      </div>
+    `;
+  }
+  
+  function renderAllMonths() {
+    if (!DOMElements.calendarsContainer) {
+      console.error('Calendars container not found');
       return;
     }
-    
-    DOMElements.calendarGridContainer.innerHTML = html;
+    const { selectedYear } = state;
+    let html = '';
+    for (let month = 1; month <= 12; month++) {
+      html += generateMonthCalendarHTML(month, selectedYear);
+    }
+    DOMElements.calendarsContainer.innerHTML = html;
+    setupMonthInteractions();
+  }
+  
+  function setupMonthInteractions() {
+    document.querySelectorAll('.calendar-month-export').forEach(monthEl => {
+      const month = parseInt(monthEl.dataset.month);
+      const bgDiv = monthEl.querySelector('.month-bg-image');
+      const overlay = monthEl.querySelector('.month-bg-overlay');
+      
+      // Drag and drop image
+      monthEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        monthEl.classList.add('border-4', 'border-blue-500');
+      });
+      monthEl.addEventListener('dragleave', () => {
+        monthEl.classList.remove('border-4', 'border-blue-500');
+      });
+      monthEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        monthEl.classList.remove('border-4', 'border-blue-500');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            if (!state.monthBackgrounds[month]) {
+              state.monthBackgrounds[month] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+            }
+            state.monthBackgrounds[month].url = ev.target.result;
+            saveState();
+            renderAllMonths();
+          };
+          reader.readAsDataURL(files[0]);
+        }
+      });
+      
+      // Click to upload
+      monthEl.addEventListener('click', (e) => {
+        if (e.target === monthEl || e.target === bgDiv || e.target.closest('.month-bg-image')) {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = (ev) => {
+            const file = ev.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev2) => {
+                if (!state.monthBackgrounds[month]) {
+                  state.monthBackgrounds[month] = { url: null, zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+                }
+                state.monthBackgrounds[month].url = ev2.target.result;
+                saveState();
+                renderAllMonths();
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+          input.click();
+        }
+      });
+      
+      // Drag to position and zoom
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let startPosX = 0;
+      let startPosY = 0;
+      let isShiftPressed = false;
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Shift' && state.monthBackgrounds[month]?.url) {
+          isShiftPressed = true;
+          overlay.style.display = 'block';
+          overlay.style.pointerEvents = 'all';
+          overlay.style.cursor = 'move';
+          monthEl.style.cursor = 'move';
+        }
+      });
+      
+      document.addEventListener('keyup', (e) => {
+        if (e.key === 'Shift') {
+          isShiftPressed = false;
+          overlay.style.display = 'none';
+          overlay.style.pointerEvents = 'none';
+          monthEl.style.cursor = 'default';
+          if (isDragging) {
+            isDragging = false;
+            saveState();
+          }
+        }
+      });
+      
+      overlay.addEventListener('mousedown', (e) => {
+        if (!state.monthBackgrounds[month]?.url) return;
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        const bg = state.monthBackgrounds[month];
+        startPosX = bg.posX || 50;
+        startPosY = bg.posY || 50;
+        e.preventDefault();
+        overlay.style.cursor = 'grabbing';
+      });
+      
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !state.monthBackgrounds[month]?.url) return;
+        const rect = monthEl.getBoundingClientRect();
+        const deltaX = ((e.clientX - dragStartX) / rect.width) * 100;
+        const deltaY = ((e.clientY - dragStartY) / rect.height) * 100;
+        
+        const bg = state.monthBackgrounds[month];
+        bg.posX = Math.max(0, Math.min(100, startPosX + deltaX));
+        bg.posY = Math.max(0, Math.min(100, startPosY + deltaY));
+        bgDiv.style.backgroundPosition = `${bg.posX}% ${bg.posY}%`;
+      });
+      
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          overlay.style.cursor = 'move';
+          saveState();
+        }
+      });
+      
+      monthEl.addEventListener('wheel', (e) => {
+        if (!state.monthBackgrounds[month]?.url || e.ctrlKey || e.metaKey) return;
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -5 : 5;
+        const bg = state.monthBackgrounds[month];
+        bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
+        bgDiv.style.backgroundSize = `${bg.zoom}%`;
+        saveState();
+      }, { passive: false });
+      
+      // Right-click to remove image
+      monthEl.addEventListener('contextmenu', (e) => {
+        if (state.monthBackgrounds[month]?.url) {
+          e.preventDefault();
+          if (confirm('Xóa ảnh nền cho tháng này?')) {
+            delete state.monthBackgrounds[month].url;
+            if (Object.keys(state.monthBackgrounds[month]).length === 1 && state.monthBackgrounds[month].url === null) {
+              delete state.monthBackgrounds[month];
+            }
+            saveState();
+            renderAllMonths();
+          }
+        }
+      });
+    });
   }
 
   function generateDayCellHTML(day) {
@@ -627,84 +780,9 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
   }
 
-  function renderStylesAndText() {
-    if (!DOMElements.calendarExportArea || !DOMElements.calendarHeaderText || !DOMElements.weekdayHeader) {
-      console.error('Required DOM elements not found');
-      return;
-    }
-    const hasBg = !!state.backgroundImageUrl;
-    const { 
-      selectedFont, backgroundColor, monthFontSize, monthFontWeight, monthTextTransform, 
-      yearFontSize, yearFontWeight, weekdayFontSize, weekdayFontWeight, weekdayTextTransform,
-      borderWidth, monthYearLayout, selectedMonth, selectedYear, isLandscape
-    } = state;
-    
-    // Apply orientation - A4 dimensions: 210mm x 297mm
-    // Portrait: 210/297 = 0.707, Landscape: 297/210 = 1.414
-    if (isLandscape) {
-      DOMElements.calendarExportArea.style.aspectRatio = '297/210';
-      DOMElements.calendarExportArea.style.maxWidth = '100%';
-    } else {
-      DOMElements.calendarExportArea.style.aspectRatio = '210/297';
-      DOMElements.calendarExportArea.style.maxWidth = '100%';
-    }
-
-    // Calendar container styles
-    DOMElements.calendarExportArea.style.fontFamily = selectedFont;
-    DOMElements.calendarExportArea.style.backgroundColor = backgroundColor;
-
-    // Background image
-    DOMElements.backgroundImageDiv.style.backgroundImage = hasBg ? `url(${state.backgroundImageUrl})` : 'none';
-    DOMElements.backgroundImageDiv.style.backgroundSize = hasBg ? `${state.bgZoom}%` : 'cover';
-    DOMElements.backgroundImageDiv.style.backgroundPosition = hasBg ? `${state.bgPosX}% ${state.bgPosY}%` : 'center';
-    DOMElements.backgroundImageDiv.style.opacity = hasBg ? `${state.bgOpacity / 100}` : '1';
-    DOMElements.backgroundImageDiv.style.filter = hasBg ? `brightness(${state.bgBrightness / 100}) saturate(${state.bgSaturation / 100})` : 'none';
-    DOMElements.backgroundImageDiv.style.cursor = hasBg ? 'move' : 'default';
-    DOMElements.backgroundImageDiv.style.userSelect = 'none';
-    
-    // Header text color - use custom colors with shadow if background exists
-    const headerTextColor = state.weekdayColor || state.dateColor || '#374151';
-    const subHeaderTextColor = state.lunarDateColor || '#6B7280';
-    // Month/Year Header
-    const monthText = 'tháng';
-    if (monthYearLayout === 'double') {
-        DOMElements.calendarHeaderText.innerHTML = `
-          <h1 class="font-bold tracking-widest" style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform}; color: ${headerTextColor};">${monthText} ${selectedMonth}</h1>
-          <p style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight}; color: ${subHeaderTextColor};">${selectedYear}</p>
-        `;
-    } else {
-        DOMElements.calendarHeaderText.innerHTML = `
-           <h1 class="font-bold tracking-widest leading-tight" style="color: ${headerTextColor};">
-                <span style="font-size: ${monthFontSize}px; font-weight: ${monthFontWeight}; text-transform: ${monthTextTransform};">${monthText} ${selectedMonth}</span>
-                <span style="font-size: ${yearFontSize}px; font-weight: ${yearFontWeight};" class="ml-4">${selectedYear}</span>
-           </h1>
-        `;
-    }
-    document.querySelectorAll('#calendar-export-area .nav-button').forEach(btn => {
-      btn.style.color = state.weekdayColor || '#4B5563';
-    });
-
-
-    // Weekday Header
-    const weekdayLabels = state.startOfWeek === 1 
-      ? ['thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy', 'chủ nhật'] 
-      : ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
-    const weekdayColor = state.weekdayColor;
-    
-    DOMElements.weekdayHeader.innerHTML = weekdayLabels.map(day => `
-      <div class="text-center font-semibold pb-2" style="font-size: ${weekdayFontSize}px; font-weight: ${weekdayFontWeight}; text-transform: ${weekdayTextTransform}; color: ${weekdayColor};">${day}</div>
-    `).join('');
-
-    // Grid Borders
-    DOMElements.calendarGridContainer.style.borderColor = state.borderColor;
-    DOMElements.calendarGridContainer.style.borderTopWidth = `${borderWidth}px`;
-    DOMElements.calendarGridContainer.style.borderLeftWidth = `${borderWidth}px`;
-  }
-  
   function render() {
     try {
-      renderStylesAndText();
-      renderCalendarGrid();
+      renderAllMonths();
     } catch (e) {
       console.error('Render error:', e);
     }
@@ -713,13 +791,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- INITIALIZATION ---
   function initializeControls() {
     if (!DOMElements.monthSelect || !DOMElements.yearSelect || !DOMElements.fontSelect) {
-      console.error('Required DOM elements not found');
-      return;
+      console.warn('Some DOM elements not found, continuing with available elements');
     }
     // Populate dropdowns
-    DOMElements.monthSelect.innerHTML = Array.from({length: 12}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
-    DOMElements.yearSelect.innerHTML = Array.from({length: 201}, (_, i) => `<option value="${2100 - i}">${2100 - i}</option>`).join('');
+    if (DOMElements.monthSelect) {
+      DOMElements.monthSelect.innerHTML = Array.from({length: 12}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+      DOMElements.monthSelect.value = state.selectedMonth;
+    }
+    if (DOMElements.yearSelect) {
+      DOMElements.yearSelect.innerHTML = Array.from({length: 201}, (_, i) => `<option value="${2100 - i}">${2100 - i}</option>`).join('');
+      DOMElements.yearSelect.value = state.selectedYear;
+    }
     const fonts = [
+        { name: 'Be Vietnam Pro', family: "'Be Vietnam Pro', sans-serif" },
+        { name: 'Noto Sans', family: "'Noto Sans', sans-serif" },
+        { name: 'Work Sans', family: "'Work Sans', sans-serif" },
+        { name: 'Quicksand', family: "'Quicksand', sans-serif" },
+        { name: 'Source Sans Pro', family: "'Source Sans Pro', sans-serif" },
         { name: 'Lexend Deca', family: "'Lexend Deca', sans-serif" },
         { name: 'Roboto', family: "'Roboto', sans-serif" },
         { name: 'Open Sans', family: "'Open Sans', sans-serif" },
@@ -728,16 +816,12 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Nunito Sans', family: "'Nunito Sans', sans-serif" },
         { name: 'Inter', family: "'Inter', sans-serif" }
     ];
-    DOMElements.fontSelect.innerHTML = fonts.map(f => `<option value="${f.family}" style="font-family:${f.family}">${f.name}</option>`).join('');
-
-    // Set initial values from state
-    if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
-    if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
-    if (DOMElements.startOfWeekSelect) DOMElements.startOfWeekSelect.value = state.startOfWeek;
-    if (DOMElements.fontSelect) DOMElements.fontSelect.value = state.selectedFont;
-    
-    if (state.backgroundImageUrl && DOMElements.backgroundControlsWrapper) {
-      DOMElements.backgroundControlsWrapper.classList.remove('hidden');
+    if (DOMElements.fontSelect) {
+      DOMElements.fontSelect.innerHTML = fonts.map(f => `<option value="${f.family}" style="font-family:${f.family}">${f.name}</option>`).join('');
+      DOMElements.fontSelect.value = state.selectedFont;
+    }
+    if (DOMElements.startOfWeekSelect) {
+      DOMElements.startOfWeekSelect.value = state.startOfWeek;
     }
     
     document.querySelectorAll('[data-state]').forEach(el => {
@@ -754,8 +838,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- EVENT LISTENERS ---
   function setupEventListeners() {
-    if (!DOMElements.monthSelect || !DOMElements.yearSelect) {
-      console.error('Cannot setup event listeners - DOM elements missing');
+    if (!DOMElements.exportBtn) {
+      console.error('Export button not found - cannot setup event listeners');
       return;
     }
     // Accordion - all expanded by default
@@ -780,10 +864,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Basic Controls
-    DOMElements.monthSelect.addEventListener('change', (e) => { state.selectedMonth = parseInt(e.target.value); saveState(); render(); });
-    DOMElements.yearSelect.addEventListener('change', (e) => { state.selectedYear = parseInt(e.target.value); saveState(); render(); });
-    DOMElements.fontSelect.addEventListener('change', (e) => { state.selectedFont = e.target.value; saveState(); render(); });
-    DOMElements.startOfWeekSelect.addEventListener('change', (e) => { state.startOfWeek = parseInt(e.target.value); saveState(); render(); });
+    if (DOMElements.monthSelect) {
+      DOMElements.monthSelect.addEventListener('change', (e) => { state.selectedMonth = parseInt(e.target.value); saveState(); render(); });
+    }
+    if (DOMElements.yearSelect) {
+      DOMElements.yearSelect.addEventListener('change', (e) => { state.selectedYear = parseInt(e.target.value); saveState(); render(); });
+    }
+    if (DOMElements.fontSelect) {
+      DOMElements.fontSelect.addEventListener('change', (e) => { state.selectedFont = e.target.value; saveState(); render(); });
+    }
+    if (DOMElements.startOfWeekSelect) {
+      DOMElements.startOfWeekSelect.addEventListener('change', (e) => { state.startOfWeek = parseInt(e.target.value); saveState(); render(); });
+    }
 
     // Slider controls (use 'input' event for real-time updates)
     document.querySelectorAll('input[type="range"][data-state]').forEach(input => {
@@ -829,157 +921,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Month navigation
-    DOMElements.prevMonthBtn.addEventListener('click', () => {
-      const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).subtract(1, 'month');
-      state.selectedMonth = date.month() + 1;
-      state.selectedYear = date.year();
-      DOMElements.monthSelect.value = state.selectedMonth;
-      DOMElements.yearSelect.value = state.selectedYear;
-      saveState();
-      render();
-    });
-    DOMElements.nextMonthBtn.addEventListener('click', () => {
-      const date = dayjs(`${state.selectedYear}-${String(state.selectedMonth).padStart(2, '0')}-01`).add(1, 'month');
-      state.selectedMonth = date.month() + 1;
-      state.selectedYear = date.year();
-      DOMElements.monthSelect.value = state.selectedMonth;
-      DOMElements.yearSelect.value = state.selectedYear;
-      saveState();
-      render();
-    });
     
-    // Image Upload
-    const processImageFile = (file) => {
-      if (!file || !file.type.startsWith('image/')) return alert('Vui lòng chỉ chọn file hình ảnh.');
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        state.backgroundImageUrl = e.target.result;
-        if (DOMElements.backgroundControlsWrapper) {
-          DOMElements.backgroundControlsWrapper.classList.remove('hidden');
-        }
-        saveState();
-        render();
-      };
-      reader.readAsDataURL(file);
-    };
-
-    DOMElements.imageUploadInput.addEventListener('change', (e) => processImageFile(e.target.files[0]));
-    DOMElements.removeImageBtn.addEventListener('click', () => {
-      state.backgroundImageUrl = null;
-      if (DOMElements.imageUploadInput) DOMElements.imageUploadInput.value = '';
-      if (DOMElements.backgroundControlsWrapper) DOMElements.backgroundControlsWrapper.classList.add('hidden');
-      saveState();
-      render();
-    });
-
-    // Drag and Drop
-    DOMElements.calendarMain.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      DOMElements.calendarExportArea.classList.add('ring-4', 'ring-indigo-500');
-    });
-    DOMElements.calendarMain.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      DOMElements.calendarExportArea.classList.remove('ring-4', 'ring-indigo-500');
-    });
-    DOMElements.calendarMain.addEventListener('drop', (e) => {
-      e.preventDefault();
-      DOMElements.calendarExportArea.classList.remove('ring-4', 'ring-indigo-500');
-      if (e.dataTransfer.files[0]) processImageFile(e.dataTransfer.files[0]);
-    });
-    
-    // Background image drag and zoom
-    let isDraggingBg = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let startBgPosX = 0;
-    let startBgPosY = 0;
-    let isShiftPressed = false;
-    
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Shift' && state.backgroundImageUrl) {
-        isShiftPressed = true;
-        if (DOMElements.backgroundDragOverlay) {
-          DOMElements.backgroundDragOverlay.style.display = 'block';
-          DOMElements.backgroundDragOverlay.style.pointerEvents = 'all';
-          DOMElements.backgroundDragOverlay.style.cursor = 'move';
-        }
-        DOMElements.calendarExportArea.style.cursor = 'move';
-      }
-    });
-    
-    document.addEventListener('keyup', (e) => {
-      if (e.key === 'Shift') {
-        isShiftPressed = false;
-        if (DOMElements.backgroundDragOverlay) {
-          DOMElements.backgroundDragOverlay.style.display = 'none';
-          DOMElements.backgroundDragOverlay.style.pointerEvents = 'none';
-        }
-        DOMElements.calendarExportArea.style.cursor = 'default';
-        if (isDraggingBg) {
-          isDraggingBg = false;
-          saveState();
-        }
-      }
-    });
-    
-    if (DOMElements.backgroundDragOverlay) {
-      DOMElements.backgroundDragOverlay.addEventListener('mousedown', (e) => {
-        if (!state.backgroundImageUrl) return;
-        isDraggingBg = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        startBgPosX = state.bgPosX;
-        startBgPosY = state.bgPosY;
-        e.preventDefault();
-        DOMElements.backgroundDragOverlay.style.cursor = 'grabbing';
-      });
+    // Export PDF - All 12 months
+    if (!DOMElements.exportBtn) {
+      console.error('Export button not found');
+      return;
     }
-    
-    document.addEventListener('mousemove', (e) => {
-      if (!isDraggingBg || !state.backgroundImageUrl) return;
-      const rect = DOMElements.calendarExportArea.getBoundingClientRect();
-      const deltaX = ((e.clientX - dragStartX) / rect.width) * 100;
-      const deltaY = ((e.clientY - dragStartY) / rect.height) * 100;
-      
-      state.bgPosX = Math.max(0, Math.min(100, startBgPosX + deltaX));
-      state.bgPosY = Math.max(0, Math.min(100, startBgPosY + deltaY));
-      
-      DOMElements.backgroundImageDiv.style.backgroundPosition = `${state.bgPosX}% ${state.bgPosY}%`;
-      
-      const posXLabel = document.querySelector('[data-label="bgPosX"]');
-      if (posXLabel) posXLabel.textContent = Math.round(state.bgPosX);
-      const posYLabel = document.querySelector('[data-label="bgPosY"]');
-      if (posYLabel) posYLabel.textContent = Math.round(state.bgPosY);
-      const posXSlider = document.querySelector('[data-state="bgPosX"]');
-      if (posXSlider) posXSlider.value = state.bgPosX;
-      const posYSlider = document.querySelector('[data-state="bgPosY"]');
-      if (posYSlider) posYSlider.value = state.bgPosY;
-    });
-    
-    document.addEventListener('mouseup', () => {
-      if (isDraggingBg) {
-        isDraggingBg = false;
-        if (DOMElements.backgroundDragOverlay) {
-          DOMElements.backgroundDragOverlay.style.cursor = 'move';
-        }
-        saveState();
-      }
-    });
-    
-    DOMElements.calendarExportArea.addEventListener('wheel', (e) => {
-      if (!state.backgroundImageUrl || e.ctrlKey || e.metaKey) return;
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -5 : 5;
-      state.bgZoom = Math.max(50, Math.min(200, state.bgZoom + delta));
-      DOMElements.backgroundImageDiv.style.backgroundSize = `${state.bgZoom}%`;
-      const zoomLabel = document.querySelector('[data-label="bgZoom"]');
-      if (zoomLabel) zoomLabel.textContent = Math.round(state.bgZoom);
-      const zoomSlider = document.querySelector('[data-state="bgZoom"]');
-      if (zoomSlider) zoomSlider.value = state.bgZoom;
-      saveState();
-    }, { passive: false });
-    
-    // Export PDF
     DOMElements.exportBtn.addEventListener('click', async () => {
         if (state.isExporting) return;
         state.isExporting = true;
@@ -992,67 +939,88 @@ document.addEventListener('DOMContentLoaded', () => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         try {
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            const element = DOMElements.calendarExportArea;
-            const rect = element.getBoundingClientRect();
-            const elementWidth = Math.round(rect.width);
-            const elementHeight = Math.round(rect.height);
-            
-            const scale = 3;
-            
-            const canvas = await html2canvas(element, {
-                useCORS: true,
-                scale: scale,
-                logging: false,
-                backgroundColor: state.backgroundImageUrl ? null : state.backgroundColor,
-                allowTaint: true,
-                removeContainer: false,
-                imageTimeout: 15000,
-                width: elementWidth,
-                height: elementHeight,
-                x: 0,
-                y: 0,
-                scrollX: 0,
-                scrollY: 0,
-                onclone: (clonedDoc) => {
-                    const clonedElement = clonedDoc.getElementById('calendar-export-area');
-                    if (clonedElement) {
-                        clonedElement.style.transform = 'none';
-                        clonedElement.style.position = 'static';
-                        clonedElement.style.width = elementWidth + 'px';
-                        clonedElement.style.height = elementHeight + 'px';
-                        clonedElement.style.margin = '0';
-                        clonedElement.style.padding = '0';
-                        clonedElement.style.boxSizing = 'border-box';
-                        clonedElement.style.aspectRatio = state.isLandscape ? '297/210' : '210/297';
-                    }
-                    const navButtons = clonedDoc.querySelectorAll('.nav-button');
-                    navButtons.forEach(btn => btn.style.display = 'none');
-                }
-            });
-            
-            const imgData = canvas.toDataURL('image/png', 1.0);
             const jsPDFLib = window.jspdf || jspdf;
             const { jsPDF } = jsPDFLib;
-            
+            const scale = 3;
             const dpi = 96;
             const mmPerInch = 25.4;
             const pixelsPerMm = (dpi * scale) / mmPerInch;
             
-            const mmWidth = canvas.width / pixelsPerMm;
-            const mmHeight = canvas.height / pixelsPerMm;
+            let pdf = null;
+            const monthElements = document.querySelectorAll('.calendar-month-export');
             
-            const pdf = new jsPDF({
-                orientation: state.isLandscape ? 'landscape' : 'portrait',
-                unit: 'mm',
-                format: [mmWidth, mmHeight],
-                precision: 16,
-                compress: false
-            });
+            for (let i = 0; i < monthElements.length; i++) {
+                const monthEl = monthElements[i];
+                const month = parseInt(monthEl.dataset.month);
+                
+                // Hide month label for export
+                const labelEl = monthEl.querySelector('.absolute.top-2.right-2');
+                if (labelEl) labelEl.style.display = 'none';
+                
+                const rect = monthEl.getBoundingClientRect();
+                const elementWidth = Math.round(rect.width);
+                const elementHeight = Math.round(rect.height);
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const canvas = await html2canvas(monthEl, {
+                    useCORS: true,
+                    scale: scale,
+                    logging: false,
+                    backgroundColor: state.monthBackgrounds[month]?.url ? null : state.backgroundColor,
+                    allowTaint: true,
+                    removeContainer: false,
+                    imageTimeout: 15000,
+                    width: elementWidth,
+                    height: elementHeight,
+                    x: 0,
+                    y: 0,
+                    scrollX: 0,
+                    scrollY: 0,
+                    onclone: (clonedDoc) => {
+                        const clonedMonth = clonedDoc.querySelector(`[data-month="${month}"]`);
+                        if (clonedMonth) {
+                            clonedMonth.style.transform = 'none';
+                            clonedMonth.style.position = 'static';
+                            clonedMonth.style.width = elementWidth + 'px';
+                            clonedMonth.style.height = elementHeight + 'px';
+                            clonedMonth.style.margin = '0';
+                            clonedMonth.style.padding = '0';
+                            clonedMonth.style.boxSizing = 'border-box';
+                            const a4PortraitRatio = 210 / 297;
+                            const a4LandscapeRatio = 297 / 210;
+                            clonedMonth.style.aspectRatio = state.isLandscape ? a4LandscapeRatio : a4PortraitRatio;
+                        }
+                        const label = clonedDoc.querySelector(`[data-month="${month}"] .absolute.top-2.right-2`);
+                        if (label) label.style.display = 'none';
+                    }
+                });
+                
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const mmWidth = canvas.width / pixelsPerMm;
+                const mmHeight = canvas.height / pixelsPerMm;
+                
+                if (i === 0) {
+                    pdf = new jsPDF({
+                        orientation: state.isLandscape ? 'landscape' : 'portrait',
+                        unit: 'mm',
+                        format: [mmWidth, mmHeight],
+                        precision: 16,
+                        compress: false
+                    });
+                } else {
+                    pdf.addPage([mmWidth, mmHeight], state.isLandscape ? 'landscape' : 'portrait');
+                }
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, mmWidth, mmHeight, undefined, 'FAST');
+                
+                // Restore label
+                if (labelEl) labelEl.style.display = 'block';
+            }
             
-            pdf.addImage(imgData, 'PNG', 0, 0, mmWidth, mmHeight, undefined, 'FAST');
-            pdf.save(`lich-viet-${state.selectedYear}-${state.selectedMonth}.pdf`);
+            if (pdf) {
+                pdf.save(`lich-viet-${state.selectedYear}-12-thang.pdf`);
+            }
         } catch (error) {
             console.error('Failed to export calendar:', error);
             alert('An error occurred while exporting the calendar: ' + error.message);
