@@ -4,6 +4,7 @@
 
   // --- CONSTANTS ---
   const STORAGE_KEY = 'vietnamese-calendar-settings';
+  const ACCORDION_STATE_KEY = 'vietnamese-calendar-accordion-state';
   const DB_NAME = 'vietnamese-calendar-images';
   const DB_VERSION = 1;
   const STORE_NAME = 'background-images';
@@ -291,7 +292,7 @@
               if (h && h.type && enabledTypes.includes(h.type) && h.name) {
                 const exists = holidays.some(existing => existing.name === h.name && !existing.isCustom);
                 if (!exists) {
-                  holidays.push({ name: h.name, isCustom: false, isPublic: h.type === 'public' });
+                  holidays.push({ name: h.name, isCustom: false, isPublic: h.type === 'public', holidayType: h.type });
                 }
               }
             }
@@ -305,6 +306,12 @@
     }
     
     const publicHolidays = holidays.filter(h => h.isPublic);
+    const observanceHolidays = holidays.filter(h => h.holidayType === 'observance');
+    
+    if (publicHolidays.length > 0 && observanceHolidays.length > 0) {
+      return publicHolidays;
+    }
+    
     if (publicHolidays.length > 0 && holidays.length > 1) {
       return publicHolidays;
     }
@@ -1074,16 +1081,54 @@
     updateBackgroundControls(state.selectedMonth);
   };
 
+  // --- ACCORDION STATE MANAGEMENT ---
+  const loadAccordionState = () => {
+    try {
+      const saved = localStorage.getItem(ACCORDION_STATE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Failed to load accordion state:', e);
+    }
+    return {
+      basic: true,
+      typography: true,
+      colors: true,
+      background: true,
+      customHolidays: true,
+      layout: true
+    };
+  };
+  
+  const saveAccordionState = (accordionState) => {
+    try {
+      localStorage.setItem(ACCORDION_STATE_KEY, JSON.stringify(accordionState));
+    } catch (e) {
+      console.warn('Failed to save accordion state:', e);
+    }
+  };
+  
+  const applyAccordionState = (accordionState) => {
+    const accordionToggles = document.querySelectorAll('.accordion-toggle');
+    for (let i = 0; i < accordionToggles.length; i++) {
+      const panel = accordionToggles[i].dataset.panel;
+      const content = document.querySelector(`[data-content="${panel}"]`);
+      const svg = accordionToggles[i].querySelector('svg');
+      const isActive = accordionState[panel] !== false;
+      if (content) {
+        content.classList.toggle('active', isActive);
+      }
+      if (svg) {
+        svg.classList.toggle('rotate-180', isActive);
+      }
+    }
+  };
+
   // --- EVENT LISTENERS ---
   const setupEventListeners = () => {
-    const accordionContents = document.querySelectorAll('.accordion-content');
-    for (let i = 0; i < accordionContents.length; i++) {
-      accordionContents[i].classList.add('active');
-    }
-    const accordionSvgs = document.querySelectorAll('.accordion-toggle svg');
-    for (let i = 0; i < accordionSvgs.length; i++) {
-      accordionSvgs[i].classList.add('rotate-180');
-    }
+    const accordionState = loadAccordionState();
+    applyAccordionState(accordionState);
     
     const accordionToggles = document.querySelectorAll('.accordion-toggle');
     for (let i = 0; i < accordionToggles.length; i++) {
@@ -1094,6 +1139,9 @@
         content.classList.toggle('active', !isActive);
         const svg = accordionToggles[i].querySelector('svg');
         if (svg) svg.classList.toggle('rotate-180', !isActive);
+        
+        accordionState[panel] = !isActive;
+        saveAccordionState(accordionState);
       });
     }
 
