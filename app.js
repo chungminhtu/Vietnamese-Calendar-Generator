@@ -58,160 +58,80 @@
       weekdayColor: '#111827', lunarDateColor: '#374151', holidayColor: '#DC2626',
       borderColor: '#4B5563'
     },
-    royalBlue: {
-      dateColor: '#1E3A8A', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#0F172A', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
+    oceanSunset: {
+      dateColor: '#1E40AF', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#3B82F6', lunarDateColor: '#06B6D4', holidayColor: '#F97316',
       borderColor: '#60A5FA'
     },
-    crimson: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#F59E0B',
+    fireIce: {
+      dateColor: '#DC2626', otherMonthDateColor: '#06B6D4',
+      weekdayColor: '#EF4444', lunarDateColor: '#14B8A6', holidayColor: '#FCD34D',
       borderColor: '#F87171'
     },
-    emerald: {
-      dateColor: '#064E3B', otherMonthDateColor: '#86EFAC',
-      weekdayColor: '#065F46', lunarDateColor: '#10B981', holidayColor: '#F97316',
+    forestGold: {
+      dateColor: '#059669', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#10B981', lunarDateColor: '#22C55E', holidayColor: '#F97316',
       borderColor: '#34D399'
     },
-    deepPurple: {
-      dateColor: '#581C87', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
+    purplePink: {
+      dateColor: '#7C3AED', otherMonthDateColor: '#EC4899',
+      weekdayColor: '#8B5CF6', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
       borderColor: '#A78BFA'
     },
-    burntOrange: {
-      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
-      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#DC2626',
+    sunset: {
+      dateColor: '#EA580C', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#F97316', lunarDateColor: '#EF4444', holidayColor: '#DC2626',
       borderColor: '#FB923C'
     },
-    navy: {
-      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
-      borderColor: '#60A5FA'
+    tealCoral: {
+      dateColor: '#0D9488', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#14B8A6', lunarDateColor: '#2DD4BF', holidayColor: '#F43F5E',
+      borderColor: '#5EEAD4'
     },
-    burgundy: {
-      dateColor: '#7F1D1D', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#991B1B', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
-      borderColor: '#F87171'
+    indigoRose: {
+      dateColor: '#4F46E5', otherMonthDateColor: '#F43F5E',
+      weekdayColor: '#6366F1', lunarDateColor: '#818CF8', holidayColor: '#EC4899',
+      borderColor: '#A5B4FC'
     },
-    forest: {
-      dateColor: '#14532D', otherMonthDateColor: '#86EFAC',
-      weekdayColor: '#065F46', lunarDateColor: '#22C55E', holidayColor: '#F97316',
-      borderColor: '#34D399'
+    emeraldOrange: {
+      dateColor: '#10B981', otherMonthDateColor: '#F97316',
+      weekdayColor: '#34D399', lunarDateColor: '#22C55E', holidayColor: '#F59E0B',
+      borderColor: '#6EE7B7'
     },
-    violet: {
-      dateColor: '#5B21B6', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
-      borderColor: '#A78BFA'
+    violetYellow: {
+      dateColor: '#8B5CF6', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#A78BFA', lunarDateColor: '#9333EA', holidayColor: '#F59E0B',
+      borderColor: '#C4B5FD'
     },
-    chocolate: {
-      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
-      weekdayColor: '#92400E', lunarDateColor: '#D97706', holidayColor: '#DC2626',
-      borderColor: '#FBBF24'
-    },
-    midnight: {
-      dateColor: '#0F172A', otherMonthDateColor: '#64748B',
-      weekdayColor: '#020617', lunarDateColor: '#334155', holidayColor: '#F97316',
-      borderColor: '#60A5FA'
-    },
-    ruby: {
-      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
-      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
+    crimsonCyan: {
+      dateColor: '#BE123C', otherMonthDateColor: '#06B6D4',
+      weekdayColor: '#F43F5E', lunarDateColor: '#14B8A6', holidayColor: '#FCD34D',
       borderColor: '#FB7185'
     },
-    jade: {
-      dateColor: '#064E3B', otherMonthDateColor: '#6EE7B7',
-      weekdayColor: '#065F46', lunarDateColor: '#10B981', holidayColor: '#F97316',
-      borderColor: '#34D399'
+    limePurple: {
+      dateColor: '#84CC16', otherMonthDateColor: '#9333EA',
+      weekdayColor: '#A3E635', lunarDateColor: '#22C55E', holidayColor: '#EC4899',
+      borderColor: '#BBF7D0'
     },
-    amethyst: {
-      dateColor: '#581C87', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#F472B6',
-      borderColor: '#A78BFA'
+    amberBlue: {
+      dateColor: '#D97706', otherMonthDateColor: '#3B82F6',
+      weekdayColor: '#F59E0B', lunarDateColor: '#FCD34D', holidayColor: '#60A5FA',
+      borderColor: '#FDE68A'
     },
-    copper: {
-      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
-      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#DC2626',
-      borderColor: '#FB923C'
+    magentaGreen: {
+      dateColor: '#D946EF', otherMonthDateColor: '#22C55E',
+      weekdayColor: '#E879F9', lunarDateColor: '#10B981', holidayColor: '#F59E0B',
+      borderColor: '#F5D0FE'
     },
-    slate: {
-      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
-      borderColor: '#60A5FA'
+    redYellow: {
+      dateColor: '#EF4444', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#F87171', lunarDateColor: '#F59E0B', holidayColor: '#F97316',
+      borderColor: '#FECACA'
     },
-    rose: {
-      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
-      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
-      borderColor: '#FB7185'
-    },
-    moss: {
-      dateColor: '#14532D', otherMonthDateColor: '#86EFAC',
-      weekdayColor: '#065F46', lunarDateColor: '#22C55E', holidayColor: '#F97316',
-      borderColor: '#34D399'
-    },
-    plum: {
-      dateColor: '#6B21A8', otherMonthDateColor: '#C084FC',
-      weekdayColor: '#581C87', lunarDateColor: '#9333EA', holidayColor: '#F472B6',
-      borderColor: '#A78BFA'
-    },
-    bronze: {
-      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
-      weekdayColor: '#92400E', lunarDateColor: '#F59E0B', holidayColor: '#DC2626',
-      borderColor: '#FBBF24'
-    },
-    charcoal: {
-      dateColor: '#111827', otherMonthDateColor: '#6B7280',
-      weekdayColor: '#030712', lunarDateColor: '#1F2937', holidayColor: '#F97316',
-      borderColor: '#60A5FA'
-    },
-    scarlet: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
-      borderColor: '#F87171'
-    },
-    teal: {
-      dateColor: '#134E4A', otherMonthDateColor: '#5EEAD4',
-      weekdayColor: '#115E59', lunarDateColor: '#14B8A6', holidayColor: '#F59E0B',
-      borderColor: '#2DD4BF'
-    },
-    indigo: {
-      dateColor: '#312E81', otherMonthDateColor: '#A5B4FC',
-      weekdayColor: '#1E1B4B', lunarDateColor: '#6366F1', holidayColor: '#F472B6',
-      borderColor: '#818CF8'
-    },
-    rust: {
-      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
-      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#FCD34D',
-      borderColor: '#FB923C'
-    },
-    onyx: {
-      dateColor: '#000000', otherMonthDateColor: '#6B7280',
-      weekdayColor: '#030712', lunarDateColor: '#111827', holidayColor: '#F97316',
-      borderColor: '#60A5FA'
-    },
-    coral: {
-      dateColor: '#9A3412', otherMonthDateColor: '#FB7185',
-      weekdayColor: '#7C2D12', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
-      borderColor: '#FB923C'
-    },
-    sage: {
-      dateColor: '#365314', otherMonthDateColor: '#BBF7D0',
-      weekdayColor: '#1A2E05', lunarDateColor: '#84CC16', holidayColor: '#F59E0B',
-      borderColor: '#86EFAC'
-    },
-    wine: {
-      dateColor: '#7F1D1D', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#991B1B', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
-      borderColor: '#F87171'
-    },
-    cobalt: {
-      dateColor: '#1E3A8A', otherMonthDateColor: '#93C5FD',
-      weekdayColor: '#1E40AF', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
-      borderColor: '#60A5FA'
-    },
-    mahogany: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7C2D12', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
-      borderColor: '#F87171'
+    blueGreen: {
+      dateColor: '#2563EB', otherMonthDateColor: '#10B981',
+      weekdayColor: '#60A5FA', lunarDateColor: '#34D399', holidayColor: '#F97316',
+      borderColor: '#93C5FD'
     }
   };
 
@@ -221,160 +141,80 @@
       weekdayColor: '#111827', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
       borderColor: '#D1D5DB'
     },
-    royalBlue: {
-      dateColor: '#1E40AF', otherMonthDateColor: '#DBEAFE',
-      weekdayColor: '#1E3A8A', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
+    oceanSunset: {
+      dateColor: '#1E40AF', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#3B82F6', lunarDateColor: '#06B6D4', holidayColor: '#F97316',
       borderColor: '#93C5FD'
     },
-    crimson: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FECACA',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
+    fireIce: {
+      dateColor: '#DC2626', otherMonthDateColor: '#06B6D4',
+      weekdayColor: '#EF4444', lunarDateColor: '#14B8A6', holidayColor: '#FCD34D',
       borderColor: '#FCA5A5'
     },
-    emerald: {
-      dateColor: '#065F46', otherMonthDateColor: '#6EE7B7',
-      weekdayColor: '#064E3B', lunarDateColor: '#10B981', holidayColor: '#F59E0B',
+    forestGold: {
+      dateColor: '#059669', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#10B981', lunarDateColor: '#22C55E', holidayColor: '#F97316',
       borderColor: '#A7F3D0'
     },
-    deepPurple: {
-      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#581C87', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
+    purplePink: {
+      dateColor: '#7C3AED', otherMonthDateColor: '#EC4899',
+      weekdayColor: '#8B5CF6', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
       borderColor: '#DDD6FE'
     },
-    burntOrange: {
-      dateColor: '#9A3412', otherMonthDateColor: '#FDBA74',
-      weekdayColor: '#7C2D12', lunarDateColor: '#F97316', holidayColor: '#EA580C',
+    sunset: {
+      dateColor: '#EA580C', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#F97316', lunarDateColor: '#EF4444', holidayColor: '#DC2626',
       borderColor: '#FED7AA'
     },
-    navy: {
-      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
-      borderColor: '#CBD5E1'
-    },
-    burgundy: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#BE123C', holidayColor: '#F43F5E',
-      borderColor: '#FECACA'
-    },
-    forest: {
-      dateColor: '#166534', otherMonthDateColor: '#86EFAC',
-      weekdayColor: '#14532D', lunarDateColor: '#22C55E', holidayColor: '#F59E0B',
-      borderColor: '#BBF7D0'
-    },
-    violet: {
-      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#5B21B6', lunarDateColor: '#A78BFA', holidayColor: '#EC4899',
-      borderColor: '#DDD6FE'
-    },
-    chocolate: {
-      dateColor: '#92400E', otherMonthDateColor: '#FCD34D',
-      weekdayColor: '#78350F', lunarDateColor: '#F59E0B', holidayColor: '#EF4444',
-      borderColor: '#FDE68A'
-    },
-    midnight: {
-      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#0F172A', lunarDateColor: '#334155', holidayColor: '#F97316',
-      borderColor: '#CBD5E1'
-    },
-    ruby: {
-      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
-      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#EC4899',
-      borderColor: '#FBCFE8'
-    },
-    jade: {
-      dateColor: '#065F46', otherMonthDateColor: '#6EE7B7',
-      weekdayColor: '#064E3B', lunarDateColor: '#34D399', holidayColor: '#F59E0B',
-      borderColor: '#A7F3D0'
-    },
-    amethyst: {
-      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#581C87', lunarDateColor: '#A78BFA', holidayColor: '#F472B6',
-      borderColor: '#DDD6FE'
-    },
-    copper: {
-      dateColor: '#9A3412', otherMonthDateColor: '#FCD34D',
-      weekdayColor: '#7C2D12', lunarDateColor: '#F97316', holidayColor: '#FDE68A',
-      borderColor: '#FED7AA'
-    },
-    slate: {
-      dateColor: '#334155', otherMonthDateColor: '#CBD5E1',
-      weekdayColor: '#1E293B', lunarDateColor: '#64748B', holidayColor: '#F59E0B',
-      borderColor: '#E2E8F0'
-    },
-    rose: {
-      dateColor: '#BE123C', otherMonthDateColor: '#F9A8D4',
-      weekdayColor: '#9F1239', lunarDateColor: '#FB7185', holidayColor: '#F472B6',
-      borderColor: '#FBCFE8'
-    },
-    moss: {
-      dateColor: '#166534', otherMonthDateColor: '#86EFAC',
-      weekdayColor: '#14532D', lunarDateColor: '#4ADE80', holidayColor: '#F59E0B',
-      borderColor: '#BBF7D0'
-    },
-    plum: {
-      dateColor: '#7C3AED', otherMonthDateColor: '#C4B5FD',
-      weekdayColor: '#6B21A8', lunarDateColor: '#A78BFA', holidayColor: '#F472B6',
-      borderColor: '#DDD6FE'
-    },
-    bronze: {
-      dateColor: '#92400E', otherMonthDateColor: '#FCD34D',
-      weekdayColor: '#78350F', lunarDateColor: '#FBBF24', holidayColor: '#EF4444',
-      borderColor: '#FDE68A'
-    },
-    charcoal: {
-      dateColor: '#374151', otherMonthDateColor: '#D1D5DB',
-      weekdayColor: '#111827', lunarDateColor: '#4B5563', holidayColor: '#F97316',
-      borderColor: '#E5E7EB'
-    },
-    scarlet: {
-      dateColor: '#B91C1C', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#991B1B', lunarDateColor: '#F87171', holidayColor: '#FECACA',
-      borderColor: '#FEE2E2'
-    },
-    teal: {
-      dateColor: '#0D9488', otherMonthDateColor: '#5EEAD4',
-      weekdayColor: '#134E4A', lunarDateColor: '#2DD4BF', holidayColor: '#F59E0B',
+    tealCoral: {
+      dateColor: '#0D9488', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#14B8A6', lunarDateColor: '#2DD4BF', holidayColor: '#F43F5E',
       borderColor: '#99F6E4'
     },
-    indigo: {
-      dateColor: '#4F46E5', otherMonthDateColor: '#A5B4FC',
-      weekdayColor: '#312E81', lunarDateColor: '#818CF8', holidayColor: '#F472B6',
+    indigoRose: {
+      dateColor: '#4F46E5', otherMonthDateColor: '#F43F5E',
+      weekdayColor: '#6366F1', lunarDateColor: '#818CF8', holidayColor: '#EC4899',
       borderColor: '#C7D2FE'
     },
-    rust: {
-      dateColor: '#9A3412', otherMonthDateColor: '#FDBA74',
-      weekdayColor: '#7C2D12', lunarDateColor: '#FB923C', holidayColor: '#FCD34D',
-      borderColor: '#FED7AA'
+    emeraldOrange: {
+      dateColor: '#10B981', otherMonthDateColor: '#F97316',
+      weekdayColor: '#34D399', lunarDateColor: '#22C55E', holidayColor: '#F59E0B',
+      borderColor: '#A7F3D0'
     },
-    onyx: {
-      dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
-      weekdayColor: '#030712', lunarDateColor: '#374151', holidayColor: '#F97316',
-      borderColor: '#D1D5DB'
+    violetYellow: {
+      dateColor: '#8B5CF6', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#A78BFA', lunarDateColor: '#9333EA', holidayColor: '#F59E0B',
+      borderColor: '#DDD6FE'
     },
-    coral: {
-      dateColor: '#C2410C', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#9A3412', lunarDateColor: '#FB7185', holidayColor: '#FCD34D',
-      borderColor: '#FED7AA'
+    crimsonCyan: {
+      dateColor: '#BE123C', otherMonthDateColor: '#06B6D4',
+      weekdayColor: '#F43F5E', lunarDateColor: '#14B8A6', holidayColor: '#FCD34D',
+      borderColor: '#FBCFE8'
     },
-    sage: {
-      dateColor: '#4D7C0F', otherMonthDateColor: '#BBF7D0',
-      weekdayColor: '#365314', lunarDateColor: '#84CC16', holidayColor: '#F59E0B',
+    limePurple: {
+      dateColor: '#84CC16', otherMonthDateColor: '#9333EA',
+      weekdayColor: '#A3E635', lunarDateColor: '#22C55E', holidayColor: '#EC4899',
       borderColor: '#D1FAE5'
     },
-    wine: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#F472B6',
+    amberBlue: {
+      dateColor: '#D97706', otherMonthDateColor: '#3B82F6',
+      weekdayColor: '#F59E0B', lunarDateColor: '#FCD34D', holidayColor: '#60A5FA',
+      borderColor: '#FDE68A'
+    },
+    magentaGreen: {
+      dateColor: '#D946EF', otherMonthDateColor: '#22C55E',
+      weekdayColor: '#E879F9', lunarDateColor: '#10B981', holidayColor: '#F59E0B',
+      borderColor: '#F0ABFC'
+    },
+    redYellow: {
+      dateColor: '#EF4444', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#F87171', lunarDateColor: '#F59E0B', holidayColor: '#F97316',
       borderColor: '#FECACA'
     },
-    cobalt: {
-      dateColor: '#2563EB', otherMonthDateColor: '#93C5FD',
-      weekdayColor: '#1E3A8A', lunarDateColor: '#60A5FA', holidayColor: '#F97316',
+    blueGreen: {
+      dateColor: '#2563EB', otherMonthDateColor: '#10B981',
+      weekdayColor: '#60A5FA', lunarDateColor: '#34D399', holidayColor: '#F97316',
       borderColor: '#BFDBFE'
-    },
-    mahogany: {
-      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
-      weekdayColor: '#7C2D12', lunarDateColor: '#DC2626', holidayColor: '#F59E0B',
-      borderColor: '#FECACA'
     }
   };
   
@@ -1305,15 +1145,41 @@
         if (!e.shiftKey) return;
         e.preventDefault();
         e.stopPropagation();
-        const currentZoom = bg.zoom !== undefined ? bg.zoom : 100;
-        const zoomStep = 5;
-        let newZoom;
-        if (e.deltaY > 0) {
-          newZoom = currentZoom - zoomStep;
-        } else {
-          newZoom = currentZoom + zoomStep;
+        
+        if (!bg.zoom) bg.zoom = 100;
+        const currentZoom = bg.zoom;
+        const zoomFactor = 1.15;
+        const minZoom = 10;
+        const maxZoom = 500;
+        
+        const deltaY = e.deltaY;
+        const deltaX = e.deltaX;
+        
+        // Use deltaY primarily, but check deltaX if deltaY is effectively 0
+        // Some browsers may report horizontal scroll when shift is held
+        let delta = deltaY;
+        if (Math.abs(deltaY) < 0.0001 && Math.abs(deltaX) > 0.0001) {
+          delta = deltaX;
         }
-        bg.zoom = Math.max(50, Math.min(200, newZoom));
+        
+        // Check if delta is effectively zero
+        if (Math.abs(delta) < 0.0001) {
+          return;
+        }
+        
+        // deltaY < 0 = scroll up = zoom in, deltaY > 0 = scroll down = zoom out
+        let newZoom;
+        if (delta < 0) {
+          // Scroll up: zoom in (increase)
+          newZoom = currentZoom * zoomFactor;
+        } else {
+          // Scroll down: zoom out (decrease)
+          newZoom = currentZoom / zoomFactor;
+        }
+        
+        newZoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
+        bg.zoom = newZoom;
+        
         const currentBgDiv = monthEl.querySelector('.month-bg-image');
         if (currentBgDiv) {
           currentBgDiv.style.backgroundSize = `${bg.zoom}%`;
