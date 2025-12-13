@@ -12,7 +12,7 @@
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
   const MAX_INIT_ATTEMPTS = 100;
-  const EXPORT_SCALE = 4;
+  const EXPORT_SCALE = 2;
   const DPI = 96;
   const MM_PER_INCH = 25.4;
   const A4_WIDTH_MM = 210;
@@ -314,7 +314,6 @@
       const store = transaction.objectStore(STORE_NAME);
       await store.put({ month: monthNum, ...imageData });
     } catch (e) {
-      console.warn('[IDB] Failed to save background image for month', monthNum, ':', e);
     }
   };
   
@@ -338,7 +337,6 @@
         request.onerror = () => reject(request.error);
       });
     } catch (e) {
-      console.warn('[IDB] Failed to load background images:', e);
       return {};
     }
   };
@@ -350,7 +348,6 @@
       const store = transaction.objectStore(STORE_NAME);
       await store.delete(monthNum);
     } catch (e) {
-      console.warn('[IDB] Failed to delete background image for month', monthNum, ':', e);
     }
   };
   
@@ -371,9 +368,7 @@
       
       state.monthBackgrounds = {};
       render();
-      console.log('[IDB] All background images removed');
     } catch (e) {
-      console.warn('[IDB] Failed to remove all background images:', e);
       state.monthBackgrounds = {};
       render();
     }
@@ -390,7 +385,6 @@
         return state;
       }
     } catch (e) {
-      console.warn('Failed to load state:', e);
     }
     return defaultState();
   };
@@ -406,7 +400,6 @@
         delete toSave.monthBackgrounds;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
       } catch (e) {
-        console.warn('Failed to save state:', e);
       }
     }, SAVE_DEBOUNCE_MS);
   };
@@ -508,7 +501,6 @@
       const saved = localStorage.getItem(CUSTOM_PALETTES_KEY);
       return saved ? JSON.parse(saved) : {};
     } catch (e) {
-      console.warn('Failed to load custom palettes:', e);
       return {};
     }
   };
@@ -520,7 +512,6 @@
       localStorage.setItem(CUSTOM_PALETTES_KEY, JSON.stringify(customPalettes));
       return true;
     } catch (e) {
-      console.warn('Failed to save custom palette:', e);
       return false;
     }
   };
@@ -532,7 +523,6 @@
       localStorage.setItem(CUSTOM_PALETTES_KEY, JSON.stringify(customPalettes));
       return true;
     } catch (e) {
-      console.warn('Failed to delete custom palette:', e);
       return false;
     }
   };
@@ -788,9 +778,7 @@
 
   const generateBackgroundStyle = (monthNum) => {
     const monthBg = state.monthBackgrounds[monthNum];
-    console.log('[RENDER] generateBackgroundStyle called for month', monthNum, 'monthBg exists:', !!monthBg, 'has URL:', !!(monthBg && monthBg.url));
     if (!monthBg || !monthBg.url) {
-      console.log('[RENDER] No background image for month', monthNum, '- returning transparent');
       return 'background: transparent;';
     }
     return 'background: transparent;';
@@ -810,14 +798,12 @@
     const hasBg = !!state.monthBackgrounds[monthNum]?.url;
     const aspectRatio = state.isLandscape ? A4_LANDSCAPE_RATIO : A4_PORTRAIT_RATIO;
     
-    console.log('[RENDER] generateMonthCalendarHTML for month', monthNum, 'hasBg:', hasBg, 'bgStyle length:', bgStyle.length, 'bgStyle starts with:', bgStyle.substring(0, 50));
     
     // --- FIX START ---
     // If an image exists (hasBg), set the content background to transparent 
     // so the image behind it is visible. Otherwise, use the selected background color.
     const contentBackgroundColor = hasBg ? 'transparent' : state.backgroundColor;
     const containerBackgroundColor = hasBg ? 'transparent' : state.backgroundColor;
-    console.log('[RENDER] Month', monthNum, 'contentBackgroundColor:', contentBackgroundColor, 'containerBackgroundColor:', containerBackgroundColor, '(hasBg:', hasBg, ')');
     // --- FIX END ---
     
     const a4Dims = getA4Dimensions(state.isLandscape);
@@ -860,7 +846,6 @@
           bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
           bgDiv.style.zIndex = '1';
           bgDiv.style.cursor = 'move';
-          console.log('[RENDER] Applied background image to month', monthNum, 'via JavaScript');
         }
       }
     }
@@ -868,7 +853,6 @@
 
   const renderAllMonths = () => {
     if (!DOMElements.calendarsContainer) return;
-    console.log('[RENDER] renderAllMonths() called - rendering 12 months');
     const parts = [];
     for (let month = 1; month <= 12; month++) {
       parts.push(generateMonthCalendarHTML(month, state.selectedYear));
@@ -882,24 +866,11 @@
         monthsWithImages.push(m);
       }
     }
-    console.log('[RENDER] renderAllMonths() completed. Months with images:', monthsWithImages.length > 0 ? monthsWithImages.join(', ') : 'none');
     setTimeout(() => {
       const monthEl = document.querySelector('[data-month="2"]');
       if (monthEl) {
         const bgDiv = monthEl.querySelector('.month-bg-image');
         const contentDiv = monthEl.querySelector('.relative.w-full.h-full');
-        console.log('[DEBUG] Month 2 DOM check:');
-        console.log('  - Container computed background:', window.getComputedStyle(monthEl).backgroundColor);
-        console.log('  - Background div exists:', !!bgDiv);
-        if (bgDiv) {
-          console.log('  - Background div computed background-image:', window.getComputedStyle(bgDiv).backgroundImage.substring(0, 50));
-          console.log('  - Background div z-index:', window.getComputedStyle(bgDiv).zIndex);
-        }
-        console.log('  - Content div exists:', !!contentDiv);
-        if (contentDiv) {
-          console.log('  - Content div computed background:', window.getComputedStyle(contentDiv).backgroundColor);
-          console.log('  - Content div z-index:', window.getComputedStyle(contentDiv).zIndex);
-        }
       }
     }, 100);
     setupMonthInteractions();
@@ -907,30 +878,15 @@
 
   const renderSingleMonth = () => {
     if (!DOMElements.calendarsContainer) return;
-    console.log('[RENDER] renderSingleMonth() called - rendering month', state.selectedMonth);
     DOMElements.calendarsContainer.innerHTML = generateMonthCalendarHTML(state.selectedMonth, state.selectedYear);
     cachedMonthElements = null;
     applyBackgroundImages();
     const hasImage = !!state.monthBackgrounds[state.selectedMonth]?.url;
-    console.log('[RENDER] renderSingleMonth() completed. Month', state.selectedMonth, 'has image:', hasImage);
     setTimeout(() => {
       const monthEl = document.querySelector('[data-month="' + state.selectedMonth + '"]');
       if (monthEl) {
         const bgDiv = monthEl.querySelector('.month-bg-image');
         const contentDiv = monthEl.querySelector('.relative.w-full.h-full');
-        console.log('[DEBUG] Month', state.selectedMonth, 'DOM check:');
-        console.log('  - Container computed background:', window.getComputedStyle(monthEl).backgroundColor);
-        console.log('  - Background div exists:', !!bgDiv);
-        if (bgDiv) {
-          console.log('  - Background div computed background-image:', window.getComputedStyle(bgDiv).backgroundImage.substring(0, 50));
-          console.log('  - Background div z-index:', window.getComputedStyle(bgDiv).zIndex);
-          console.log('  - Background div opacity:', window.getComputedStyle(bgDiv).opacity);
-        }
-        console.log('  - Content div exists:', !!contentDiv);
-        if (contentDiv) {
-          console.log('  - Content div computed background:', window.getComputedStyle(contentDiv).backgroundColor);
-          console.log('  - Content div z-index:', window.getComputedStyle(contentDiv).zIndex);
-        }
       }
     }, 100);
     setupMonthInteractions();
@@ -942,14 +898,12 @@
     }
     renderTimeout = requestAnimationFrame(() => {
       try {
-        console.log('[RENDER] render() called, showAllMonths:', state.showAllMonths);
         if (state.showAllMonths) {
           renderAllMonths();
         } else {
           renderSingleMonth();
         }
       } catch (e) {
-        console.error('[RENDER] Render error:', e);
       }
       renderTimeout = null;
     });
@@ -1023,18 +977,14 @@
         e.preventDefault();
         monthEl.classList.remove('border-4', 'border-blue-500');
         const files = e.dataTransfer.files;
-        console.log('[DRAG-DROP] Image dropped on month', month, 'Files:', files.length, 'First file:', files[0]?.name, 'Type:', files[0]?.type, 'Size:', files[0]?.size, 'bytes');
         if (files.length > 0 && files[0].type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onerror = (err) => {
-            console.error('[DRAG-DROP] Error reading file:', err);
           };
           reader.onload = (ev) => {
             const monthNum = parseInt(month);
-            console.log('[DRAG-DROP] FileReader loaded for month', monthNum, 'Data URL length:', ev.target.result?.length || 0, 'Starts with:', ev.target.result?.substring(0, 30) || 'N/A');
             if (!state.monthBackgrounds[monthNum]) {
               state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 50, brightness: 100, saturation: 120 };
-              console.log('[DRAG-DROP] Created new background object for month', monthNum);
             } else {
               if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
               if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 50;
@@ -1044,17 +994,12 @@
               if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
             }
             state.monthBackgrounds[monthNum].url = ev.target.result;
-            console.log('[DRAG-DROP] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
-            console.log('[DRAG-DROP] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
             saveBackgroundImage(monthNum, state.monthBackgrounds[monthNum]);
             updateBackgroundControls(monthNum);
-            console.log('[DRAG-DROP] Calling render() to update calendar...');
             render();
           };
-          console.log('[DRAG-DROP] Starting FileReader.readAsDataURL()...');
           reader.readAsDataURL(files[0]);
         } else {
-          console.warn('[DRAG-DROP] No valid image file found. File type:', files[0]?.type);
         }
       });
       
@@ -1065,18 +1010,14 @@
           input.accept = 'image/*';
           input.onchange = async (ev) => {
             const file = ev.target.files[0];
-            console.log('[CLICK-UPLOAD] File selected for month', month, 'File:', file?.name, 'Type:', file?.type, 'Size:', file?.size, 'bytes');
             if (file) {
               const reader = new FileReader();
               reader.onerror = (err) => {
-                console.error('[CLICK-UPLOAD] Error reading file:', err);
               };
               reader.onload = (ev2) => {
                 const monthNum = parseInt(month);
-                console.log('[CLICK-UPLOAD] FileReader loaded for month', monthNum, 'Data URL length:', ev2.target.result?.length || 0, 'Starts with:', ev2.target.result?.substring(0, 30) || 'N/A');
                 if (!state.monthBackgrounds[monthNum]) {
                   state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 50, brightness: 100, saturation: 120 };
-                  console.log('[CLICK-UPLOAD] Created new background object for month', monthNum);
                 } else {
                   if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
                   if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 50;
@@ -1086,14 +1027,10 @@
                   if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
                 }
                 state.monthBackgrounds[monthNum].url = ev2.target.result;
-                console.log('[CLICK-UPLOAD] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
-                console.log('[CLICK-UPLOAD] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
                 saveBackgroundImage(monthNum, state.monthBackgrounds[monthNum]);
                 updateBackgroundControls(monthNum);
-                console.log('[CLICK-UPLOAD] Calling render() to update calendar...');
                 render();
               };
-              console.log('[CLICK-UPLOAD] Starting FileReader.readAsDataURL()...');
               reader.readAsDataURL(file);
             }
           };
@@ -1478,7 +1415,6 @@
         return JSON.parse(saved);
       }
     } catch (e) {
-      console.warn('Failed to load accordion state:', e);
     }
     return {
       basic: true,
@@ -1494,7 +1430,6 @@
     try {
       localStorage.setItem(ACCORDION_STATE_KEY, JSON.stringify(accordionState));
     } catch (e) {
-      console.warn('Failed to save accordion state:', e);
     }
   };
   
@@ -1784,341 +1719,52 @@
         DOMElements.exportBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Đang xuất...</span>';
         document.body.classList.add('is-exporting');
 
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
         try {
-          const jsPDFLib = window.jspdf || jspdf;
-          const { jsPDF } = jsPDFLib;
-          const pixelsPerMm = DPI / MM_PER_INCH;
-          let pdf = null;
           const monthElements = getMonthElements();
-          
           const a4Dims = getA4Dimensions(state.isLandscape);
-          const elementWidth = a4Dims.width;
-          const elementHeight = a4Dims.height;
+          const exportContainer = document.createElement('div');
+          exportContainer.style.width = a4Dims.width + 'px';
+          document.body.appendChild(exportContainer);
           
-          for (let i = 0; i < monthElements.length; i++) {
-            const monthEl = monthElements[i];
-            const month = parseInt(monthEl.dataset.month);
-            
-            await new Promise(resolve => setTimeout(resolve, 150));
-            
-            const canvas = await html2canvas(monthEl, {
-              useCORS: true,
-              scale: EXPORT_SCALE,
-              logging: false,
-              backgroundColor: state.monthBackgrounds[month]?.url ? null : state.backgroundColor,
-              allowTaint: true,
-              removeContainer: false,
-              imageTimeout: 20000,
-              width: elementWidth,
-              height: elementHeight,
-              x: 0,
-              y: 0,
-              scrollX: 0,
-              scrollY: 0,
-              windowWidth: elementWidth,
-              windowHeight: elementHeight,
-              onclone: (clonedDoc, element) => {
-                const clonedMonth = clonedDoc.querySelector(`[data-month="${month}"]`);
-                if (clonedMonth) {
-                  const rect = monthEl.getBoundingClientRect();
-                  clonedMonth.style.position = 'fixed';
-                  clonedMonth.style.left = '0';
-                  clonedMonth.style.top = '0';
-                  clonedMonth.style.width = elementWidth + 'px';
-                  clonedMonth.style.height = elementHeight + 'px';
-                  clonedMonth.style.margin = '0';
-                  clonedMonth.style.padding = '0';
-                  clonedMonth.style.boxSizing = 'border-box';
-                  clonedMonth.style.overflow = 'hidden';
-                  clonedMonth.style.transform = 'none';
-                  clonedMonth.style.borderRadius = '0';
-                  clonedMonth.style.maxWidth = elementWidth + 'px';
-                  clonedMonth.style.maxHeight = elementHeight + 'px';
-                  
-                  const navButtons = clonedMonth.querySelectorAll('.nav-button');
-                  for (let j = 0; j < navButtons.length; j++) {
-                    navButtons[j].style.display = 'none';
-                  }
-                  
-                  const contentDiv = clonedMonth.querySelector('.relative.w-full.h-full');
-                  if (contentDiv) {
-                    const originalContentDiv = monthEl.querySelector('.relative.w-full.h-full');
-                    if (originalContentDiv) {
-                      const computedStyle = window.getComputedStyle(originalContentDiv);
-                      contentDiv.style.paddingTop = computedStyle.paddingTop;
-                      contentDiv.style.paddingRight = computedStyle.paddingRight;
-                      contentDiv.style.paddingBottom = computedStyle.paddingBottom;
-                      contentDiv.style.paddingLeft = computedStyle.paddingLeft;
-                      contentDiv.style.margin = '0';
-                      contentDiv.style.boxSizing = computedStyle.boxSizing;
-                    }
-                  }
-                  
-                  const clonedDayCells = clonedMonth.querySelectorAll('.calendar-grid > div');
-                  const originalDayCells = monthEl.querySelectorAll('.calendar-grid > div');
-                  for (let j = 0; j < clonedDayCells.length && j < originalDayCells.length; j++) {
-                    const dayCell = clonedDayCells[j];
-                    const originalCell = originalDayCells[j];
-                    const computedStyle = window.getComputedStyle(originalCell);
-                    dayCell.style.paddingTop = computedStyle.paddingTop;
-                    dayCell.style.paddingRight = computedStyle.paddingRight;
-                    dayCell.style.paddingBottom = computedStyle.paddingBottom;
-                    dayCell.style.paddingLeft = computedStyle.paddingLeft;
-                    dayCell.style.margin = '0';
-                    dayCell.style.lineHeight = computedStyle.lineHeight;
-                    dayCell.style.verticalAlign = computedStyle.verticalAlign;
-                    dayCell.style.display = computedStyle.display;
-                    dayCell.style.alignItems = computedStyle.alignItems;
-                    dayCell.style.justifyContent = computedStyle.justifyContent;
-                    dayCell.style.alignContent = computedStyle.alignContent;
-                    dayCell.style.boxSizing = computedStyle.boxSizing;
-                    
-                    const flexContainers = dayCell.querySelectorAll('.flex, .w-full');
-                    const originalFlexContainers = originalCell.querySelectorAll('.flex, .w-full');
-                    for (let f = 0; f < flexContainers.length && f < originalFlexContainers.length; f++) {
-                      const flexEl = flexContainers[f];
-                      const originalFlexEl = originalFlexContainers[f];
-                      const flexComputedStyle = window.getComputedStyle(originalFlexEl);
-                      flexEl.style.alignItems = flexComputedStyle.alignItems;
-                      flexEl.style.justifyContent = flexComputedStyle.justifyContent;
-                      flexEl.style.alignContent = flexComputedStyle.alignContent;
-                      flexEl.style.marginTop = flexComputedStyle.marginTop;
-                      flexEl.style.marginRight = flexComputedStyle.marginRight;
-                      flexEl.style.marginBottom = flexComputedStyle.marginBottom;
-                      flexEl.style.marginLeft = flexComputedStyle.marginLeft;
-                      flexEl.style.paddingTop = flexComputedStyle.paddingTop;
-                      flexEl.style.paddingRight = flexComputedStyle.paddingRight;
-                      flexEl.style.paddingBottom = flexComputedStyle.paddingBottom;
-                      flexEl.style.paddingLeft = flexComputedStyle.paddingLeft;
-                      flexEl.style.minHeight = flexComputedStyle.minHeight;
-                      flexEl.style.gap = flexComputedStyle.gap;
-                      flexEl.style.boxSizing = flexComputedStyle.boxSizing;
-                      flexEl.style.flex = flexComputedStyle.flex;
-                      flexEl.style.flexShrink = flexComputedStyle.flexShrink;
-                      flexEl.style.flexGrow = flexComputedStyle.flexGrow;
-                      flexEl.style.flexBasis = flexComputedStyle.flexBasis;
-                      flexEl.style.maxWidth = flexComputedStyle.maxWidth;
-                      flexEl.style.minWidth = flexComputedStyle.minWidth;
-                      flexEl.style.width = flexComputedStyle.width;
-                    }
-                    
-                    const holidaySections = dayCell.querySelectorAll('.holiday-section');
-                    const originalHolidaySections = originalCell.querySelectorAll('.holiday-section');
-                    for (let h = 0; h < holidaySections.length && h < originalHolidaySections.length; h++) {
-                      const holidaySection = holidaySections[h];
-                      const originalHolidaySection = originalHolidaySections[h];
-                      const holidayComputedStyle = window.getComputedStyle(originalHolidaySection);
-                      holidaySection.style.marginTop = holidayComputedStyle.marginTop;
-                      holidaySection.style.marginRight = holidayComputedStyle.marginRight;
-                      holidaySection.style.marginBottom = holidayComputedStyle.marginBottom;
-                      holidaySection.style.marginLeft = holidayComputedStyle.marginLeft;
-                      holidaySection.style.paddingTop = holidayComputedStyle.paddingTop;
-                      holidaySection.style.paddingRight = holidayComputedStyle.paddingRight;
-                      holidaySection.style.paddingBottom = holidayComputedStyle.paddingBottom;
-                      holidaySection.style.paddingLeft = holidayComputedStyle.paddingLeft;
-                      holidaySection.style.flex = holidayComputedStyle.flex;
-                      holidaySection.style.flexShrink = holidayComputedStyle.flexShrink;
-                      holidaySection.style.flexGrow = holidayComputedStyle.flexGrow;
-                      holidaySection.style.flexBasis = holidayComputedStyle.flexBasis;
-                      holidaySection.style.maxWidth = holidayComputedStyle.maxWidth;
-                      holidaySection.style.minWidth = holidayComputedStyle.minWidth;
-                      holidaySection.style.width = holidayComputedStyle.width;
-                      holidaySection.style.boxSizing = holidayComputedStyle.boxSizing;
-                    }
-                    
-                    const dateParagraphs = dayCell.querySelectorAll('p');
-                    const originalDateParagraphs = originalCell.querySelectorAll('p');
-                    for (let k = 0; k < dateParagraphs.length && k < originalDateParagraphs.length; k++) {
-                      const dateP = dateParagraphs[k];
-                      const originalP = originalDateParagraphs[k];
-                      const pComputedStyle = window.getComputedStyle(originalP);
-                      dateP.style.lineHeight = pComputedStyle.lineHeight;
-                      dateP.style.marginTop = pComputedStyle.marginTop;
-                      dateP.style.marginRight = pComputedStyle.marginRight;
-                      dateP.style.marginBottom = pComputedStyle.marginBottom;
-                      dateP.style.marginLeft = pComputedStyle.marginLeft;
-                      dateP.style.paddingTop = pComputedStyle.paddingTop;
-                      dateP.style.paddingRight = pComputedStyle.paddingRight;
-                      dateP.style.paddingBottom = pComputedStyle.paddingBottom;
-                      dateP.style.paddingLeft = pComputedStyle.paddingLeft;
-                      dateP.style.fontSize = pComputedStyle.fontSize;
-                      dateP.style.fontWeight = pComputedStyle.fontWeight;
-                      dateP.style.verticalAlign = pComputedStyle.verticalAlign;
-                      dateP.style.display = pComputedStyle.display;
-                      dateP.style.height = pComputedStyle.height;
-                      dateP.style.boxSizing = pComputedStyle.boxSizing;
-                      
-                      const textCenterDivs = dateP.parentElement ? dateP.parentElement.querySelectorAll('.text-center') : [];
-                      const originalTextCenterDivs = originalP.parentElement ? originalP.parentElement.querySelectorAll('.text-center') : [];
-                      for (let t = 0; t < textCenterDivs.length && t < originalTextCenterDivs.length; t++) {
-                        const textDiv = textCenterDivs[t];
-                        const originalTextDiv = originalTextCenterDivs[t];
-                        const textComputedStyle = window.getComputedStyle(originalTextDiv);
-                        textDiv.style.lineHeight = textComputedStyle.lineHeight;
-                        textDiv.style.marginTop = textComputedStyle.marginTop;
-                        textDiv.style.marginRight = textComputedStyle.marginRight;
-                        textDiv.style.marginBottom = textComputedStyle.marginBottom;
-                        textDiv.style.marginLeft = textComputedStyle.marginLeft;
-                        textDiv.style.paddingTop = textComputedStyle.paddingTop;
-                        textDiv.style.paddingRight = textComputedStyle.paddingRight;
-                        textDiv.style.paddingBottom = textComputedStyle.paddingBottom;
-                        textDiv.style.paddingLeft = textComputedStyle.paddingLeft;
-                        textDiv.style.display = textComputedStyle.display;
-                        textDiv.style.textAlign = textComputedStyle.textAlign;
-                        textDiv.style.alignItems = textComputedStyle.alignItems;
-                        textDiv.style.justifyContent = textComputedStyle.justifyContent;
-                        textDiv.style.height = textComputedStyle.height;
-                        textDiv.style.minHeight = textComputedStyle.minHeight;
-                        textDiv.style.boxSizing = textComputedStyle.boxSizing;
-                        textDiv.style.width = textComputedStyle.width;
-                        textDiv.style.maxWidth = textComputedStyle.maxWidth;
-                        textDiv.style.minWidth = textComputedStyle.minWidth;
-                      }
-                      
-                      const dateNumberContainers = dateP.closest('.flex') ? [dateP.closest('.flex')] : [];
-                      const originalDateNumberContainers = originalP.closest('.flex') ? [originalP.closest('.flex')] : [];
-                      for (let d = 0; d < dateNumberContainers.length && d < originalDateNumberContainers.length; d++) {
-                        const dateContainer = dateNumberContainers[d];
-                        const originalDateContainer = originalDateNumberContainers[d];
-                        const dateContainerComputedStyle = window.getComputedStyle(originalDateContainer);
-                        dateContainer.style.marginTop = dateContainerComputedStyle.marginTop;
-                        dateContainer.style.marginRight = dateContainerComputedStyle.marginRight;
-                        dateContainer.style.marginBottom = dateContainerComputedStyle.marginBottom;
-                        dateContainer.style.marginLeft = dateContainerComputedStyle.marginLeft;
-                        dateContainer.style.paddingTop = dateContainerComputedStyle.paddingTop;
-                        dateContainer.style.paddingRight = dateContainerComputedStyle.paddingRight;
-                        dateContainer.style.paddingBottom = dateContainerComputedStyle.paddingBottom;
-                        dateContainer.style.paddingLeft = dateContainerComputedStyle.paddingLeft;
-                        dateContainer.style.flex = dateContainerComputedStyle.flex;
-                        dateContainer.style.flexShrink = dateContainerComputedStyle.flexShrink;
-                        dateContainer.style.flexGrow = dateContainerComputedStyle.flexGrow;
-                        dateContainer.style.flexBasis = dateContainerComputedStyle.flexBasis;
-                        dateContainer.style.width = dateContainerComputedStyle.width;
-                        dateContainer.style.maxWidth = dateContainerComputedStyle.maxWidth;
-                        dateContainer.style.minWidth = dateContainerComputedStyle.minWidth;
-                        dateContainer.style.boxSizing = dateContainerComputedStyle.boxSizing;
-                      }
-                      
-                      const leadingNoneDivs = dateP.parentElement ? dateP.parentElement.querySelectorAll('.leading-none') : [];
-                      const originalLeadingNoneDivs = originalP.parentElement ? originalP.parentElement.querySelectorAll('.leading-none') : [];
-                      for (let l = 0; l < leadingNoneDivs.length && l < originalLeadingNoneDivs.length; l++) {
-                        const leadingDiv = leadingNoneDivs[l];
-                        const originalLeadingDiv = originalLeadingNoneDivs[l];
-                        const leadingComputedStyle = window.getComputedStyle(originalLeadingDiv);
-                        leadingDiv.style.lineHeight = leadingComputedStyle.lineHeight;
-                        leadingDiv.style.marginTop = leadingComputedStyle.marginTop;
-                        leadingDiv.style.marginRight = leadingComputedStyle.marginRight;
-                        leadingDiv.style.marginBottom = leadingComputedStyle.marginBottom;
-                        leadingDiv.style.marginLeft = leadingComputedStyle.marginLeft;
-                        leadingDiv.style.paddingTop = leadingComputedStyle.paddingTop;
-                        leadingDiv.style.paddingRight = leadingComputedStyle.paddingRight;
-                        leadingDiv.style.paddingBottom = leadingComputedStyle.paddingBottom;
-                        leadingDiv.style.paddingLeft = leadingComputedStyle.paddingLeft;
-                        leadingDiv.style.display = leadingComputedStyle.display;
-                        leadingDiv.style.height = leadingComputedStyle.height;
-                        leadingDiv.style.minHeight = leadingComputedStyle.minHeight;
-                        leadingDiv.style.boxSizing = leadingComputedStyle.boxSizing;
-                      }
-                    }
-                  }
-                  
-                  const allTextElements = clonedMonth.querySelectorAll('p, h1, h2, h3, span, div');
-                  for (let j = 0; j < allTextElements.length; j++) {
-                    const el = allTextElements[j];
-                    el.style.textRendering = 'optimizeLegibility';
-                    el.style.webkitFontSmoothing = 'antialiased';
-                    el.style.mozOsxFontSmoothing = 'grayscale';
-                    if (el.style.overflow === 'hidden') {
-                      el.style.overflow = 'visible';
-                    }
-                    if (el.style.textOverflow) {
-                      el.style.textOverflow = 'clip';
-                    }
-                  }
-                  
-                  const calendarGrid = clonedMonth.querySelector('.calendar-grid');
-                  if (calendarGrid) {
-                    calendarGrid.style.overflow = 'visible';
-                    const originalGrid = monthEl.querySelector('.calendar-grid');
-                    if (originalGrid) {
-                      const computedStyle = window.getComputedStyle(originalGrid);
-                      calendarGrid.style.marginTop = computedStyle.marginTop;
-                      calendarGrid.style.marginRight = computedStyle.marginRight;
-                      calendarGrid.style.marginBottom = computedStyle.marginBottom;
-                      calendarGrid.style.marginLeft = computedStyle.marginLeft;
-                      calendarGrid.style.paddingTop = computedStyle.paddingTop;
-                      calendarGrid.style.paddingRight = computedStyle.paddingRight;
-                      calendarGrid.style.paddingBottom = computedStyle.paddingBottom;
-                      calendarGrid.style.paddingLeft = computedStyle.paddingLeft;
-                      calendarGrid.style.boxSizing = computedStyle.boxSizing;
-                    }
-                  }
-                  
-                  const holidayNames = clonedMonth.querySelectorAll('.holiday-name');
-                  for (let j = 0; j < holidayNames.length; j++) {
-                    holidayNames[j].style.overflow = 'visible';
-                    holidayNames[j].style.textOverflow = 'clip';
-                    holidayNames[j].style.whiteSpace = 'normal';
-                    holidayNames[j].style.wordWrap = 'break-word';
-                  }
-                }
-                
-                const body = clonedDoc.body;
-                if (body) {
-                  body.style.margin = '0';
-                  body.style.padding = '0';
-                  body.style.width = elementWidth + 'px';
-                  body.style.height = elementHeight + 'px';
-                  body.style.overflow = 'hidden';
-                  body.style.position = 'fixed';
-                  body.style.left = '0';
-                  body.style.top = '0';
-                  body.style.maxWidth = elementWidth + 'px';
-                  body.style.maxHeight = elementHeight + 'px';
-                }
-                
-                const html = clonedDoc.documentElement;
-                if (html) {
-                  html.style.margin = '0';
-                  html.style.padding = '0';
-                  html.style.width = elementWidth + 'px';
-                  html.style.height = elementHeight + 'px';
-                  html.style.overflow = 'hidden';
-                  html.style.maxWidth = elementWidth + 'px';
-                  html.style.maxHeight = elementHeight + 'px';
-                }
-              }
+          monthElements.forEach((monthEl, i) => {
+            const clone = monthEl.cloneNode(true);
+            Object.assign(clone.style, {
+              width: a4Dims.width + 'px',
+              height: a4Dims.height + 'px',
+              margin: '0',
+              padding: '0',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+              transform: 'none',
+              borderRadius: '0'
             });
-            
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            const pixelsPerMm = DPI / MM_PER_INCH;
-            const canvasWidthMm = (canvas.width / EXPORT_SCALE) / pixelsPerMm;
-            const canvasHeightMm = (canvas.height / EXPORT_SCALE) / pixelsPerMm;
-            const mmWidth = state.isLandscape ? A4_HEIGHT_MM : A4_WIDTH_MM;
-            const mmHeight = state.isLandscape ? A4_WIDTH_MM : A4_HEIGHT_MM;
-            
-            if (i === 0) {
-              pdf = new jsPDF({
-                orientation: state.isLandscape ? 'landscape' : 'portrait',
-                unit: 'mm',
-                format: [mmWidth, mmHeight],
-                precision: 16,
-                compress: false
-              });
-            } else {
-              pdf.addPage([mmWidth, mmHeight], state.isLandscape ? 'landscape' : 'portrait');
-            }
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, mmWidth, mmHeight, undefined, 'FAST');
-          }
+            clone.querySelectorAll('.nav-button').forEach(btn => btn.style.display = 'none');
+            if (i < monthElements.length - 1) clone.classList.add('html2pdf__page-break');
+            exportContainer.appendChild(clone);
+          });
           
-          if (pdf) {
-            pdf.save(`lich-viet-${state.selectedYear}-12-thang.pdf`);
-          }
+          await html2pdf().set({
+            margin: 0,
+            filename: `lich-viet-${state.selectedYear}-12-thang.pdf`,
+            image: { type: 'png', quality: 1.0 },
+            html2canvas: { 
+              scale: EXPORT_SCALE,
+              useCORS: true,
+              logging: false,
+              allowTaint: true,
+              width: a4Dims.width,
+              height: a4Dims.height
+            },
+            jsPDF: { 
+              unit: 'mm', 
+              format: [state.isLandscape ? A4_HEIGHT_MM : A4_WIDTH_MM, state.isLandscape ? A4_WIDTH_MM : A4_HEIGHT_MM],
+              orientation: state.isLandscape ? 'landscape' : 'portrait'
+            },
+            pagebreak: { mode: ['css', 'legacy'] }
+          }).from(exportContainer).save();
+          
+          document.body.removeChild(exportContainer);
         } catch (error) {
-          console.error('Failed to export calendar:', error);
           alert('An error occurred while exporting the calendar: ' + error.message);
         } finally {
           state.isExporting = false;
@@ -2136,21 +1782,18 @@
   const startApp = () => {
     initAttempts++;
     
-    if (typeof dayjs === 'undefined' || typeof html2canvas === 'undefined' || (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined')) {
+    if (typeof dayjs === 'undefined' || typeof html2pdf === 'undefined') {
       if (initAttempts < MAX_INIT_ATTEMPTS) {
         setTimeout(startApp, 100);
       } else {
-        console.error('Required libraries failed to load');
         if (typeof dayjs === 'undefined') alert('Required library (dayjs) failed to load. Please refresh the page.');
-        if (typeof html2canvas === 'undefined') alert('Required library (html2canvas) failed to load. Please refresh the page.');
-        if (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined') alert('Required library (jsPDF) failed to load. Please refresh the page.');
+        if (typeof html2pdf === 'undefined') alert('Required library (html2pdf) failed to load. Please refresh the page.');
       }
       return;
     }
     
     const SolarClass = window.Solar || Solar;
     if (SolarClass && typeof SolarClass.fromYmd === 'function') {
-      console.log('lunar-javascript library loaded');
     }
     
     try {
@@ -2164,13 +1807,10 @@
           } else if (HolidaysLib.Holidays) {
             holidayService = new HolidaysLib.Holidays('VN');
           }
-          console.log('Holiday service initialized');
         } catch (e) {
-          console.warn('Holidays library initialization failed:', e);
         }
       }
     } catch (e) {
-      console.warn('Holidays service not available:', e);
     }
     
     try {
@@ -2181,23 +1821,18 @@
       loadBackgroundImages().then((images) => {
         if (Object.keys(images).length > 0) {
           state.monthBackgrounds = { ...state.monthBackgrounds, ...images };
-          console.log('[IDB] Loaded', Object.keys(images).length, 'background images from IndexedDB');
           updateBackgroundControls(state.selectedMonth);
         }
         render();
       }).catch((e) => {
-        console.warn('[IDB] Failed to load background images, rendering without them:', e);
         render();
       });
-      console.log('Calendar initialized successfully');
     } catch (e) {
-      console.error('Failed to initialize app:', e);
       alert('Failed to initialize calendar. Please check console for errors: ' + e.message);
     }
   };
   
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, starting initialization...');
     setTimeout(startApp, 100);
   });
 })();
