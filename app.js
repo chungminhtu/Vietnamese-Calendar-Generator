@@ -823,6 +823,24 @@
     '</div>';
   };
 
+  const processImageWithFilters = (imageUrl, brightness, saturation) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/jpeg', 0.95));
+      };
+      img.onerror = reject;
+      img.src = imageUrl;
+    });
+  };
+
   const applyBackgroundImages = () => {
     const monthElements = document.querySelectorAll('.calendar-month-export');
     for (let i = 0; i < monthElements.length; i++) {
@@ -1726,6 +1744,24 @@
           exportContainer.style.width = a4Dims.width + 'px';
           document.body.appendChild(exportContainer);
           
+          const processedImages = {};
+          const imagePromises = [];
+          
+          for (let month = 1; month <= 12; month++) {
+            const monthBg = state.monthBackgrounds[month];
+            if (monthBg && monthBg.url) {
+              const brightness = (monthBg.brightness || 100) / 100;
+              const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
+              imagePromises.push(
+                processImageWithFilters(monthBg.url, brightness, saturation)
+                  .then(dataUrl => { processedImages[month] = dataUrl; })
+                  .catch(() => { processedImages[month] = monthBg.url; })
+              );
+            }
+          }
+          
+          await Promise.all(imagePromises);
+          
           monthElements.forEach((monthEl, i) => {
             const clone = monthEl.cloneNode(true);
             Object.assign(clone.style, {
@@ -1742,21 +1778,19 @@
             
             const monthNum = parseInt(clone.dataset.month);
             const monthBg = state.monthBackgrounds[monthNum];
-            if (monthBg && monthBg.url) {
+            if (monthBg && monthBg.url && processedImages[monthNum]) {
               const bgDiv = clone.querySelector('.month-bg-image');
               if (bgDiv) {
                 const zoom = monthBg.zoom || 100;
                 const posX = monthBg.posX || 50;
                 const posY = monthBg.posY || 50;
                 const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
-                const brightness = (monthBg.brightness || 100) / 100;
-                const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
-                bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
+                bgDiv.style.backgroundImage = 'url("' + processedImages[monthNum].replace(/"/g, '\\"') + '")';
                 bgDiv.style.backgroundSize = zoom + '%';
                 bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
                 bgDiv.style.backgroundRepeat = 'no-repeat';
                 bgDiv.style.opacity = opacity;
-                bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+                bgDiv.style.filter = 'none';
                 bgDiv.style.zIndex = '1';
               }
             }
@@ -1781,21 +1815,19 @@
                 clonedElements.forEach((clonedEl) => {
                   const monthNum = parseInt(clonedEl.dataset.month);
                   const monthBg = state.monthBackgrounds[monthNum];
-                  if (monthBg && monthBg.url) {
+                  if (monthBg && monthBg.url && processedImages[monthNum]) {
                     const bgDiv = clonedEl.querySelector('.month-bg-image');
                     if (bgDiv) {
                       const zoom = monthBg.zoom || 100;
                       const posX = monthBg.posX || 50;
                       const posY = monthBg.posY || 50;
                       const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
-                      const brightness = (monthBg.brightness || 100) / 100;
-                      const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
-                      bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
+                      bgDiv.style.backgroundImage = 'url("' + processedImages[monthNum].replace(/"/g, '\\"') + '")';
                       bgDiv.style.backgroundSize = zoom + '%';
                       bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
                       bgDiv.style.backgroundRepeat = 'no-repeat';
                       bgDiv.style.opacity = opacity;
-                      bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+                      bgDiv.style.filter = 'none';
                       bgDiv.style.zIndex = '1';
                     }
                   }
