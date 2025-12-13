@@ -1019,8 +1019,20 @@
     }
     
     if (DOMElements.customHolidayDate) {
-      const today = new Date();
-      DOMElements.customHolidayDate.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+      if (typeof flatpickr !== 'undefined') {
+        flatpickr(DOMElements.customHolidayDate, {
+          locale: 'vn',
+          dateFormat: 'd/m/Y',
+          defaultDate: new Date(),
+          allowInput: true
+        });
+      } else {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        DOMElements.customHolidayDate.value = day + '/' + month + '/' + year;
+      }
     }
     
     renderCustomHolidaysList();
@@ -1193,23 +1205,62 @@
     }
     
     if (DOMElements.addCustomHolidayBtn && DOMElements.customHolidayDate && DOMElements.customHolidayName) {
+      const convertDateToISO = (dateStr) => {
+        if (!dateStr) return null;
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const year = parseInt(parts[2], 10);
+          if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900 && year <= 2100) {
+            return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+          }
+        }
+        return null;
+      };
+      
       DOMElements.addCustomHolidayBtn.addEventListener('click', () => {
-        const date = DOMElements.customHolidayDate.value;
+        const dateInput = DOMElements.customHolidayDate.value.trim();
         const name = DOMElements.customHolidayName.value.trim();
-        if (date && name) {
-          if (!state.customHolidays) state.customHolidays = [];
-          const exists = state.customHolidays.some(h => h.date === date && h.name === name);
-          if (!exists) {
-            state.customHolidays.push({ date: date, name: name });
-            saveState();
-            renderCustomHolidaysList();
-            render();
-            DOMElements.customHolidayName.value = '';
+        if (dateInput && name) {
+          const date = convertDateToISO(dateInput);
+          if (date) {
+            if (!state.customHolidays) state.customHolidays = [];
+            const exists = state.customHolidays.some(h => h.date === date && h.name === name);
+            if (!exists) {
+              state.customHolidays.push({ date: date, name: name });
+              saveState();
+              renderCustomHolidaysList();
+              render();
+              DOMElements.customHolidayName.value = '';
+              if (typeof flatpickr !== 'undefined') {
+                const fp = DOMElements.customHolidayDate._flatpickr;
+                if (fp) {
+                  fp.setDate(new Date());
+                }
+              } else {
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, '0');
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const year = today.getFullYear();
+                DOMElements.customHolidayDate.value = day + '/' + month + '/' + year;
+              }
+            } else {
+              alert('Ngày lễ này đã tồn tại');
+            }
+          } else {
+            alert('Vui lòng nhập ngày hợp lệ (dd/MM/yyyy)');
           }
         }
       });
       
       DOMElements.customHolidayName.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          DOMElements.addCustomHolidayBtn.click();
+        }
+      });
+      
+      DOMElements.customHolidayDate.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           DOMElements.addCustomHolidayBtn.click();
         }

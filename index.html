@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <title>Vietnamese Calendar Generator</title>
@@ -16,6 +16,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.4/lunar.min.js" integrity="sha512-B/tey06yuqPVphjK3i4RAoSqy8aRtR22jxdYpPXRLdD74mgUazviLmu+1HSJvPBgXi9zFd8InZIWKnYMcHYJfg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/date-holidays@3.26.5/dist/umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -159,7 +162,7 @@
         <div data-content="customHolidays" class="accordion-content active">
           <div class="p-1.5 space-y-1.5 text-xs">
             <div class="flex gap-1">
-              <input type="date" id="custom-holiday-date" class="flex-1 p-1 border border-gray-300 rounded text-xs" style="min-width: 0;">
+              <input type="text" id="custom-holiday-date" class="flex-1 p-1 border border-gray-300 rounded text-xs" style="min-width: 0;" placeholder="dd/MM/yyyy">
               <input type="text" id="custom-holiday-name" placeholder="Tên ngày lễ" class="flex-1 p-1 border border-gray-300 rounded text-xs" style="min-width: 0;">
               <button id="add-custom-holiday" class="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 whitespace-nowrap">Thêm</button>
             </div>
