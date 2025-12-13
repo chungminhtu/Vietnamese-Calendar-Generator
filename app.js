@@ -5,6 +5,7 @@
   // --- CONSTANTS ---
   const STORAGE_KEY = 'vietnamese-calendar-settings';
   const ACCORDION_STATE_KEY = 'vietnamese-calendar-accordion-state';
+  const CUSTOM_PALETTES_KEY = 'vietnamese-calendar-custom-palettes';
   const DB_NAME = 'vietnamese-calendar-images';
   const DB_VERSION = 2;
   const STORE_NAME = 'background-images';
@@ -57,253 +58,323 @@
       weekdayColor: '#111827', lunarDateColor: '#374151', holidayColor: '#DC2626',
       borderColor: '#4B5563'
     },
-    professional: {
-      dateColor: '#000000', otherMonthDateColor: '#4B5563',
-      weekdayColor: '#111827', lunarDateColor: '#1F2937', holidayColor: '#DC2626',
-      borderColor: '#374151'
+    royalBlue: {
+      dateColor: '#1E3A8A', otherMonthDateColor: '#94A3B8',
+      weekdayColor: '#0F172A', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
+      borderColor: '#60A5FA'
     },
-    minimal: {
-      dateColor: '#000000', otherMonthDateColor: '#6B7280',
-      weekdayColor: '#111827', lunarDateColor: '#374151', holidayColor: '#DC2626',
-      borderColor: '#4B5563'
-    },
-    vibrant: {
-      dateColor: '#1E293B', otherMonthDateColor: '#64748B',
-      weekdayColor: '#0F172A', lunarDateColor: '#334155', holidayColor: '#EA580C',
-      borderColor: '#475569'
-    },
-    warm: {
-      dateColor: '#7C2D12', otherMonthDateColor: '#9A3412',
-      weekdayColor: '#92400E', lunarDateColor: '#B45309', holidayColor: '#DC2626',
-      borderColor: '#78350F'
-    },
-    cool: {
-      dateColor: '#0C4A6E', otherMonthDateColor: '#075985',
-      weekdayColor: '#164E63', lunarDateColor: '#0E7490', holidayColor: '#DC2626',
-      borderColor: '#0369A1'
-    },
-    sunset: {
-      dateColor: '#7C2D12', otherMonthDateColor: '#9A3412',
-      weekdayColor: '#C2410C', lunarDateColor: '#EA580C', holidayColor: '#DC2626',
-      borderColor: '#78350F'
-    },
-    ocean: {
-      dateColor: '#164E63', otherMonthDateColor: '#0E7490',
-      weekdayColor: '#155E75', lunarDateColor: '#0891B2', holidayColor: '#EF4444',
-      borderColor: '#075985'
-    },
-    forest: {
-      dateColor: '#14532D', otherMonthDateColor: '#15803D',
-      weekdayColor: '#166534', lunarDateColor: '#16A34A', holidayColor: '#DC2626',
-      borderColor: '#065F46'
-    },
-    lavender: {
-      dateColor: '#581C87', otherMonthDateColor: '#6D28D9',
-      weekdayColor: '#4C1D95', lunarDateColor: '#7C3AED', holidayColor: '#EC4899',
-      borderColor: '#5B21B6'
-    },
-    cherry: {
-      dateColor: '#991B1B', otherMonthDateColor: '#B91C1C',
-      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#EF4444',
-      borderColor: '#991B1B'
+    crimson: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#F59E0B',
+      borderColor: '#F87171'
     },
     emerald: {
-      dateColor: '#064E3B', otherMonthDateColor: '#047857',
-      weekdayColor: '#065F46', lunarDateColor: '#059669', holidayColor: '#F59E0B',
-      borderColor: '#047857'
+      dateColor: '#064E3B', otherMonthDateColor: '#86EFAC',
+      weekdayColor: '#065F46', lunarDateColor: '#10B981', holidayColor: '#F97316',
+      borderColor: '#34D399'
     },
-    sapphire: {
-      dateColor: '#1E3A8A', otherMonthDateColor: '#2563EB',
-      weekdayColor: '#1E40AF', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
-      borderColor: '#1E40AF'
+    deepPurple: {
+      dateColor: '#581C87', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
+      borderColor: '#A78BFA'
     },
-    rose: {
-      dateColor: '#9F1239', otherMonthDateColor: '#BE123C',
-      weekdayColor: '#881337', lunarDateColor: '#E11D48', holidayColor: '#F43F5E',
-      borderColor: '#9F1239'
+    burntOrange: {
+      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#DC2626',
+      borderColor: '#FB923C'
     },
-    golden: {
-      dateColor: '#78350F', otherMonthDateColor: '#92400E',
-      weekdayColor: '#854D0E', lunarDateColor: '#D97706', holidayColor: '#DC2626',
-      borderColor: '#92400E'
+    navy: {
+      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
+      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
+      borderColor: '#60A5FA'
     },
-    turquoise: {
-      dateColor: '#134E4A', otherMonthDateColor: '#0D9488',
-      weekdayColor: '#115E59', lunarDateColor: '#14B8A6', holidayColor: '#F59E0B',
-      borderColor: '#0F766E'
+    burgundy: {
+      dateColor: '#7F1D1D', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#991B1B', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
+      borderColor: '#F87171'
+    },
+    forest: {
+      dateColor: '#14532D', otherMonthDateColor: '#86EFAC',
+      weekdayColor: '#065F46', lunarDateColor: '#22C55E', holidayColor: '#F97316',
+      borderColor: '#34D399'
     },
     violet: {
-      dateColor: '#5B21B6', otherMonthDateColor: '#7C3AED',
+      dateColor: '#5B21B6', otherMonthDateColor: '#C4B5FD',
       weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
-      borderColor: '#6D28D9'
+      borderColor: '#A78BFA'
     },
-    coral: {
-      dateColor: '#9A3412', otherMonthDateColor: '#C2410C',
-      weekdayColor: '#7C2D12', lunarDateColor: '#EA580C', holidayColor: '#EF4444',
-      borderColor: '#9A3412'
+    chocolate: {
+      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#92400E', lunarDateColor: '#D97706', holidayColor: '#DC2626',
+      borderColor: '#FBBF24'
     },
-    mint: {
-      dateColor: '#065F46', otherMonthDateColor: '#047857',
-      weekdayColor: '#064E3B', lunarDateColor: '#10B981', holidayColor: '#F59E0B',
-      borderColor: '#047857'
+    midnight: {
+      dateColor: '#0F172A', otherMonthDateColor: '#64748B',
+      weekdayColor: '#020617', lunarDateColor: '#334155', holidayColor: '#F97316',
+      borderColor: '#60A5FA'
     },
-    indigo: {
-      dateColor: '#312E81', otherMonthDateColor: '#4F46E5',
-      weekdayColor: '#1E1B4B', lunarDateColor: '#6366F1', holidayColor: '#EC4899',
-      borderColor: '#4338CA'
+    ruby: {
+      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
+      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
+      borderColor: '#FB7185'
     },
-    peach: {
-      dateColor: '#9A3412', otherMonthDateColor: '#C2410C',
-      weekdayColor: '#7C2D12', lunarDateColor: '#F97316', holidayColor: '#EF4444',
-      borderColor: '#9A3412'
+    jade: {
+      dateColor: '#064E3B', otherMonthDateColor: '#6EE7B7',
+      weekdayColor: '#065F46', lunarDateColor: '#10B981', holidayColor: '#F97316',
+      borderColor: '#34D399'
     },
-    cyan: {
-      dateColor: '#155E75', otherMonthDateColor: '#0891B2',
-      weekdayColor: '#164E63', lunarDateColor: '#06B6D4', holidayColor: '#F59E0B',
-      borderColor: '#0E7490'
+    amethyst: {
+      dateColor: '#581C87', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#4C1D95', lunarDateColor: '#8B5CF6', holidayColor: '#F472B6',
+      borderColor: '#A78BFA'
     },
-    magenta: {
-      dateColor: '#831843', otherMonthDateColor: '#BE185D',
-      weekdayColor: '#9F1239', lunarDateColor: '#EC4899', holidayColor: '#F43F5E',
-      borderColor: '#9F1239'
+    copper: {
+      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#DC2626',
+      borderColor: '#FB923C'
     },
-    amber: {
-      dateColor: '#78350F', otherMonthDateColor: '#92400E',
-      weekdayColor: '#854D0E', lunarDateColor: '#D97706', holidayColor: '#EF4444',
-      borderColor: '#92400E'
+    slate: {
+      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
+      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
+      borderColor: '#60A5FA'
+    },
+    rose: {
+      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
+      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
+      borderColor: '#FB7185'
+    },
+    moss: {
+      dateColor: '#14532D', otherMonthDateColor: '#86EFAC',
+      weekdayColor: '#065F46', lunarDateColor: '#22C55E', holidayColor: '#F97316',
+      borderColor: '#34D399'
+    },
+    plum: {
+      dateColor: '#6B21A8', otherMonthDateColor: '#C084FC',
+      weekdayColor: '#581C87', lunarDateColor: '#9333EA', holidayColor: '#F472B6',
+      borderColor: '#A78BFA'
+    },
+    bronze: {
+      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#92400E', lunarDateColor: '#F59E0B', holidayColor: '#DC2626',
+      borderColor: '#FBBF24'
+    },
+    charcoal: {
+      dateColor: '#111827', otherMonthDateColor: '#6B7280',
+      weekdayColor: '#030712', lunarDateColor: '#1F2937', holidayColor: '#F97316',
+      borderColor: '#60A5FA'
+    },
+    scarlet: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
+      borderColor: '#F87171'
     },
     teal: {
-      dateColor: '#134E4A', otherMonthDateColor: '#0D9488',
+      dateColor: '#134E4A', otherMonthDateColor: '#5EEAD4',
       weekdayColor: '#115E59', lunarDateColor: '#14B8A6', holidayColor: '#F59E0B',
-      borderColor: '#0F766E'
+      borderColor: '#2DD4BF'
+    },
+    indigo: {
+      dateColor: '#312E81', otherMonthDateColor: '#A5B4FC',
+      weekdayColor: '#1E1B4B', lunarDateColor: '#6366F1', holidayColor: '#F472B6',
+      borderColor: '#818CF8'
+    },
+    rust: {
+      dateColor: '#7C2D12', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#9A3412', lunarDateColor: '#F97316', holidayColor: '#FCD34D',
+      borderColor: '#FB923C'
+    },
+    onyx: {
+      dateColor: '#000000', otherMonthDateColor: '#6B7280',
+      weekdayColor: '#030712', lunarDateColor: '#111827', holidayColor: '#F97316',
+      borderColor: '#60A5FA'
+    },
+    coral: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#7C2D12', lunarDateColor: '#F43F5E', holidayColor: '#FCD34D',
+      borderColor: '#FB923C'
+    },
+    sage: {
+      dateColor: '#365314', otherMonthDateColor: '#BBF7D0',
+      weekdayColor: '#1A2E05', lunarDateColor: '#84CC16', holidayColor: '#F59E0B',
+      borderColor: '#86EFAC'
+    },
+    wine: {
+      dateColor: '#7F1D1D', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#991B1B', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
+      borderColor: '#F87171'
+    },
+    cobalt: {
+      dateColor: '#1E3A8A', otherMonthDateColor: '#93C5FD',
+      weekdayColor: '#1E40AF', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
+      borderColor: '#60A5FA'
+    },
+    mahogany: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7C2D12', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
+      borderColor: '#F87171'
     }
   };
 
   const COLOR_PALETTES_LIGHT = {
     default: {
-      dateColor: '#F9FAFB', otherMonthDateColor: '#D1D5DB',
-      weekdayColor: '#FFFFFF', lunarDateColor: '#E5E7EB', holidayColor: '#FEE2E2',
-      borderColor: '#9CA3AF'
-    },
-    professional: {
-      dateColor: '#FFFFFF', otherMonthDateColor: '#E5E7EB',
-      weekdayColor: '#F9FAFB', lunarDateColor: '#F3F4F6', holidayColor: '#FEE2E2',
+      dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#111827', lunarDateColor: '#6B7280', holidayColor: '#DC2626',
       borderColor: '#D1D5DB'
     },
-    minimal: {
-      dateColor: '#FFFFFF', otherMonthDateColor: '#D1D5DB',
-      weekdayColor: '#F9FAFB', lunarDateColor: '#E5E7EB', holidayColor: '#FEE2E2',
-      borderColor: '#9CA3AF'
+    royalBlue: {
+      dateColor: '#1E40AF', otherMonthDateColor: '#DBEAFE',
+      weekdayColor: '#1E3A8A', lunarDateColor: '#3B82F6', holidayColor: '#F97316',
+      borderColor: '#93C5FD'
     },
-    vibrant: {
-      dateColor: '#EFF6FF', otherMonthDateColor: '#DBEAFE',
-      weekdayColor: '#F0F9FF', lunarDateColor: '#E0F2FE', holidayColor: '#FED7AA',
-      borderColor: '#BFDBFE'
-    },
-    warm: {
-      dateColor: '#FEF3C7', otherMonthDateColor: '#FDE68A',
-      weekdayColor: '#FCD34D', lunarDateColor: '#FBBF24', holidayColor: '#FEE2E2',
-      borderColor: '#F59E0B'
-    },
-    cool: {
-      dateColor: '#E0F2FE', otherMonthDateColor: '#BAE6FD',
-      weekdayColor: '#F0F9FF', lunarDateColor: '#DBEAFE', holidayColor: '#FEE2E2',
-      borderColor: '#7DD3FC'
-    },
-    sunset: {
-      dateColor: '#FED7AA', otherMonthDateColor: '#FDE68A',
-      weekdayColor: '#FCD34D', lunarDateColor: '#FBBF24', holidayColor: '#FEE2E2',
-      borderColor: '#F59E0B'
-    },
-    ocean: {
-      dateColor: '#CFFAFE', otherMonthDateColor: '#A5F3FC',
-      weekdayColor: '#E0F2FE', lunarDateColor: '#BAE6FD', holidayColor: '#FEE2E2',
-      borderColor: '#67E8F9'
-    },
-    forest: {
-      dateColor: '#D1FAE5', otherMonthDateColor: '#A7F3D0',
-      weekdayColor: '#ECFDF5', lunarDateColor: '#D1FAE5', holidayColor: '#FEE2E2',
-      borderColor: '#6EE7B7'
-    },
-    lavender: {
-      dateColor: '#EDE9FE', otherMonthDateColor: '#DDD6FE',
-      weekdayColor: '#F5F3FF', lunarDateColor: '#E9D5FF', holidayColor: '#FCE7F3',
-      borderColor: '#C4B5FD'
-    },
-    cherry: {
-      dateColor: '#FEE2E2', otherMonthDateColor: '#FECACA',
-      weekdayColor: '#FEF2F2', lunarDateColor: '#FEE2E2', holidayColor: '#FEE2E2',
+    crimson: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FECACA',
+      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#FCD34D',
       borderColor: '#FCA5A5'
     },
     emerald: {
-      dateColor: '#D1FAE5', otherMonthDateColor: '#A7F3D0',
-      weekdayColor: '#ECFDF5', lunarDateColor: '#D1FAE5', holidayColor: '#FEF3C7',
-      borderColor: '#6EE7B7'
+      dateColor: '#065F46', otherMonthDateColor: '#6EE7B7',
+      weekdayColor: '#064E3B', lunarDateColor: '#10B981', holidayColor: '#F59E0B',
+      borderColor: '#A7F3D0'
     },
-    sapphire: {
-      dateColor: '#DBEAFE', otherMonthDateColor: '#BFDBFE',
-      weekdayColor: '#EFF6FF', lunarDateColor: '#DBEAFE', holidayColor: '#FED7AA',
-      borderColor: '#93C5FD'
+    deepPurple: {
+      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#581C87', lunarDateColor: '#8B5CF6', holidayColor: '#EC4899',
+      borderColor: '#DDD6FE'
     },
-    rose: {
-      dateColor: '#FFE4E6', otherMonthDateColor: '#FECDD3',
-      weekdayColor: '#FFF1F2', lunarDateColor: '#FFE4E6', holidayColor: '#FEE2E2',
-      borderColor: '#FDA4AF'
+    burntOrange: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#7C2D12', lunarDateColor: '#F97316', holidayColor: '#EA580C',
+      borderColor: '#FED7AA'
     },
-    golden: {
-      dateColor: '#FEF3C7', otherMonthDateColor: '#FDE68A',
-      weekdayColor: '#FFFBEB', lunarDateColor: '#FCD34D', holidayColor: '#FEE2E2',
-      borderColor: '#FBBF24'
+    navy: {
+      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
+      weekdayColor: '#0F172A', lunarDateColor: '#475569', holidayColor: '#F59E0B',
+      borderColor: '#CBD5E1'
     },
-    turquoise: {
-      dateColor: '#CCFBF1', otherMonthDateColor: '#99F6E4',
-      weekdayColor: '#F0FDFA', lunarDateColor: '#CCFBF1', holidayColor: '#FEF3C7',
-      borderColor: '#5EEAD4'
+    burgundy: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7F1D1D', lunarDateColor: '#BE123C', holidayColor: '#F43F5E',
+      borderColor: '#FECACA'
+    },
+    forest: {
+      dateColor: '#166534', otherMonthDateColor: '#86EFAC',
+      weekdayColor: '#14532D', lunarDateColor: '#22C55E', holidayColor: '#F59E0B',
+      borderColor: '#BBF7D0'
     },
     violet: {
-      dateColor: '#EDE9FE', otherMonthDateColor: '#DDD6FE',
-      weekdayColor: '#F5F3FF', lunarDateColor: '#E9D5FF', holidayColor: '#FCE7F3',
-      borderColor: '#C4B5FD'
+      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#5B21B6', lunarDateColor: '#A78BFA', holidayColor: '#EC4899',
+      borderColor: '#DDD6FE'
     },
-    coral: {
-      dateColor: '#FFEDD5', otherMonthDateColor: '#FED7AA',
-      weekdayColor: '#FFF7ED', lunarDateColor: '#FDE68A', holidayColor: '#FEE2E2',
-      borderColor: '#FDBA74'
+    chocolate: {
+      dateColor: '#92400E', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#78350F', lunarDateColor: '#F59E0B', holidayColor: '#EF4444',
+      borderColor: '#FDE68A'
     },
-    mint: {
-      dateColor: '#D1FAE5', otherMonthDateColor: '#A7F3D0',
-      weekdayColor: '#ECFDF5', lunarDateColor: '#D1FAE5', holidayColor: '#FEF3C7',
-      borderColor: '#6EE7B7'
+    midnight: {
+      dateColor: '#1E293B', otherMonthDateColor: '#94A3B8',
+      weekdayColor: '#0F172A', lunarDateColor: '#334155', holidayColor: '#F97316',
+      borderColor: '#CBD5E1'
     },
-    indigo: {
-      dateColor: '#E0E7FF', otherMonthDateColor: '#C7D2FE',
-      weekdayColor: '#EEF2FF', lunarDateColor: '#E0E7FF', holidayColor: '#FCE7F3',
-      borderColor: '#A5B4FC'
+    ruby: {
+      dateColor: '#9F1239', otherMonthDateColor: '#F9A8D4',
+      weekdayColor: '#881337', lunarDateColor: '#F43F5E', holidayColor: '#EC4899',
+      borderColor: '#FBCFE8'
     },
-    peach: {
-      dateColor: '#FFF7ED', otherMonthDateColor: '#FFEDD5',
-      weekdayColor: '#FFFBEB', lunarDateColor: '#FED7AA', holidayColor: '#FEE2E2',
-      borderColor: '#FCD34D'
+    jade: {
+      dateColor: '#065F46', otherMonthDateColor: '#6EE7B7',
+      weekdayColor: '#064E3B', lunarDateColor: '#34D399', holidayColor: '#F59E0B',
+      borderColor: '#A7F3D0'
     },
-    cyan: {
-      dateColor: '#CFFAFE', otherMonthDateColor: '#A5F3FC',
-      weekdayColor: '#F0FDFA', lunarDateColor: '#CCFBF1', holidayColor: '#FEF3C7',
-      borderColor: '#67E8F9'
+    amethyst: {
+      dateColor: '#6D28D9', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#581C87', lunarDateColor: '#A78BFA', holidayColor: '#F472B6',
+      borderColor: '#DDD6FE'
     },
-    magenta: {
-      dateColor: '#FCE7F3', otherMonthDateColor: '#FBCFE8',
-      weekdayColor: '#FDF2F8', lunarDateColor: '#FCE7F3', holidayColor: '#FEE2E2',
-      borderColor: '#F9A8D4'
+    copper: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#7C2D12', lunarDateColor: '#F97316', holidayColor: '#FDE68A',
+      borderColor: '#FED7AA'
     },
-    amber: {
-      dateColor: '#FEF3C7', otherMonthDateColor: '#FDE68A',
-      weekdayColor: '#FFFBEB', lunarDateColor: '#FCD34D', holidayColor: '#FEE2E2',
-      borderColor: '#FBBF24'
+    slate: {
+      dateColor: '#334155', otherMonthDateColor: '#CBD5E1',
+      weekdayColor: '#1E293B', lunarDateColor: '#64748B', holidayColor: '#F59E0B',
+      borderColor: '#E2E8F0'
+    },
+    rose: {
+      dateColor: '#BE123C', otherMonthDateColor: '#F9A8D4',
+      weekdayColor: '#9F1239', lunarDateColor: '#FB7185', holidayColor: '#F472B6',
+      borderColor: '#FBCFE8'
+    },
+    moss: {
+      dateColor: '#166534', otherMonthDateColor: '#86EFAC',
+      weekdayColor: '#14532D', lunarDateColor: '#4ADE80', holidayColor: '#F59E0B',
+      borderColor: '#BBF7D0'
+    },
+    plum: {
+      dateColor: '#7C3AED', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#6B21A8', lunarDateColor: '#A78BFA', holidayColor: '#F472B6',
+      borderColor: '#DDD6FE'
+    },
+    bronze: {
+      dateColor: '#92400E', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#78350F', lunarDateColor: '#FBBF24', holidayColor: '#EF4444',
+      borderColor: '#FDE68A'
+    },
+    charcoal: {
+      dateColor: '#374151', otherMonthDateColor: '#D1D5DB',
+      weekdayColor: '#111827', lunarDateColor: '#4B5563', holidayColor: '#F97316',
+      borderColor: '#E5E7EB'
+    },
+    scarlet: {
+      dateColor: '#B91C1C', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#991B1B', lunarDateColor: '#F87171', holidayColor: '#FECACA',
+      borderColor: '#FEE2E2'
     },
     teal: {
-      dateColor: '#CCFBF1', otherMonthDateColor: '#99F6E4',
-      weekdayColor: '#F0FDFA', lunarDateColor: '#CCFBF1', holidayColor: '#FEF3C7',
-      borderColor: '#5EEAD4'
+      dateColor: '#0D9488', otherMonthDateColor: '#5EEAD4',
+      weekdayColor: '#134E4A', lunarDateColor: '#2DD4BF', holidayColor: '#F59E0B',
+      borderColor: '#99F6E4'
+    },
+    indigo: {
+      dateColor: '#4F46E5', otherMonthDateColor: '#A5B4FC',
+      weekdayColor: '#312E81', lunarDateColor: '#818CF8', holidayColor: '#F472B6',
+      borderColor: '#C7D2FE'
+    },
+    rust: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#7C2D12', lunarDateColor: '#FB923C', holidayColor: '#FCD34D',
+      borderColor: '#FED7AA'
+    },
+    onyx: {
+      dateColor: '#1F2937', otherMonthDateColor: '#9CA3AF',
+      weekdayColor: '#030712', lunarDateColor: '#374151', holidayColor: '#F97316',
+      borderColor: '#D1D5DB'
+    },
+    coral: {
+      dateColor: '#C2410C', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#9A3412', lunarDateColor: '#FB7185', holidayColor: '#FCD34D',
+      borderColor: '#FED7AA'
+    },
+    sage: {
+      dateColor: '#4D7C0F', otherMonthDateColor: '#BBF7D0',
+      weekdayColor: '#365314', lunarDateColor: '#84CC16', holidayColor: '#F59E0B',
+      borderColor: '#D1FAE5'
+    },
+    wine: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7F1D1D', lunarDateColor: '#DC2626', holidayColor: '#F472B6',
+      borderColor: '#FECACA'
+    },
+    cobalt: {
+      dateColor: '#2563EB', otherMonthDateColor: '#93C5FD',
+      weekdayColor: '#1E3A8A', lunarDateColor: '#60A5FA', holidayColor: '#F97316',
+      borderColor: '#BFDBFE'
+    },
+    mahogany: {
+      dateColor: '#991B1B', otherMonthDateColor: '#FCA5A5',
+      weekdayColor: '#7C2D12', lunarDateColor: '#DC2626', holidayColor: '#F59E0B',
+      borderColor: '#FECACA'
     }
   };
   
@@ -592,9 +663,49 @@
     return holidays;
   };
 
+  const getCustomPalettes = () => {
+    try {
+      const saved = localStorage.getItem(CUSTOM_PALETTES_KEY);
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      console.warn('Failed to load custom palettes:', e);
+      return {};
+    }
+  };
+
+  const saveCustomPalette = (name, palette) => {
+    try {
+      const customPalettes = getCustomPalettes();
+      customPalettes[name] = palette;
+      localStorage.setItem(CUSTOM_PALETTES_KEY, JSON.stringify(customPalettes));
+      return true;
+    } catch (e) {
+      console.warn('Failed to save custom palette:', e);
+      return false;
+    }
+  };
+
+  const deleteCustomPalette = (name) => {
+    try {
+      const customPalettes = getCustomPalettes();
+      delete customPalettes[name];
+      localStorage.setItem(CUSTOM_PALETTES_KEY, JSON.stringify(customPalettes));
+      return true;
+    } catch (e) {
+      console.warn('Failed to delete custom palette:', e);
+      return false;
+    }
+  };
+
   const applyColorPalette = (paletteName) => {
     const paletteSet = state.isDarkTheme ? COLOR_PALETTES_DARK : COLOR_PALETTES_LIGHT;
-    const palette = paletteSet[paletteName];
+    let palette = paletteSet[paletteName];
+    
+    if (!palette) {
+      const customPalettes = getCustomPalettes();
+      palette = customPalettes[paletteName];
+    }
+    
     if (palette) {
       Object.assign(state, palette);
       state.colorPalette = paletteName;
@@ -620,6 +731,72 @@
     applyColorPalette(currentPalette);
   };
 
+  const renderCustomPalettesList = () => {
+    if (!DOMElements.customPalettesList) return;
+    const customPalettes = getCustomPalettes();
+    const paletteNames = Object.keys(customPalettes);
+    
+    const paletteSelect = document.querySelector('[data-state="colorPalette"]');
+    if (paletteSelect) {
+      const existingCustomOptions = paletteSelect.querySelectorAll('option[data-custom="true"]');
+      for (let i = 0; i < existingCustomOptions.length; i++) {
+        existingCustomOptions[i].remove();
+      }
+      
+      for (let i = 0; i < paletteNames.length; i++) {
+        const name = paletteNames[i];
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        option.dataset.custom = 'true';
+        paletteSelect.appendChild(option);
+      }
+    }
+    
+    if (paletteNames.length === 0) {
+      DOMElements.customPalettesList.innerHTML = '<p class="text-xs text-gray-500 text-center py-1">Chưa có bảng màu tùy chỉnh</p>';
+      return;
+    }
+    
+    let html = '';
+    for (let i = 0; i < paletteNames.length; i++) {
+      const name = paletteNames[i];
+      html += '<div class="flex items-center justify-between p-1 bg-gray-50 rounded text-xs hover:bg-gray-100">';
+      html += '<button class="flex-1 text-left custom-palette-select" data-palette="' + name.replace(/"/g, '&quot;') + '">' + name.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</button>';
+      html += '<button class="delete-custom-palette text-red-600 hover:text-red-800 px-1" data-palette="' + name.replace(/"/g, '&quot;') + '">×</button>';
+      html += '</div>';
+    }
+    DOMElements.customPalettesList.innerHTML = html;
+    
+    const selectButtons = DOMElements.customPalettesList.querySelectorAll('.custom-palette-select');
+    for (let i = 0; i < selectButtons.length; i++) {
+      selectButtons[i].addEventListener('click', (e) => {
+        const paletteName = e.target.dataset.palette;
+        if (paletteName) {
+          if (paletteSelect) {
+            paletteSelect.value = paletteName;
+            applyColorPalette(paletteName);
+          }
+        }
+      });
+    }
+    
+    const deleteButtons = DOMElements.customPalettesList.querySelectorAll('.delete-custom-palette');
+    for (let i = 0; i < deleteButtons.length; i++) {
+      deleteButtons[i].addEventListener('click', (e) => {
+        const paletteName = e.target.dataset.palette;
+        if (paletteName && confirm('Xóa bảng màu "' + paletteName + '"?')) {
+          deleteCustomPalette(paletteName);
+          renderCustomPalettesList();
+          if (paletteSelect && paletteSelect.value === paletteName) {
+            paletteSelect.value = 'default';
+            applyColorPalette('default');
+          }
+        }
+      });
+    }
+  };
+
   const updateStateAndRender = (key, value) => {
     state[key] = value;
     saveState();
@@ -638,7 +815,10 @@
     customHolidayDate: null,
     customHolidayName: null,
     addCustomHolidayBtn: null,
-    customHolidaysList: null
+    customHolidaysList: null,
+    customPaletteName: null,
+    saveCustomPaletteBtn: null,
+    customPalettesList: null
   };
 
   const initDOMElements = () => {
@@ -653,6 +833,9 @@
     DOMElements.customHolidayName = document.getElementById('custom-holiday-name');
     DOMElements.addCustomHolidayBtn = document.getElementById('add-custom-holiday');
     DOMElements.customHolidaysList = document.getElementById('custom-holidays-list');
+    DOMElements.customPaletteName = document.getElementById('custom-palette-name');
+    DOMElements.saveCustomPaletteBtn = document.getElementById('save-custom-palette');
+    DOMElements.customPalettesList = document.getElementById('custom-palettes-list');
   };
 
   // --- RENDERING ---
@@ -1121,9 +1304,20 @@
         if (dragState.isDragging) return;
         if (!e.shiftKey) return;
         e.preventDefault();
-        const delta = e.deltaY > 0 ? -5 : 5;
-        bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
-        bgDiv.style.backgroundSize = `${bg.zoom}%`;
+        e.stopPropagation();
+        const currentZoom = bg.zoom !== undefined ? bg.zoom : 100;
+        const zoomStep = 5;
+        let newZoom;
+        if (e.deltaY > 0) {
+          newZoom = currentZoom - zoomStep;
+        } else {
+          newZoom = currentZoom + zoomStep;
+        }
+        bg.zoom = Math.max(50, Math.min(200, newZoom));
+        const currentBgDiv = monthEl.querySelector('.month-bg-image');
+        if (currentBgDiv) {
+          currentBgDiv.style.backgroundSize = `${bg.zoom}%`;
+        }
         saveBackgroundImage(monthNum, bg);
       }, { passive: false });
       
@@ -1459,6 +1653,55 @@
     const accordionState = loadAccordionState();
     applyAccordionState(accordionState);
     
+    if (DOMElements.saveCustomPaletteBtn) {
+      DOMElements.saveCustomPaletteBtn.addEventListener('click', () => {
+        const name = DOMElements.customPaletteName ? DOMElements.customPaletteName.value.trim() : '';
+        if (!name) {
+          alert('Vui lòng nhập tên bảng màu');
+          return;
+        }
+        
+        const customPalettes = getCustomPalettes();
+        if (customPalettes[name] && !confirm('Bảng màu "' + name + '" đã tồn tại. Ghi đè?')) {
+          return;
+        }
+        
+        const palette = {
+          dateColor: state.dateColor || '#1F2937',
+          otherMonthDateColor: state.otherMonthDateColor || '#6B7280',
+          weekdayColor: state.weekdayColor || '#111827',
+          lunarDateColor: state.lunarDateColor || '#374151',
+          holidayColor: state.holidayColor || '#DC2626',
+          borderColor: state.borderColor || '#4B5563'
+        };
+        
+        if (saveCustomPalette(name, palette)) {
+          if (DOMElements.customPaletteName) {
+            DOMElements.customPaletteName.value = '';
+          }
+          renderCustomPalettesList();
+          
+          const paletteSelect = document.querySelector('[data-state="colorPalette"]');
+          if (paletteSelect) {
+            paletteSelect.value = name;
+            applyColorPalette(name);
+          }
+          
+          alert('Đã lưu bảng màu "' + name + '"');
+        } else {
+          alert('Không thể lưu bảng màu');
+        }
+      });
+    }
+    
+    if (DOMElements.customPaletteName) {
+      DOMElements.customPaletteName.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && DOMElements.saveCustomPaletteBtn) {
+          DOMElements.saveCustomPaletteBtn.click();
+        }
+      });
+    }
+    
     const accordionToggles = document.querySelectorAll('.accordion-toggle');
     for (let i = 0; i < accordionToggles.length; i++) {
       accordionToggles[i].addEventListener('click', () => {
@@ -1738,9 +1981,12 @@
                     const originalContentDiv = monthEl.querySelector('.relative.w-full.h-full');
                     if (originalContentDiv) {
                       const computedStyle = window.getComputedStyle(originalContentDiv);
-                      contentDiv.style.padding = computedStyle.padding;
+                      contentDiv.style.paddingTop = computedStyle.paddingTop;
+                      contentDiv.style.paddingRight = computedStyle.paddingRight;
+                      contentDiv.style.paddingBottom = computedStyle.paddingBottom;
+                      contentDiv.style.paddingLeft = computedStyle.paddingLeft;
                       contentDiv.style.margin = '0';
-                      contentDiv.style.boxSizing = 'border-box';
+                      contentDiv.style.boxSizing = computedStyle.boxSizing;
                     }
                   }
                   
@@ -1750,7 +1996,10 @@
                     const dayCell = clonedDayCells[j];
                     const originalCell = originalDayCells[j];
                     const computedStyle = window.getComputedStyle(originalCell);
-                    dayCell.style.padding = computedStyle.padding;
+                    dayCell.style.paddingTop = computedStyle.paddingTop;
+                    dayCell.style.paddingRight = computedStyle.paddingRight;
+                    dayCell.style.paddingBottom = computedStyle.paddingBottom;
+                    dayCell.style.paddingLeft = computedStyle.paddingLeft;
                     dayCell.style.margin = '0';
                     dayCell.style.lineHeight = computedStyle.lineHeight;
                     dayCell.style.verticalAlign = computedStyle.verticalAlign;
@@ -1758,6 +2007,7 @@
                     dayCell.style.alignItems = computedStyle.alignItems;
                     dayCell.style.justifyContent = computedStyle.justifyContent;
                     dayCell.style.alignContent = computedStyle.alignContent;
+                    dayCell.style.boxSizing = computedStyle.boxSizing;
                     
                     const flexContainers = dayCell.querySelectorAll('.flex, .w-full');
                     const originalFlexContainers = originalCell.querySelectorAll('.flex, .w-full');
@@ -1768,10 +2018,48 @@
                       flexEl.style.alignItems = flexComputedStyle.alignItems;
                       flexEl.style.justifyContent = flexComputedStyle.justifyContent;
                       flexEl.style.alignContent = flexComputedStyle.alignContent;
-                      flexEl.style.margin = flexComputedStyle.margin;
-                      flexEl.style.padding = flexComputedStyle.padding;
+                      flexEl.style.marginTop = flexComputedStyle.marginTop;
+                      flexEl.style.marginRight = flexComputedStyle.marginRight;
+                      flexEl.style.marginBottom = flexComputedStyle.marginBottom;
+                      flexEl.style.marginLeft = flexComputedStyle.marginLeft;
+                      flexEl.style.paddingTop = flexComputedStyle.paddingTop;
+                      flexEl.style.paddingRight = flexComputedStyle.paddingRight;
+                      flexEl.style.paddingBottom = flexComputedStyle.paddingBottom;
+                      flexEl.style.paddingLeft = flexComputedStyle.paddingLeft;
                       flexEl.style.minHeight = flexComputedStyle.minHeight;
                       flexEl.style.gap = flexComputedStyle.gap;
+                      flexEl.style.boxSizing = flexComputedStyle.boxSizing;
+                      flexEl.style.flex = flexComputedStyle.flex;
+                      flexEl.style.flexShrink = flexComputedStyle.flexShrink;
+                      flexEl.style.flexGrow = flexComputedStyle.flexGrow;
+                      flexEl.style.flexBasis = flexComputedStyle.flexBasis;
+                      flexEl.style.maxWidth = flexComputedStyle.maxWidth;
+                      flexEl.style.minWidth = flexComputedStyle.minWidth;
+                      flexEl.style.width = flexComputedStyle.width;
+                    }
+                    
+                    const holidaySections = dayCell.querySelectorAll('.holiday-section');
+                    const originalHolidaySections = originalCell.querySelectorAll('.holiday-section');
+                    for (let h = 0; h < holidaySections.length && h < originalHolidaySections.length; h++) {
+                      const holidaySection = holidaySections[h];
+                      const originalHolidaySection = originalHolidaySections[h];
+                      const holidayComputedStyle = window.getComputedStyle(originalHolidaySection);
+                      holidaySection.style.marginTop = holidayComputedStyle.marginTop;
+                      holidaySection.style.marginRight = holidayComputedStyle.marginRight;
+                      holidaySection.style.marginBottom = holidayComputedStyle.marginBottom;
+                      holidaySection.style.marginLeft = holidayComputedStyle.marginLeft;
+                      holidaySection.style.paddingTop = holidayComputedStyle.paddingTop;
+                      holidaySection.style.paddingRight = holidayComputedStyle.paddingRight;
+                      holidaySection.style.paddingBottom = holidayComputedStyle.paddingBottom;
+                      holidaySection.style.paddingLeft = holidayComputedStyle.paddingLeft;
+                      holidaySection.style.flex = holidayComputedStyle.flex;
+                      holidaySection.style.flexShrink = holidayComputedStyle.flexShrink;
+                      holidaySection.style.flexGrow = holidayComputedStyle.flexGrow;
+                      holidaySection.style.flexBasis = holidayComputedStyle.flexBasis;
+                      holidaySection.style.maxWidth = holidayComputedStyle.maxWidth;
+                      holidaySection.style.minWidth = holidayComputedStyle.minWidth;
+                      holidaySection.style.width = holidayComputedStyle.width;
+                      holidaySection.style.boxSizing = holidayComputedStyle.boxSizing;
                     }
                     
                     const dateParagraphs = dayCell.querySelectorAll('p');
@@ -1781,8 +2069,14 @@
                       const originalP = originalDateParagraphs[k];
                       const pComputedStyle = window.getComputedStyle(originalP);
                       dateP.style.lineHeight = pComputedStyle.lineHeight;
-                      dateP.style.margin = pComputedStyle.margin;
-                      dateP.style.padding = pComputedStyle.padding;
+                      dateP.style.marginTop = pComputedStyle.marginTop;
+                      dateP.style.marginRight = pComputedStyle.marginRight;
+                      dateP.style.marginBottom = pComputedStyle.marginBottom;
+                      dateP.style.marginLeft = pComputedStyle.marginLeft;
+                      dateP.style.paddingTop = pComputedStyle.paddingTop;
+                      dateP.style.paddingRight = pComputedStyle.paddingRight;
+                      dateP.style.paddingBottom = pComputedStyle.paddingBottom;
+                      dateP.style.paddingLeft = pComputedStyle.paddingLeft;
                       dateP.style.fontSize = pComputedStyle.fontSize;
                       dateP.style.fontWeight = pComputedStyle.fontWeight;
                       dateP.style.verticalAlign = pComputedStyle.verticalAlign;
@@ -1797,8 +2091,14 @@
                         const originalTextDiv = originalTextCenterDivs[t];
                         const textComputedStyle = window.getComputedStyle(originalTextDiv);
                         textDiv.style.lineHeight = textComputedStyle.lineHeight;
-                        textDiv.style.margin = textComputedStyle.margin;
-                        textDiv.style.padding = textComputedStyle.padding;
+                        textDiv.style.marginTop = textComputedStyle.marginTop;
+                        textDiv.style.marginRight = textComputedStyle.marginRight;
+                        textDiv.style.marginBottom = textComputedStyle.marginBottom;
+                        textDiv.style.marginLeft = textComputedStyle.marginLeft;
+                        textDiv.style.paddingTop = textComputedStyle.paddingTop;
+                        textDiv.style.paddingRight = textComputedStyle.paddingRight;
+                        textDiv.style.paddingBottom = textComputedStyle.paddingBottom;
+                        textDiv.style.paddingLeft = textComputedStyle.paddingLeft;
                         textDiv.style.display = textComputedStyle.display;
                         textDiv.style.textAlign = textComputedStyle.textAlign;
                         textDiv.style.alignItems = textComputedStyle.alignItems;
@@ -1806,6 +2106,33 @@
                         textDiv.style.height = textComputedStyle.height;
                         textDiv.style.minHeight = textComputedStyle.minHeight;
                         textDiv.style.boxSizing = textComputedStyle.boxSizing;
+                        textDiv.style.width = textComputedStyle.width;
+                        textDiv.style.maxWidth = textComputedStyle.maxWidth;
+                        textDiv.style.minWidth = textComputedStyle.minWidth;
+                      }
+                      
+                      const dateNumberContainers = dateP.closest('.flex') ? [dateP.closest('.flex')] : [];
+                      const originalDateNumberContainers = originalP.closest('.flex') ? [originalP.closest('.flex')] : [];
+                      for (let d = 0; d < dateNumberContainers.length && d < originalDateNumberContainers.length; d++) {
+                        const dateContainer = dateNumberContainers[d];
+                        const originalDateContainer = originalDateNumberContainers[d];
+                        const dateContainerComputedStyle = window.getComputedStyle(originalDateContainer);
+                        dateContainer.style.marginTop = dateContainerComputedStyle.marginTop;
+                        dateContainer.style.marginRight = dateContainerComputedStyle.marginRight;
+                        dateContainer.style.marginBottom = dateContainerComputedStyle.marginBottom;
+                        dateContainer.style.marginLeft = dateContainerComputedStyle.marginLeft;
+                        dateContainer.style.paddingTop = dateContainerComputedStyle.paddingTop;
+                        dateContainer.style.paddingRight = dateContainerComputedStyle.paddingRight;
+                        dateContainer.style.paddingBottom = dateContainerComputedStyle.paddingBottom;
+                        dateContainer.style.paddingLeft = dateContainerComputedStyle.paddingLeft;
+                        dateContainer.style.flex = dateContainerComputedStyle.flex;
+                        dateContainer.style.flexShrink = dateContainerComputedStyle.flexShrink;
+                        dateContainer.style.flexGrow = dateContainerComputedStyle.flexGrow;
+                        dateContainer.style.flexBasis = dateContainerComputedStyle.flexBasis;
+                        dateContainer.style.width = dateContainerComputedStyle.width;
+                        dateContainer.style.maxWidth = dateContainerComputedStyle.maxWidth;
+                        dateContainer.style.minWidth = dateContainerComputedStyle.minWidth;
+                        dateContainer.style.boxSizing = dateContainerComputedStyle.boxSizing;
                       }
                       
                       const leadingNoneDivs = dateP.parentElement ? dateP.parentElement.querySelectorAll('.leading-none') : [];
@@ -1815,8 +2142,14 @@
                         const originalLeadingDiv = originalLeadingNoneDivs[l];
                         const leadingComputedStyle = window.getComputedStyle(originalLeadingDiv);
                         leadingDiv.style.lineHeight = leadingComputedStyle.lineHeight;
-                        leadingDiv.style.margin = leadingComputedStyle.margin;
-                        leadingDiv.style.padding = leadingComputedStyle.padding;
+                        leadingDiv.style.marginTop = leadingComputedStyle.marginTop;
+                        leadingDiv.style.marginRight = leadingComputedStyle.marginRight;
+                        leadingDiv.style.marginBottom = leadingComputedStyle.marginBottom;
+                        leadingDiv.style.marginLeft = leadingComputedStyle.marginLeft;
+                        leadingDiv.style.paddingTop = leadingComputedStyle.paddingTop;
+                        leadingDiv.style.paddingRight = leadingComputedStyle.paddingRight;
+                        leadingDiv.style.paddingBottom = leadingComputedStyle.paddingBottom;
+                        leadingDiv.style.paddingLeft = leadingComputedStyle.paddingLeft;
                         leadingDiv.style.display = leadingComputedStyle.display;
                         leadingDiv.style.height = leadingComputedStyle.height;
                         leadingDiv.style.minHeight = leadingComputedStyle.minHeight;
@@ -1845,8 +2178,15 @@
                     const originalGrid = monthEl.querySelector('.calendar-grid');
                     if (originalGrid) {
                       const computedStyle = window.getComputedStyle(originalGrid);
-                      calendarGrid.style.margin = computedStyle.margin;
-                      calendarGrid.style.padding = computedStyle.padding;
+                      calendarGrid.style.marginTop = computedStyle.marginTop;
+                      calendarGrid.style.marginRight = computedStyle.marginRight;
+                      calendarGrid.style.marginBottom = computedStyle.marginBottom;
+                      calendarGrid.style.marginLeft = computedStyle.marginLeft;
+                      calendarGrid.style.paddingTop = computedStyle.paddingTop;
+                      calendarGrid.style.paddingRight = computedStyle.paddingRight;
+                      calendarGrid.style.paddingBottom = computedStyle.paddingBottom;
+                      calendarGrid.style.paddingLeft = computedStyle.paddingLeft;
+                      calendarGrid.style.boxSizing = computedStyle.boxSizing;
                     }
                   }
                   
@@ -1968,9 +2308,10 @@
     }
     
     try {
-      initDOMElements();
-      initializeControls();
-      setupEventListeners();
+    initDOMElements();
+    initializeControls();
+    setupEventListeners();
+    renderCustomPalettesList();
       loadBackgroundImages().then((images) => {
         if (Object.keys(images).length > 0) {
           state.monthBackgrounds = { ...state.monthBackgrounds, ...images };

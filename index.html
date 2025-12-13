@@ -103,30 +103,37 @@
               <label class="block mb-1 text-xs font-medium text-gray-600">Bảng màu</label>
               <select data-state="colorPalette" class="w-full p-1 border border-gray-300 rounded text-xs">
                 <option value="default">Mặc định</option>
-                <option value="professional">Chuyên nghiệp</option>
-                <option value="minimal">Tối giản</option>
-                <option value="vibrant">Sống động</option>
-                <option value="warm">Ấm áp</option>
-                <option value="cool">Mát mẻ</option>
-                <option value="sunset">Hoàng hôn</option>
-                <option value="ocean">Đại dương</option>
-                <option value="forest">Rừng xanh</option>
-                <option value="lavender">Oải hương</option>
-                <option value="cherry">Anh đào</option>
+                <option value="royalBlue">Xanh hoàng gia</option>
+                <option value="crimson">Đỏ thẫm</option>
                 <option value="emerald">Ngọc lục bảo</option>
-                <option value="sapphire">Sapphire</option>
-                <option value="rose">Hồng</option>
-                <option value="golden">Vàng</option>
-                <option value="turquoise">Ngọc lam</option>
+                <option value="deepPurple">Tím đậm</option>
+                <option value="burntOrange">Cam cháy</option>
+                <option value="navy">Xanh navy</option>
+                <option value="burgundy">Đỏ rượu vang</option>
+                <option value="forest">Rừng xanh</option>
                 <option value="violet">Tím</option>
-                <option value="coral">San hô</option>
-                <option value="mint">Bạc hà</option>
-                <option value="indigo">Chàm</option>
-                <option value="peach">Đào</option>
-                <option value="cyan">Xanh lơ</option>
-                <option value="magenta">Đỏ tươi</option>
-                <option value="amber">Hổ phách</option>
+                <option value="chocolate">Sô cô la</option>
+                <option value="midnight">Nửa đêm</option>
+                <option value="ruby">Hồng ngọc</option>
+                <option value="jade">Ngọc bích</option>
+                <option value="amethyst">Thạch anh tím</option>
+                <option value="copper">Đồng</option>
+                <option value="slate">Xám đá</option>
+                <option value="rose">Hồng</option>
+                <option value="moss">Rêu xanh</option>
+                <option value="plum">Mận</option>
+                <option value="bronze">Đồng thau</option>
+                <option value="charcoal">Than củi</option>
+                <option value="scarlet">Đỏ tươi</option>
                 <option value="teal">Xanh ngọc</option>
+                <option value="indigo">Chàm</option>
+                <option value="rust">Gỉ sắt</option>
+                <option value="onyx">Onyx đen</option>
+                <option value="coral">San hô</option>
+                <option value="sage">Xám xanh</option>
+                <option value="wine">Rượu vang</option>
+                <option value="cobalt">Coban</option>
+                <option value="mahogany">Gỗ gụ</option>
               </select>
             </div>
             <div class="space-y-1.5 text-xs">
@@ -154,6 +161,13 @@
                 <label class="text-xs">Viền</label>
                 <input type="color" data-state="borderColor" value="#E5E7EB">
               </div>
+            </div>
+            <div class="pt-2 border-t border-gray-200 space-y-2">
+              <div class="flex gap-1">
+                <input type="text" id="custom-palette-name" placeholder="Tên bảng màu..." class="flex-1 p-1 border border-gray-300 rounded text-xs">
+                <button id="save-custom-palette" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors">Lưu</button>
+              </div>
+              <div id="custom-palettes-list" class="space-y-1 max-h-32 overflow-y-auto"></div>
             </div>
           </div>
         </div>
