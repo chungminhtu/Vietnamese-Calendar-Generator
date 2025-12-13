@@ -6,7 +6,7 @@
   const STORAGE_KEY = 'vietnamese-calendar-settings';
   const ACCORDION_STATE_KEY = 'vietnamese-calendar-accordion-state';
   const DB_NAME = 'vietnamese-calendar-images';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const STORE_NAME = 'background-images';
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
@@ -225,9 +225,13 @@
   
   const openDB = () => {
     return new Promise((resolve, reject) => {
-      if (db) {
+      if (db && db.objectStoreNames.contains(STORE_NAME)) {
         resolve(db);
         return;
+      }
+      if (db) {
+        db.close();
+        db = null;
       }
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onerror = () => reject(request.error);
@@ -644,9 +648,9 @@
           const zoom = monthBg.zoom || 100;
           const posX = monthBg.posX || 50;
           const posY = monthBg.posY || 50;
-          const opacity = (monthBg.opacity || 100) / 100;
+          const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
           const brightness = (monthBg.brightness || 100) / 100;
-          const saturation = (monthBg.saturation || 100) / 100;
+          const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
           bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
           bgDiv.style.backgroundSize = zoom + '%';
           bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
@@ -828,13 +832,13 @@
             const monthNum = parseInt(month);
             console.log('[DRAG-DROP] FileReader loaded for month', monthNum, 'Data URL length:', ev.target.result?.length || 0, 'Starts with:', ev.target.result?.substring(0, 30) || 'N/A');
             if (!state.monthBackgrounds[monthNum]) {
-              state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+              state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 50, brightness: 100, saturation: 120 };
               console.log('[DRAG-DROP] Created new background object for month', monthNum);
             } else {
               if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
-              if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 100;
+              if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 50;
               if (!state.monthBackgrounds[monthNum].brightness) state.monthBackgrounds[monthNum].brightness = 100;
-              if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 100;
+              if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 120;
               if (!state.monthBackgrounds[monthNum].posX) state.monthBackgrounds[monthNum].posX = 50;
               if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
             }
@@ -870,13 +874,13 @@
                 const monthNum = parseInt(month);
                 console.log('[CLICK-UPLOAD] FileReader loaded for month', monthNum, 'Data URL length:', ev2.target.result?.length || 0, 'Starts with:', ev2.target.result?.substring(0, 30) || 'N/A');
                 if (!state.monthBackgrounds[monthNum]) {
-                  state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+                  state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 50, brightness: 100, saturation: 120 };
                   console.log('[CLICK-UPLOAD] Created new background object for month', monthNum);
                 } else {
                   if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
-                  if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 100;
+                  if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 50;
                   if (!state.monthBackgrounds[monthNum].brightness) state.monthBackgrounds[monthNum].brightness = 100;
-                  if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 100;
+                  if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 120;
                   if (!state.monthBackgrounds[monthNum].posX) state.monthBackgrounds[monthNum].posX = 50;
                   if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
                 }
@@ -1106,9 +1110,9 @@
     
     const controls = [
       { key: 'bgZoom', prop: 'zoom', default: 100 },
-      { key: 'bgOpacity', prop: 'opacity', default: 100 },
+      { key: 'bgOpacity', prop: 'opacity', default: 50 },
       { key: 'bgBrightness', prop: 'brightness', default: 100 },
-      { key: 'bgSaturation', prop: 'saturation', default: 100 }
+      { key: 'bgSaturation', prop: 'saturation', default: 120 }
     ];
     
     for (let i = 0; i < controls.length; i++) {
@@ -1324,7 +1328,7 @@
             } else {
               const month = state.selectedMonth;
               if (!state.monthBackgrounds[month]) {
-                state.monthBackgrounds[month] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+                state.monthBackgrounds[month] = { zoom: 100, posX: 50, posY: 50, opacity: 50, brightness: 100, saturation: 120 };
               }
               state.monthBackgrounds[month][actualKey] = value;
               if (state.monthBackgrounds[month].url) {
