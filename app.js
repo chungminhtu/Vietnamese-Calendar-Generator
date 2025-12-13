@@ -562,6 +562,7 @@
           state.selectedYear = date.year();
           if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
           if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
+          updateBackgroundControls(state.selectedMonth);
           saveState();
           render();
         });
@@ -576,6 +577,7 @@
           state.selectedYear = date.year();
           if (DOMElements.monthSelect) DOMElements.monthSelect.value = state.selectedMonth;
           if (DOMElements.yearSelect) DOMElements.yearSelect.value = state.selectedYear;
+          updateBackgroundControls(state.selectedMonth);
           saveState();
           render();
         });
@@ -616,10 +618,18 @@
             if (!state.monthBackgrounds[monthNum]) {
               state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
               console.log('[DRAG-DROP] Created new background object for month', monthNum);
+            } else {
+              if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
+              if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 100;
+              if (!state.monthBackgrounds[monthNum].brightness) state.monthBackgrounds[monthNum].brightness = 100;
+              if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 100;
+              if (!state.monthBackgrounds[monthNum].posX) state.monthBackgrounds[monthNum].posX = 50;
+              if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
             }
             state.monthBackgrounds[monthNum].url = ev.target.result;
             console.log('[DRAG-DROP] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
-            console.log('[DRAG-DROP] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+            console.log('[DRAG-DROP] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+            updateBackgroundControls(monthNum);
             console.log('[DRAG-DROP] Calling render() to update calendar...');
             render();
           };
@@ -649,10 +659,18 @@
                 if (!state.monthBackgrounds[monthNum]) {
                   state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
                   console.log('[CLICK-UPLOAD] Created new background object for month', monthNum);
+                } else {
+                  if (!state.monthBackgrounds[monthNum].zoom) state.monthBackgrounds[monthNum].zoom = 100;
+                  if (!state.monthBackgrounds[monthNum].opacity) state.monthBackgrounds[monthNum].opacity = 100;
+                  if (!state.monthBackgrounds[monthNum].brightness) state.monthBackgrounds[monthNum].brightness = 100;
+                  if (!state.monthBackgrounds[monthNum].saturation) state.monthBackgrounds[monthNum].saturation = 100;
+                  if (!state.monthBackgrounds[monthNum].posX) state.monthBackgrounds[monthNum].posX = 50;
+                  if (!state.monthBackgrounds[monthNum].posY) state.monthBackgrounds[monthNum].posY = 50;
                 }
                 state.monthBackgrounds[monthNum].url = ev2.target.result;
                 console.log('[CLICK-UPLOAD] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
-                console.log('[CLICK-UPLOAD] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+                console.log('[CLICK-UPLOAD] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+                updateBackgroundControls(monthNum);
                 console.log('[CLICK-UPLOAD] Calling render() to update calendar...');
                 render();
               };
@@ -865,6 +883,32 @@
   };
 
   // --- INITIALIZATION ---
+  const updateBackgroundControls = (monthNum) => {
+    const bg = state.monthBackgrounds[monthNum];
+    if (!bg) return;
+    
+    const controls = [
+      { key: 'bgZoom', prop: 'zoom', default: 100 },
+      { key: 'bgOpacity', prop: 'opacity', default: 100 },
+      { key: 'bgBrightness', prop: 'brightness', default: 100 },
+      { key: 'bgSaturation', prop: 'saturation', default: 100 }
+    ];
+    
+    for (let i = 0; i < controls.length; i++) {
+      const control = controls[i];
+      const input = document.querySelector(`[data-state="${control.key}"]`);
+      const label = document.querySelector(`[data-label="${control.key}"]`);
+      const value = bg[control.prop] !== undefined ? bg[control.prop] : control.default;
+      
+      if (input) {
+        input.value = value;
+      }
+      if (label) {
+        label.textContent = value;
+      }
+    }
+  };
+
   const initializeControls = () => {
     if (DOMElements.monthSelect) {
       const options = [];
@@ -935,6 +979,8 @@
         }
       }
     }
+    
+    updateBackgroundControls(state.selectedMonth);
   };
 
   // --- EVENT LISTENERS ---
@@ -963,6 +1009,7 @@
     if (DOMElements.monthSelect) {
       DOMElements.monthSelect.addEventListener('change', (e) => {
         updateStateAndRender('selectedMonth', parseInt(e.target.value));
+        updateBackgroundControls(state.selectedMonth);
       });
     }
     if (DOMElements.yearSelect) {
