@@ -65,6 +65,101 @@
       dateColor: '#0C4A6E', otherMonthDateColor: '#0284C7',
       weekdayColor: '#0369A1', lunarDateColor: '#075985', holidayColor: '#DC2626',
       borderColor: '#BAE6FD'
+    },
+    sunset: {
+      dateColor: '#7C2D12', otherMonthDateColor: '#F97316',
+      weekdayColor: '#EA580C', lunarDateColor: '#F59E0B', holidayColor: '#DC2626',
+      borderColor: '#FED7AA'
+    },
+    ocean: {
+      dateColor: '#164E63', otherMonthDateColor: '#06B6D4',
+      weekdayColor: '#0891B2', lunarDateColor: '#0E7490', holidayColor: '#EF4444',
+      borderColor: '#A5F3FC'
+    },
+    forest: {
+      dateColor: '#14532D', otherMonthDateColor: '#22C55E',
+      weekdayColor: '#16A34A', lunarDateColor: '#15803D', holidayColor: '#DC2626',
+      borderColor: '#BBF7D0'
+    },
+    lavender: {
+      dateColor: '#581C87', otherMonthDateColor: '#A78BFA',
+      weekdayColor: '#7C3AED', lunarDateColor: '#6D28D9', holidayColor: '#EC4899',
+      borderColor: '#E9D5FF'
+    },
+    cherry: {
+      dateColor: '#991B1B', otherMonthDateColor: '#F87171',
+      weekdayColor: '#DC2626', lunarDateColor: '#B91C1C', holidayColor: '#EF4444',
+      borderColor: '#FECACA'
+    },
+    emerald: {
+      dateColor: '#064E3B', otherMonthDateColor: '#10B981',
+      weekdayColor: '#059669', lunarDateColor: '#047857', holidayColor: '#F59E0B',
+      borderColor: '#A7F3D0'
+    },
+    sapphire: {
+      dateColor: '#1E3A8A', otherMonthDateColor: '#60A5FA',
+      weekdayColor: '#3B82F6', lunarDateColor: '#2563EB', holidayColor: '#F97316',
+      borderColor: '#DBEAFE'
+    },
+    rose: {
+      dateColor: '#9F1239', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#E11D48', lunarDateColor: '#BE123C', holidayColor: '#F43F5E',
+      borderColor: '#FFE4E6'
+    },
+    golden: {
+      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#F59E0B', lunarDateColor: '#D97706', holidayColor: '#DC2626',
+      borderColor: '#FEF3C7'
+    },
+    turquoise: {
+      dateColor: '#134E4A', otherMonthDateColor: '#5EEAD4',
+      weekdayColor: '#14B8A6', lunarDateColor: '#0D9488', holidayColor: '#F59E0B',
+      borderColor: '#CCFBF1'
+    },
+    violet: {
+      dateColor: '#5B21B6', otherMonthDateColor: '#C4B5FD',
+      weekdayColor: '#8B5CF6', lunarDateColor: '#7C3AED', holidayColor: '#EC4899',
+      borderColor: '#EDE9FE'
+    },
+    coral: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FDBA74',
+      weekdayColor: '#F97316', lunarDateColor: '#EA580C', holidayColor: '#EF4444',
+      borderColor: '#FFEDD5'
+    },
+    mint: {
+      dateColor: '#065F46', otherMonthDateColor: '#6EE7B7',
+      weekdayColor: '#10B981', lunarDateColor: '#059669', holidayColor: '#F59E0B',
+      borderColor: '#D1FAE5'
+    },
+    indigo: {
+      dateColor: '#312E81', otherMonthDateColor: '#818CF8',
+      weekdayColor: '#6366F1', lunarDateColor: '#4F46E5', holidayColor: '#EC4899',
+      borderColor: '#E0E7FF'
+    },
+    peach: {
+      dateColor: '#9A3412', otherMonthDateColor: '#FED7AA',
+      weekdayColor: '#FB923C', lunarDateColor: '#F97316', holidayColor: '#EF4444',
+      borderColor: '#FFF7ED'
+    },
+    cyan: {
+      dateColor: '#155E75', otherMonthDateColor: '#67E8F9',
+      weekdayColor: '#06B6D4', lunarDateColor: '#0891B2', holidayColor: '#F59E0B',
+      borderColor: '#CFFAFE'
+    },
+    magenta: {
+      dateColor: '#831843', otherMonthDateColor: '#F9A8D4',
+      weekdayColor: '#EC4899', lunarDateColor: '#DB2777', holidayColor: '#F43F5E',
+      borderColor: '#FCE7F3'
+    },
+    amber: {
+      dateColor: '#78350F', otherMonthDateColor: '#FCD34D',
+      weekdayColor: '#F59E0B', lunarDateColor: '#D97706', holidayColor: '#EF4444',
+      borderColor: '#FEF3C7'
+    },
+    teal: {
+      dateColor: '#134E4A', otherMonthDateColor: '#5EEAD4',
+      weekdayColor: '#14B8A6', lunarDateColor: '#0D9488', holidayColor: '#F59E0B',
+      borderColor: '#CCFBF1'
     }
   };
 
@@ -325,6 +420,16 @@
       Object.assign(state, palette);
       state.colorPalette = paletteName;
       state.backgroundColor = '#FFFFFF';
+      
+      const colorInputs = document.querySelectorAll('input[type="color"][data-state]');
+      for (let i = 0; i < colorInputs.length; i++) {
+        const colorInput = colorInputs[i];
+        const key = colorInput.dataset.state;
+        if (state[key]) {
+          colorInput.value = state[key];
+        }
+      }
+      
       saveState();
       render();
     }
