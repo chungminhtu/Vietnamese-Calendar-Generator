@@ -187,16 +187,16 @@
       for (let i = 0; i < state.customHolidays.length; i++) {
         const custom = state.customHolidays[i];
         if (custom && custom.date === dateStr && custom.name) {
-          holidays.push({ name: custom.name, isCustom: true });
+          holidays.push({ name: custom.name, isCustom: true, isPublic: false });
         }
       }
     }
     
     if (lunarDay > 0 && lunarMonth > 0) {
       if (lunarMonth === 1 && lunarDay <= 3) {
-        holidays.push({ name: 'Tết Nguyên Đán', isCustom: false });
+        holidays.push({ name: 'Tết Nguyên Đán', isCustom: false, isPublic: false });
       } else if (lunarMonth === 3 && lunarDay === 10) {
-        holidays.push({ name: 'Giỗ Tổ Hùng Vương', isCustom: false });
+        holidays.push({ name: 'Giỗ Tổ Hùng Vương', isCustom: false, isPublic: false });
       }
     }
     
@@ -217,7 +217,7 @@
               if (h && h.type && enabledTypes.includes(h.type) && h.name) {
                 const exists = holidays.some(existing => existing.name === h.name && !existing.isCustom);
                 if (!exists) {
-                  holidays.push({ name: h.name, isCustom: false });
+                  holidays.push({ name: h.name, isCustom: false, isPublic: h.type === 'public' });
                 }
               }
             }
@@ -226,7 +226,16 @@
       }
     }
     
-    return holidays.length > 0 ? holidays : null;
+    if (holidays.length === 0) {
+      return null;
+    }
+    
+    const publicHolidays = holidays.filter(h => h.isPublic);
+    if (publicHolidays.length > 0 && holidays.length > 1) {
+      return publicHolidays;
+    }
+    
+    return holidays;
   };
 
   const applyColorPalette = (paletteName) => {
@@ -433,6 +442,7 @@
           bgDiv.style.opacity = opacity;
           bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
           bgDiv.style.zIndex = '1';
+          bgDiv.style.cursor = 'move';
           console.log('[RENDER] Applied background image to month', monthNum, 'via JavaScript');
         }
       }
@@ -670,15 +680,52 @@
         overlay.style.cursor = 'grabbing';
       });
       
+      bgDiv.addEventListener('mousedown', (e) => {
+        if (e.button === 1) {
+          const monthNum = parseInt(month);
+          const bg = state.monthBackgrounds[monthNum];
+          if (!bg?.url) return;
+          e.preventDefault();
+          dragState.isDragging = true;
+          dragState.monthNum = monthNum;
+          dragState.monthEl = monthEl;
+          dragState.bgDiv = bgDiv;
+          dragState.dragStartX = e.clientX;
+          dragState.dragStartY = e.clientY;
+          dragState.startPosX = bg.posX || 50;
+          dragState.startPosY = bg.posY || 50;
+          bgDiv.style.cursor = 'grabbing';
+        }
+      });
+      
       monthEl.addEventListener('wheel', (e) => {
         const monthNum = parseInt(month);
         const bg = state.monthBackgrounds[monthNum];
         if (!bg?.url || e.ctrlKey || e.metaKey) return;
+        if (dragState.isDragging) return;
         e.preventDefault();
         const delta = e.deltaY > 0 ? -5 : 5;
         bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
         bgDiv.style.backgroundSize = `${bg.zoom}%`;
       }, { passive: false });
+      
+      monthEl.addEventListener('mousedown', (e) => {
+        if (e.button === 1) {
+          const monthNum = parseInt(month);
+          const bg = state.monthBackgrounds[monthNum];
+          if (!bg?.url) return;
+          e.preventDefault();
+          dragState.isDragging = true;
+          dragState.monthNum = monthNum;
+          dragState.monthEl = monthEl;
+          dragState.bgDiv = bgDiv;
+          dragState.dragStartX = e.clientX;
+          dragState.dragStartY = e.clientY;
+          dragState.startPosX = bg.posX || 50;
+          dragState.startPosY = bg.posY || 50;
+          monthEl.style.cursor = 'grabbing';
+        }
+      });
       
       monthEl.addEventListener('contextmenu', (e) => {
         const monthNum = parseInt(month);
@@ -694,6 +741,12 @@
           }
         }
       });
+      
+      monthEl.addEventListener('auxclick', (e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+        }
+      });
     }
   };
 
@@ -705,8 +758,8 @@
       const bg = state.monthBackgrounds[dragState.monthNum];
       if (!bg?.url || !dragState.monthEl || !dragState.bgDiv) return;
       const rect = dragState.monthEl.getBoundingClientRect();
-      const deltaX = ((e.clientX - dragState.dragStartX) / rect.width) * 100;
-      const deltaY = ((e.clientY - dragState.dragStartY) / rect.height) * 100;
+      const deltaX = -((e.clientX - dragState.dragStartX) / rect.width) * 100;
+      const deltaY = -((e.clientY - dragState.dragStartY) / rect.height) * 100;
       bg.posX = Math.max(0, Math.min(100, dragState.startPosX + deltaX));
       bg.posY = Math.max(0, Math.min(100, dragState.startPosY + deltaY));
       dragState.bgDiv.style.backgroundPosition = `${bg.posX}% ${bg.posY}%`;
@@ -755,16 +808,24 @@
     
     document.addEventListener('mousemove', throttledMouseMove);
     
-    document.addEventListener('mouseup', () => {
+    document.addEventListener('mouseup', (e) => {
       if (dragState.isDragging) {
         dragState.isDragging = false;
         if (dragState.monthEl) {
           const overlay = dragState.monthEl.querySelector('.month-bg-overlay');
           if (overlay) overlay.style.cursor = 'move';
+          const bgDiv = dragState.monthEl.querySelector('.month-bg-image');
+          if (bgDiv && state.monthBackgrounds[dragState.monthNum]?.url) {
+            bgDiv.style.cursor = 'move';
+          }
+          dragState.monthEl.style.cursor = 'default';
         }
         dragState.monthNum = null;
         dragState.monthEl = null;
         dragState.bgDiv = null;
+      }
+      if (e.button === 1) {
+        e.preventDefault();
       }
     });
   }
