@@ -20,14 +20,22 @@
   const getA4Dimensions = (isLandscape) => {
     const pixelsPerMm = DPI / MM_PER_INCH;
     if (isLandscape) {
+      const width = A4_HEIGHT_MM * pixelsPerMm;
+      const height = A4_WIDTH_MM * pixelsPerMm;
       return {
-        width: Math.round(A4_HEIGHT_MM * pixelsPerMm),
-        height: Math.round(A4_WIDTH_MM * pixelsPerMm)
+        width: Math.round(width),
+        height: Math.round(height),
+        exactWidth: width,
+        exactHeight: height
       };
     } else {
+      const width = A4_WIDTH_MM * pixelsPerMm;
+      const height = A4_HEIGHT_MM * pixelsPerMm;
       return {
-        width: Math.round(A4_WIDTH_MM * pixelsPerMm),
-        height: Math.round(A4_HEIGHT_MM * pixelsPerMm)
+        width: Math.round(width),
+        height: Math.round(height),
+        exactWidth: width,
+        exactHeight: height
       };
     }
   };
@@ -1562,7 +1570,8 @@
     for (let i = 0; i < rangeInputs.length; i++) {
       rangeInputs[i].addEventListener('input', (e) => {
         const key = e.target.dataset.state;
-        const isFloat = e.target.step && e.target.step.includes('.');
+        const step = e.target.getAttribute('step');
+        const isFloat = step && (parseFloat(step) < 1 || step.includes('.'));
         const value = isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
         
         if (key.startsWith('bg')) {
@@ -1604,7 +1613,7 @@
         const label = cachedLabels.get(key) || document.querySelector(`[data-label="${key}"]`);
         if (label) {
           if (!cachedLabels.has(key)) cachedLabels.set(key, label);
-          label.textContent = value;
+          label.textContent = isFloat ? value.toFixed(2) : value;
         }
         saveState();
         render();
@@ -1740,8 +1749,18 @@
         try {
           const monthElements = getMonthElements();
           const a4Dims = getA4Dimensions(state.isLandscape);
+          const exactWidth = a4Dims.exactWidth || a4Dims.width;
+          const exactHeight = a4Dims.exactHeight || a4Dims.height;
           const exportContainer = document.createElement('div');
-          exportContainer.style.width = a4Dims.width + 'px';
+          exportContainer.style.width = exactWidth + 'px';
+          exportContainer.style.height = exactHeight + 'px';
+          exportContainer.style.margin = '0';
+          exportContainer.style.padding = '0';
+          exportContainer.style.boxSizing = 'border-box';
+          exportContainer.style.position = 'absolute';
+          exportContainer.style.left = '0';
+          exportContainer.style.top = '0';
+          exportContainer.style.overflow = 'hidden';
           document.body.appendChild(exportContainer);
           
           const processedImages = {};
@@ -1765,14 +1784,17 @@
           monthElements.forEach((monthEl, i) => {
             const clone = monthEl.cloneNode(true);
             Object.assign(clone.style, {
-              width: a4Dims.width + 'px',
-              height: a4Dims.height + 'px',
+              width: exactWidth + 'px',
+              height: exactHeight + 'px',
               margin: '0',
               padding: '0',
               boxSizing: 'border-box',
               overflow: 'hidden',
               transform: 'none',
-              borderRadius: '0'
+              borderRadius: '0',
+              position: 'relative',
+              left: '0',
+              top: '0'
             });
             clone.querySelectorAll('.nav-button').forEach(btn => btn.style.display = 'none');
             
@@ -1782,7 +1804,8 @@
               const bgDiv = clone.querySelector('.month-bg-image');
               if (bgDiv) {
                 const zoom = monthBg.zoom || 100;
-                const posX = monthBg.posX || 50;
+                const offsetPercent = (10 / a4Dims.width) * 100;
+                const posX = (monthBg.posX || 50) - offsetPercent;
                 const posY = monthBg.posY || 50;
                 const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
                 bgDiv.style.backgroundImage = 'url("' + processedImages[monthNum].replace(/"/g, '\\"') + '")';
@@ -1792,6 +1815,15 @@
                 bgDiv.style.opacity = opacity;
                 bgDiv.style.filter = 'none';
                 bgDiv.style.zIndex = '1';
+                bgDiv.style.position = 'absolute';
+                bgDiv.style.top = '0';
+                bgDiv.style.left = '0';
+                bgDiv.style.right = '0';
+                bgDiv.style.bottom = '0';
+                bgDiv.style.width = '100%';
+                bgDiv.style.height = '100%';
+                bgDiv.style.margin = '0';
+                bgDiv.style.padding = '0';
               }
             }
             
@@ -1802,24 +1834,41 @@
           await html2pdf().set({
             margin: 0,
             filename: `lich-viet-${state.selectedYear}-12-thang.pdf`,
-            image: { type: 'jpeg', quality: 1 },
+            image: { type: 'jpeg', quality: 0.95 },
             html2canvas: { 
               scale: EXPORT_SCALE,
               useCORS: true,
               logging: false,
               allowTaint: true,
-              width: a4Dims.width,
-              height: a4Dims.height,
+              width: exactWidth,
+              height: exactHeight,
               onclone: (clonedDoc) => {
+                const body = clonedDoc.body;
+                if (body) {
+                  body.style.margin = '0';
+                  body.style.padding = '0';
+                  body.style.overflow = 'hidden';
+                }
+                const html = clonedDoc.documentElement;
+                if (html) {
+                  html.style.margin = '0';
+                  html.style.padding = '0';
+                  html.style.overflow = 'hidden';
+                }
                 const clonedElements = clonedDoc.querySelectorAll('[data-month]');
                 clonedElements.forEach((clonedEl) => {
+                  clonedEl.style.margin = '0';
+                  clonedEl.style.padding = '0';
+                  clonedEl.style.left = '0';
+                  clonedEl.style.position = 'relative';
                   const monthNum = parseInt(clonedEl.dataset.month);
                   const monthBg = state.monthBackgrounds[monthNum];
                   if (monthBg && monthBg.url && processedImages[monthNum]) {
                     const bgDiv = clonedEl.querySelector('.month-bg-image');
                     if (bgDiv) {
                       const zoom = monthBg.zoom || 100;
-                      const posX = monthBg.posX || 50;
+                      const offsetPercent = (10 / a4Dims.width) * 100;
+                      const posX = (monthBg.posX || 50) - offsetPercent;
                       const posY = monthBg.posY || 50;
                       const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
                       bgDiv.style.backgroundImage = 'url("' + processedImages[monthNum].replace(/"/g, '\\"') + '")';
@@ -1829,6 +1878,15 @@
                       bgDiv.style.opacity = opacity;
                       bgDiv.style.filter = 'none';
                       bgDiv.style.zIndex = '1';
+                      bgDiv.style.position = 'absolute';
+                      bgDiv.style.top = '0';
+                      bgDiv.style.left = '0';
+                      bgDiv.style.right = '0';
+                      bgDiv.style.bottom = '0';
+                      bgDiv.style.width = '100%';
+                      bgDiv.style.height = '100%';
+                      bgDiv.style.margin = '0';
+                      bgDiv.style.padding = '0';
                     }
                   }
                 });
@@ -1836,7 +1894,7 @@
             },
             jsPDF: { 
               unit: 'mm', 
-              format: [state.isLandscape ? A4_HEIGHT_MM : A4_WIDTH_MM, state.isLandscape ? A4_WIDTH_MM : A4_HEIGHT_MM],
+              format: 'a4',
               orientation: state.isLandscape ? 'landscape' : 'portrait'
             },
             pagebreak: { mode: ['css', 'legacy'] }
