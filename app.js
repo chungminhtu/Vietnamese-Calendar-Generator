@@ -4,6 +4,9 @@
 
   // --- CONSTANTS ---
   const STORAGE_KEY = 'vietnamese-calendar-settings';
+  const DB_NAME = 'vietnamese-calendar-images';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'background-images';
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
   const MAX_INIT_ATTEMPTS = 100;
@@ -119,6 +122,77 @@
       customHolidays: [],
       isExporting: false, isDragging: false
     };
+  };
+
+  // --- INDEXEDDB HELPERS ---
+  let db = null;
+  
+  const openDB = () => {
+    return new Promise((resolve, reject) => {
+      if (db) {
+        resolve(db);
+        return;
+      }
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        db = request.result;
+        resolve(db);
+      };
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'month' });
+        }
+      };
+    });
+  };
+  
+  const saveBackgroundImage = async (monthNum, imageData) => {
+    try {
+      const database = await openDB();
+      const transaction = database.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      await store.put({ month: monthNum, ...imageData });
+    } catch (e) {
+      console.warn('[IDB] Failed to save background image for month', monthNum, ':', e);
+    }
+  };
+  
+  const loadBackgroundImages = async () => {
+    try {
+      const database = await openDB();
+      const transaction = database.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll();
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+          const images = {};
+          for (let i = 0; i < request.result.length; i++) {
+            const item = request.result[i];
+            const month = item.month;
+            delete item.month;
+            images[month] = item;
+          }
+          resolve(images);
+        };
+        request.onerror = () => reject(request.error);
+      });
+    } catch (e) {
+      console.warn('[IDB] Failed to load background images:', e);
+      return {};
+    }
+  };
+  
+  const deleteBackgroundImage = async (monthNum) => {
+    try {
+      const database = await openDB();
+      const transaction = database.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      await store.delete(monthNum);
+    } catch (e) {
+      console.warn('[IDB] Failed to delete background image for month', monthNum, ':', e);
+    }
   };
 
   const loadState = () => {
@@ -629,6 +703,7 @@
             state.monthBackgrounds[monthNum].url = ev.target.result;
             console.log('[DRAG-DROP] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
             console.log('[DRAG-DROP] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+            saveBackgroundImage(monthNum, state.monthBackgrounds[monthNum]);
             updateBackgroundControls(monthNum);
             console.log('[DRAG-DROP] Calling render() to update calendar...');
             render();
@@ -670,6 +745,7 @@
                 state.monthBackgrounds[monthNum].url = ev2.target.result;
                 console.log('[CLICK-UPLOAD] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
                 console.log('[CLICK-UPLOAD] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, opacity: state.monthBackgrounds[monthNum].opacity, brightness: state.monthBackgrounds[monthNum].brightness, saturation: state.monthBackgrounds[monthNum].saturation, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+                saveBackgroundImage(monthNum, state.monthBackgrounds[monthNum]);
                 updateBackgroundControls(monthNum);
                 console.log('[CLICK-UPLOAD] Calling render() to update calendar...');
                 render();
@@ -725,6 +801,7 @@
         const delta = e.deltaY > 0 ? -5 : 5;
         bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
         bgDiv.style.backgroundSize = `${bg.zoom}%`;
+        saveBackgroundImage(monthNum, bg);
       }, { passive: false });
       
       monthEl.addEventListener('mousedown', (e) => {
@@ -755,6 +832,7 @@
             if (Object.keys(bg).length === 0 || (Object.keys(bg).length === 6 && !bg.url)) {
               delete state.monthBackgrounds[monthNum];
             }
+            deleteBackgroundImage(monthNum);
             render();
           }
         }
@@ -781,6 +859,7 @@
       bg.posX = Math.max(0, Math.min(100, dragState.startPosX + deltaX));
       bg.posY = Math.max(0, Math.min(100, dragState.startPosY + deltaY));
       dragState.bgDiv.style.backgroundPosition = `${bg.posX}% ${bg.posY}%`;
+      saveBackgroundImage(dragState.monthNum, bg);
     }, 16);
     
     document.addEventListener('keydown', (e) => {
@@ -1057,6 +1136,9 @@
                 state.monthBackgrounds[month] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
               }
               state.monthBackgrounds[month][actualKey] = value;
+              if (state.monthBackgrounds[month].url) {
+                saveBackgroundImage(month, state.monthBackgrounds[month]);
+              }
             }
           }
         } else {
@@ -1358,7 +1440,16 @@
       initDOMElements();
       initializeControls();
       setupEventListeners();
-      render();
+      loadBackgroundImages().then((images) => {
+        if (Object.keys(images).length > 0) {
+          state.monthBackgrounds = { ...state.monthBackgrounds, ...images };
+          console.log('[IDB] Loaded', Object.keys(images).length, 'background images from IndexedDB');
+        }
+        render();
+      }).catch((e) => {
+        console.warn('[IDB] Failed to load background images, rendering without them:', e);
+        render();
+      });
       console.log('Calendar initialized successfully');
     } catch (e) {
       console.error('Failed to initialize app:', e);
