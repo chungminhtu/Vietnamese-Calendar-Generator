@@ -290,6 +290,31 @@
       console.warn('[IDB] Failed to delete background image for month', monthNum, ':', e);
     }
   };
+  
+  const removeAllBackgroundImages = async () => {
+    if (!confirm('Bạn có chắc chắn muốn xóa tất cả hình nền?')) {
+      return;
+    }
+    
+    try {
+      const database = await openDB();
+      const transaction = database.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.clear();
+      await new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+      
+      state.monthBackgrounds = {};
+      render();
+      console.log('[IDB] All background images removed');
+    } catch (e) {
+      console.warn('[IDB] Failed to remove all background images:', e);
+      state.monthBackgrounds = {};
+      render();
+    }
+  };
 
   const loadState = () => {
     try {
@@ -488,9 +513,10 @@
     html += '</div></div>';
     
     if (hasHolidays && isCurrentMonth) {
-      html += '<div class="text-center pb-1 mt-auto">';
+      html += '<div class="text-center mt-auto" style="padding-bottom: 2px;">';
       for (let i = 0; i < holidays.length; i++) {
-        html += '<p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + state.holidayColor + '; line-height: normal; padding: 1px 0;">' + holidays[i].name + '</p>';
+        const holidayColor = holidays[i].isCustom ? '#6B21A8' : state.holidayColor;
+        html += '<p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + holidayColor + '; line-height: normal; padding: 0; margin: 0;">' + holidays[i].name + '</p>';
       }
       html += '</div>';
     }
@@ -1417,6 +1443,13 @@
         if (e.key === 'Enter') {
           DOMElements.addCustomHolidayBtn.click();
         }
+      });
+    }
+    
+    const removeAllBackgroundsBtn = document.getElementById('remove-all-backgrounds');
+    if (removeAllBackgroundsBtn) {
+      removeAllBackgroundsBtn.addEventListener('click', async () => {
+        await removeAllBackgroundImages();
       });
     }
     
