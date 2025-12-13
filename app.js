@@ -413,8 +413,7 @@
   };
 
   let state = loadState();
-  let holidayjsData = null;
-  let holidayjsCache = {};
+  let holidayService = null;
   let dragState = { isDragging: false, monthNum: null, dragStartX: 0, dragStartY: 0, startPosX: 0, startPosY: 0, monthEl: null, bgDiv: null };
   let shiftPressedMonths = new Set();
 
@@ -478,7 +477,7 @@
       }
     }
     
-    if (holidayjsData) {
+    if (holidayService) {
       const enabledTypes = [];
       if (state.showHolidayPublic) enabledTypes.push('public');
       if (state.showHolidayBank) enabledTypes.push('bank');
@@ -487,45 +486,22 @@
       if (state.showHolidayObservance) enabledTypes.push('observance');
       if (enabledTypes.length > 0) {
         try {
-          const year = date.getFullYear();
-          const dateStr = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-          
-          if (!holidayjsCache[year]) {
-            if (typeof holidayjs !== 'undefined' && typeof holidayjs.calculateHolidays === 'function') {
-              holidayjs.calculateHolidays('ca', year, (err, yearHolidays) => {
-                if (!err && yearHolidays) {
-                  holidayjsCache[year] = yearHolidays;
-                }
-              });
-            }
-          }
-          
-          const yearHolidays = holidayjsCache[year];
-          if (yearHolidays && Array.isArray(yearHolidays)) {
-            for (let i = 0; i < yearHolidays.length; i++) {
-              const h = yearHolidays[i];
-              if (h && h.date === dateStr) {
-                const holidayTypes = h.type ? (Array.isArray(h.type) ? h.type : [h.type]) : [];
-                const hasEnabledType = holidayTypes.some(t => enabledTypes.includes(t));
-                
-                if (hasEnabledType && h.name) {
-                  const hNormalized = normalizeName(h.name);
-                  const exists = holidays.some(existing => {
-                    if (existing.isCustom) return false;
-                    const existingNormalized = normalizeName(existing.name);
-                    if (existingNormalized === hNormalized) return true;
-                    if (existingNormalized.includes(hNormalized) || hNormalized.includes(existingNormalized)) return true;
-                    return false;
-                  });
-                  if (!exists) {
-                    const isPublic = holidayTypes.includes('public');
-                    holidays.push({ 
-                      name: h.name, 
-                      isCustom: false, 
-                      isPublic: isPublic, 
-                      holidayType: holidayTypes[0] || 'observance' 
-                    });
-                  }
+          const allHolidays = holidayService.isHoliday(date);
+          if (allHolidays) {
+            const holidaysArray = Array.isArray(allHolidays) ? allHolidays : [allHolidays];
+            for (let i = 0; i < holidaysArray.length; i++) {
+              const h = holidaysArray[i];
+              if (h && h.type && enabledTypes.includes(h.type) && h.name) {
+                const hNormalized = normalizeName(h.name);
+                const exists = holidays.some(existing => {
+                  if (existing.isCustom) return false;
+                  const existingNormalized = normalizeName(existing.name);
+                  if (existingNormalized === hNormalized) return true;
+                  if (existingNormalized.includes(hNormalized) || hNormalized.includes(existingNormalized)) return true;
+                  return false;
+                });
+                if (!exists) {
+                  holidays.push({ name: h.name, isCustom: false, isPublic: h.type === 'public', holidayType: h.type });
                 }
               }
             }
@@ -2008,15 +1984,17 @@
     }
     
     try {
-      if (typeof holidayjs !== 'undefined') {
-        holidayjsData = holidayjs;
-        if (typeof holidayjs.calculateHolidays === 'function') {
-          holidayjs.calculateHolidays('ca', state.selectedYear, (err, holidays) => {
-            if (!err && holidays) {
-              holidayjsCache[state.selectedYear] = holidays;
-              render();
-            }
-          });
+      const HolidaysLib = window.Holidays || window.dateHolidays || Holidays;
+      if (HolidaysLib) {
+        try {
+          if (HolidaysLib.default) {
+            holidayService = new HolidaysLib.default('VN');
+          } else if (typeof HolidaysLib === 'function') {
+            holidayService = new HolidaysLib('VN');
+          } else if (HolidaysLib.Holidays) {
+            holidayService = new HolidaysLib.Holidays('VN');
+          }
+        } catch (e) {
         }
       }
     } catch (e) {
@@ -2044,13 +2022,16 @@
   };
 
   const debugHolidays2026 = () => {
-    if (!holidayjsData || typeof holidayjsData.calculateHolidays !== 'function') {
-      console.log('Holidayjs not available');
+    if (!holidayService) {
+      console.log('Holiday service not available');
       return;
     }
     
     console.log('=== DEBUG: All Holidays for 2026 (All Types) ===');
     const year = 2026;
+    const allHolidays = [];
+    const startDate = new Date(year, 0, 1);
+    const endDate = new Date(year, 11, 31);
     
     const typeLabels = {
       'public': 'public holiday',
@@ -2060,59 +2041,53 @@
       'observance': 'optional festivity, no paid day off'
     };
     
-    holidayjsData.calculateHolidays('ca', year, (err, yearHolidays) => {
-      if (err) {
-        console.error('Error calculating holidays:', err);
-        return;
-      }
-      
-      if (!yearHolidays || !Array.isArray(yearHolidays)) {
-        console.log('No holidays found');
-        return;
-      }
-      
-      const allHolidays = [];
-      yearHolidays.forEach(h => {
-        if (h && h.name && h.date) {
-          const dateObj = new Date(h.date + 'T00:00:00');
-          const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dateObj.getDay()];
-          const holidayTypes = h.type ? (Array.isArray(h.type) ? h.type : [h.type]) : ['observance'];
-          
-          holidayTypes.forEach(type => {
-            allHolidays.push({
-              date: h.date,
-              weekday: weekday,
-              name: h.name,
-              type: type
-            });
-          });
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      try {
+        const holidayResult = holidayService.isHoliday(d);
+        if (holidayResult) {
+          const holidaysArray = Array.isArray(holidayResult) ? holidayResult : [holidayResult];
+          for (let i = 0; i < holidaysArray.length; i++) {
+            const h = holidaysArray[i];
+            if (h && h.type && h.name) {
+              const dateStr = `${year}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+              const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+              allHolidays.push({
+                date: dateStr,
+                weekday: weekday,
+                name: h.name,
+                type: h.type
+              });
+            }
+          }
         }
-      });
-      
-      console.log(`Total holidays found: ${allHolidays.length}`);
-      
-      const types = ['public', 'bank', 'school', 'optional', 'observance'];
-      types.forEach(type => {
-        const typeHolidays = allHolidays.filter(h => h.type === type);
-        if (typeHolidays.length > 0) {
-          console.log(`\n--- ${type.toUpperCase()} Holidays (${typeLabels[type]}) - ${typeHolidays.length} found ---`);
-          typeHolidays.sort((a, b) => a.date.localeCompare(b.date));
-          typeHolidays.forEach(h => {
-            console.log(`${h.date} (${h.weekday}): ${h.name}`);
-          });
-        } else {
-          console.log(`\n--- ${type.toUpperCase()} Holidays (${typeLabels[type]}) - 0 found ---`);
-        }
-      });
-      
-      console.log('\n--- All Holidays (Sorted by Date) ---');
-      allHolidays.sort((a, b) => a.date.localeCompare(b.date));
-      allHolidays.forEach(h => {
-        console.log(`${h.date} (${h.weekday}): ${h.name} [${h.type}]`);
-      });
-      
-      console.log('\n=== End Debug ===');
+      } catch (e) {
+        console.error('Error checking holiday for', d, e);
+      }
+    }
+    
+    console.log(`Total holidays found: ${allHolidays.length}`);
+    
+    const types = ['public', 'bank', 'school', 'optional', 'observance'];
+    types.forEach(type => {
+      const typeHolidays = allHolidays.filter(h => h.type === type);
+      if (typeHolidays.length > 0) {
+        console.log(`\n--- ${type.toUpperCase()} Holidays (${typeLabels[type]}) - ${typeHolidays.length} found ---`);
+        typeHolidays.sort((a, b) => a.date.localeCompare(b.date));
+        typeHolidays.forEach(h => {
+          console.log(`${h.date} (${h.weekday}): ${h.name}`);
+        });
+      } else {
+        console.log(`\n--- ${type.toUpperCase()} Holidays (${typeLabels[type]}) - 0 found ---`);
+      }
     });
+    
+    console.log('\n--- All Holidays (Sorted by Date) ---');
+    allHolidays.sort((a, b) => a.date.localeCompare(b.date));
+    allHolidays.forEach(h => {
+      console.log(`${h.date} (${h.weekday}): ${h.name} [${h.type}]`);
+    });
+    
+    console.log('\n=== End Debug ===');
   };
   
   document.addEventListener('DOMContentLoaded', () => {
