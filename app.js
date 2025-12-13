@@ -11,7 +11,7 @@
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
   const MAX_INIT_ATTEMPTS = 100;
-  const EXPORT_SCALE = 1;
+  const EXPORT_SCALE = 4;
   const DPI = 96;
   const MM_PER_INCH = 25.4;
   const A4_WIDTH_MM = 210;
@@ -691,10 +691,10 @@
     if (state.showWritingLines) {
       let lineCount = parseInt(state.writingLinesCount);
       if (isNaN(lineCount) || lineCount < 2) lineCount = 3;
-      const availableHeight = 'calc(100% - 50px)';
+      const availableHeight = 'calc(100% - 30px)';
       const gapCount = lineCount + 1;
       const gapSizePercent = 100 / gapCount;
-      html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 50px; padding: 0 2px; pointer-events: none; height: ' + availableHeight + ';">';
+      html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 30px; padding: 0 2px; pointer-events: none; height: ' + availableHeight + ';">';
       for (let i = 0; i < lineCount; i++) {
         const bottomOffset = gapSizePercent * (i + 1);
         html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; border-top: 1px dotted ' + state.borderColor + '; width: calc(100% - 4px);"></div>';
@@ -798,13 +798,13 @@
     // --- FIX END ---
     
     const a4Dims = getA4Dimensions(state.isLandscape);
-    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: ' + a4Dims.width + 'px; height: ' + a4Dims.height + 'px; max-width: 100%; max-height: calc(100vh - 4rem); background-color: ' + containerBackgroundColor + ';">' +
+    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: ' + a4Dims.width + 'px; height: ' + a4Dims.height + 'px; max-width: 100%; max-height: calc(100vh - 4rem); background-color: ' + containerBackgroundColor + '; box-sizing: border-box; overflow: hidden;">' +
       // Layer 1: The Background Image
       '<div class="month-bg-image absolute inset-0 rounded-lg" style="position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; ' + bgStyle + ' cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1 !important; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%;"></div>' +
       // Layer 2: Overlay (hidden by default)
       '<div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>' +
       // Layer 3: The Content (Dates/Text) - Now uses contentBackgroundColor
-      '<div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ' + state.selectedFont + '; background-color: ' + contentBackgroundColor + ';">' +
+      '<div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ' + state.selectedFont + '; background-color: ' + contentBackgroundColor + '; box-sizing: border-box;">' +
         '<header class="relative text-center pb-4 flex items-center justify-center">' + generateNavButtonsHTML() + '<div class="flex-1">' + generateHeaderHTML(month, year) + '</div></header>' +
         '<div class="flex flex-col flex-grow">' +
           '<div class="weekday-header grid grid-cols-7">' + generateWeekdayHTML() + '</div>' +
@@ -1079,23 +1079,25 @@
       });
       
       overlay.addEventListener('mousedown', (e) => {
-        const monthNum = parseInt(month);
-        const bg = state.monthBackgrounds[monthNum];
-        if (!bg?.url) return;
-        dragState.isDragging = true;
-        dragState.monthNum = monthNum;
-        dragState.monthEl = monthEl;
-        dragState.bgDiv = bgDiv;
-        dragState.dragStartX = e.clientX;
-        dragState.dragStartY = e.clientY;
-        dragState.startPosX = bg.posX || 50;
-        dragState.startPosY = bg.posY || 50;
-        e.preventDefault();
-        overlay.style.cursor = 'grabbing';
+        if (e.button === 0 && e.shiftKey) {
+          const monthNum = parseInt(month);
+          const bg = state.monthBackgrounds[monthNum];
+          if (!bg?.url) return;
+          dragState.isDragging = true;
+          dragState.monthNum = monthNum;
+          dragState.monthEl = monthEl;
+          dragState.bgDiv = bgDiv;
+          dragState.dragStartX = e.clientX;
+          dragState.dragStartY = e.clientY;
+          dragState.startPosX = bg.posX || 50;
+          dragState.startPosY = bg.posY || 50;
+          e.preventDefault();
+          overlay.style.cursor = 'grabbing';
+        }
       });
       
       bgDiv.addEventListener('mousedown', (e) => {
-        if (e.button === 1) {
+        if (e.button === 0 && e.shiftKey) {
           const monthNum = parseInt(month);
           const bg = state.monthBackgrounds[monthNum];
           if (!bg?.url) return;
@@ -1115,8 +1117,9 @@
       monthEl.addEventListener('wheel', (e) => {
         const monthNum = parseInt(month);
         const bg = state.monthBackgrounds[monthNum];
-        if (!bg?.url || e.ctrlKey || e.metaKey) return;
+        if (!bg?.url) return;
         if (dragState.isDragging) return;
+        if (!e.shiftKey) return;
         e.preventDefault();
         const delta = e.deltaY > 0 ? -5 : 5;
         bg.zoom = Math.max(50, Math.min(200, (bg.zoom || 100) + delta));
@@ -1125,7 +1128,7 @@
       }, { passive: false });
       
       monthEl.addEventListener('mousedown', (e) => {
-        if (e.button === 1) {
+        if (e.button === 0 && e.shiftKey) {
           const monthNum = parseInt(month);
           const bg = state.monthBackgrounds[monthNum];
           if (!bg?.url) return;
@@ -1681,33 +1684,13 @@
           let pdf = null;
           const monthElements = getMonthElements();
           
+          const a4Dims = getA4Dimensions(state.isLandscape);
+          const elementWidth = a4Dims.width;
+          const elementHeight = a4Dims.height;
+          
           for (let i = 0; i < monthElements.length; i++) {
             const monthEl = monthElements[i];
             const month = parseInt(monthEl.dataset.month);
-            
-            const originalStyles = {
-              position: monthEl.style.position,
-              transform: monthEl.style.transform,
-              margin: monthEl.style.margin,
-              padding: monthEl.style.padding,
-              boxSizing: monthEl.style.boxSizing,
-              overflow: monthEl.style.overflow
-            };
-            
-            monthEl.style.position = 'absolute';
-            monthEl.style.left = '0';
-            monthEl.style.top = '0';
-            monthEl.style.margin = '0';
-            monthEl.style.padding = '0';
-            monthEl.style.boxSizing = 'border-box';
-            monthEl.style.overflow = 'visible';
-            
-            const a4Dims = getA4Dimensions(state.isLandscape);
-            const elementWidth = a4Dims.width;
-            const elementHeight = a4Dims.height;
-            
-            monthEl.style.width = elementWidth + 'px';
-            monthEl.style.height = elementHeight + 'px';
             
             await new Promise(resolve => setTimeout(resolve, 150));
             
@@ -1730,20 +1713,116 @@
               onclone: (clonedDoc, element) => {
                 const clonedMonth = clonedDoc.querySelector(`[data-month="${month}"]`);
                 if (clonedMonth) {
-                  clonedMonth.style.position = 'absolute';
+                  const rect = monthEl.getBoundingClientRect();
+                  clonedMonth.style.position = 'fixed';
                   clonedMonth.style.left = '0';
                   clonedMonth.style.top = '0';
                   clonedMonth.style.width = elementWidth + 'px';
-                  clonedMonth.style.height = finalHeight + 'px';
+                  clonedMonth.style.height = elementHeight + 'px';
                   clonedMonth.style.margin = '0';
                   clonedMonth.style.padding = '0';
                   clonedMonth.style.boxSizing = 'border-box';
-                  clonedMonth.style.overflow = 'visible';
+                  clonedMonth.style.overflow = 'hidden';
                   clonedMonth.style.transform = 'none';
+                  clonedMonth.style.borderRadius = '0';
+                  clonedMonth.style.maxWidth = elementWidth + 'px';
+                  clonedMonth.style.maxHeight = elementHeight + 'px';
                   
                   const navButtons = clonedMonth.querySelectorAll('.nav-button');
                   for (let j = 0; j < navButtons.length; j++) {
                     navButtons[j].style.display = 'none';
+                  }
+                  
+                  const contentDiv = clonedMonth.querySelector('.relative.w-full.h-full');
+                  if (contentDiv) {
+                    const originalContentDiv = monthEl.querySelector('.relative.w-full.h-full');
+                    if (originalContentDiv) {
+                      const computedStyle = window.getComputedStyle(originalContentDiv);
+                      contentDiv.style.padding = computedStyle.padding;
+                      contentDiv.style.margin = '0';
+                      contentDiv.style.boxSizing = 'border-box';
+                    }
+                  }
+                  
+                  const clonedDayCells = clonedMonth.querySelectorAll('.calendar-grid > div');
+                  const originalDayCells = monthEl.querySelectorAll('.calendar-grid > div');
+                  for (let j = 0; j < clonedDayCells.length && j < originalDayCells.length; j++) {
+                    const dayCell = clonedDayCells[j];
+                    const originalCell = originalDayCells[j];
+                    const computedStyle = window.getComputedStyle(originalCell);
+                    dayCell.style.padding = computedStyle.padding;
+                    dayCell.style.margin = '0';
+                    dayCell.style.lineHeight = computedStyle.lineHeight;
+                    dayCell.style.verticalAlign = computedStyle.verticalAlign;
+                    dayCell.style.display = computedStyle.display;
+                    dayCell.style.alignItems = computedStyle.alignItems;
+                    dayCell.style.justifyContent = computedStyle.justifyContent;
+                    dayCell.style.alignContent = computedStyle.alignContent;
+                    
+                    const flexContainers = dayCell.querySelectorAll('.flex, .w-full');
+                    const originalFlexContainers = originalCell.querySelectorAll('.flex, .w-full');
+                    for (let f = 0; f < flexContainers.length && f < originalFlexContainers.length; f++) {
+                      const flexEl = flexContainers[f];
+                      const originalFlexEl = originalFlexContainers[f];
+                      const flexComputedStyle = window.getComputedStyle(originalFlexEl);
+                      flexEl.style.alignItems = flexComputedStyle.alignItems;
+                      flexEl.style.justifyContent = flexComputedStyle.justifyContent;
+                      flexEl.style.alignContent = flexComputedStyle.alignContent;
+                      flexEl.style.margin = flexComputedStyle.margin;
+                      flexEl.style.padding = flexComputedStyle.padding;
+                      flexEl.style.minHeight = flexComputedStyle.minHeight;
+                      flexEl.style.gap = flexComputedStyle.gap;
+                    }
+                    
+                    const dateParagraphs = dayCell.querySelectorAll('p');
+                    const originalDateParagraphs = originalCell.querySelectorAll('p');
+                    for (let k = 0; k < dateParagraphs.length && k < originalDateParagraphs.length; k++) {
+                      const dateP = dateParagraphs[k];
+                      const originalP = originalDateParagraphs[k];
+                      const pComputedStyle = window.getComputedStyle(originalP);
+                      dateP.style.lineHeight = pComputedStyle.lineHeight;
+                      dateP.style.margin = pComputedStyle.margin;
+                      dateP.style.padding = pComputedStyle.padding;
+                      dateP.style.fontSize = pComputedStyle.fontSize;
+                      dateP.style.fontWeight = pComputedStyle.fontWeight;
+                      dateP.style.verticalAlign = pComputedStyle.verticalAlign;
+                      dateP.style.display = pComputedStyle.display;
+                      dateP.style.height = pComputedStyle.height;
+                      dateP.style.boxSizing = pComputedStyle.boxSizing;
+                      
+                      const textCenterDivs = dateP.parentElement ? dateP.parentElement.querySelectorAll('.text-center') : [];
+                      const originalTextCenterDivs = originalP.parentElement ? originalP.parentElement.querySelectorAll('.text-center') : [];
+                      for (let t = 0; t < textCenterDivs.length && t < originalTextCenterDivs.length; t++) {
+                        const textDiv = textCenterDivs[t];
+                        const originalTextDiv = originalTextCenterDivs[t];
+                        const textComputedStyle = window.getComputedStyle(originalTextDiv);
+                        textDiv.style.lineHeight = textComputedStyle.lineHeight;
+                        textDiv.style.margin = textComputedStyle.margin;
+                        textDiv.style.padding = textComputedStyle.padding;
+                        textDiv.style.display = textComputedStyle.display;
+                        textDiv.style.textAlign = textComputedStyle.textAlign;
+                        textDiv.style.alignItems = textComputedStyle.alignItems;
+                        textDiv.style.justifyContent = textComputedStyle.justifyContent;
+                        textDiv.style.height = textComputedStyle.height;
+                        textDiv.style.minHeight = textComputedStyle.minHeight;
+                        textDiv.style.boxSizing = textComputedStyle.boxSizing;
+                      }
+                      
+                      const leadingNoneDivs = dateP.parentElement ? dateP.parentElement.querySelectorAll('.leading-none') : [];
+                      const originalLeadingNoneDivs = originalP.parentElement ? originalP.parentElement.querySelectorAll('.leading-none') : [];
+                      for (let l = 0; l < leadingNoneDivs.length && l < originalLeadingNoneDivs.length; l++) {
+                        const leadingDiv = leadingNoneDivs[l];
+                        const originalLeadingDiv = originalLeadingNoneDivs[l];
+                        const leadingComputedStyle = window.getComputedStyle(originalLeadingDiv);
+                        leadingDiv.style.lineHeight = leadingComputedStyle.lineHeight;
+                        leadingDiv.style.margin = leadingComputedStyle.margin;
+                        leadingDiv.style.padding = leadingComputedStyle.padding;
+                        leadingDiv.style.display = leadingComputedStyle.display;
+                        leadingDiv.style.height = leadingComputedStyle.height;
+                        leadingDiv.style.minHeight = leadingComputedStyle.minHeight;
+                        leadingDiv.style.boxSizing = leadingComputedStyle.boxSizing;
+                      }
+                    }
                   }
                   
                   const allTextElements = clonedMonth.querySelectorAll('p, h1, h2, h3, span, div');
@@ -1763,6 +1842,12 @@
                   const calendarGrid = clonedMonth.querySelector('.calendar-grid');
                   if (calendarGrid) {
                     calendarGrid.style.overflow = 'visible';
+                    const originalGrid = monthEl.querySelector('.calendar-grid');
+                    if (originalGrid) {
+                      const computedStyle = window.getComputedStyle(originalGrid);
+                      calendarGrid.style.margin = computedStyle.margin;
+                      calendarGrid.style.padding = computedStyle.padding;
+                    }
                   }
                   
                   const holidayNames = clonedMonth.querySelectorAll('.holiday-name');
@@ -1779,8 +1864,13 @@
                   body.style.margin = '0';
                   body.style.padding = '0';
                   body.style.width = elementWidth + 'px';
-                  body.style.height = finalHeight + 'px';
-                  body.style.overflow = 'visible';
+                  body.style.height = elementHeight + 'px';
+                  body.style.overflow = 'hidden';
+                  body.style.position = 'fixed';
+                  body.style.left = '0';
+                  body.style.top = '0';
+                  body.style.maxWidth = elementWidth + 'px';
+                  body.style.maxHeight = elementHeight + 'px';
                 }
                 
                 const html = clonedDoc.documentElement;
@@ -1788,24 +1878,18 @@
                   html.style.margin = '0';
                   html.style.padding = '0';
                   html.style.width = elementWidth + 'px';
-                  html.style.height = finalHeight + 'px';
-                  html.style.overflow = 'visible';
+                  html.style.height = elementHeight + 'px';
+                  html.style.overflow = 'hidden';
+                  html.style.maxWidth = elementWidth + 'px';
+                  html.style.maxHeight = elementHeight + 'px';
                 }
               }
             });
             
-            monthEl.style.position = originalStyles.position;
-            monthEl.style.transform = originalStyles.transform;
-            monthEl.style.margin = originalStyles.margin;
-            monthEl.style.padding = originalStyles.padding;
-            monthEl.style.boxSizing = originalStyles.boxSizing;
-            monthEl.style.overflow = originalStyles.overflow;
-            monthEl.style.left = '';
-            monthEl.style.top = '';
-            monthEl.style.width = '';
-            monthEl.style.height = '';
-            
             const imgData = canvas.toDataURL('image/png', 1.0);
+            const pixelsPerMm = DPI / MM_PER_INCH;
+            const canvasWidthMm = (canvas.width / EXPORT_SCALE) / pixelsPerMm;
+            const canvasHeightMm = (canvas.height / EXPORT_SCALE) / pixelsPerMm;
             const mmWidth = state.isLandscape ? A4_HEIGHT_MM : A4_WIDTH_MM;
             const mmHeight = state.isLandscape ? A4_WIDTH_MM : A4_HEIGHT_MM;
             
