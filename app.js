@@ -342,6 +342,7 @@
       borderColor: '#4B5563', colorPalette: 'default',
       datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1,
       showOtherMonthDates: true, isLandscape: false, showAllMonths: false,
+      showWritingLines: true, writingLinesCount: 3,
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false,
       showHolidayOptional: false, showHolidayObservance: true,
       monthBackgrounds: {},
@@ -458,6 +459,7 @@
         const parsed = JSON.parse(saved);
         const state = { ...defaultState(), ...parsed };
         state.monthBackgrounds = {};
+        if (!state.writingLinesCount) state.writingLinesCount = 3;
         return state;
       }
     } catch (e) {
@@ -646,19 +648,39 @@
     const positionClasses = DATE_POSITION_CLASSES[datePosition] || DATE_POSITION_CLASSES['top-right'];
     
     const dayNum = date.getDate();
-    let html = '<div class="border-r border-b p-1 flex flex-col" style="border-color: ' + state.borderColor + '; border-right-width: ' + borderWidth + 'px; border-bottom-width: ' + borderWidth + 'px;"><div class="w-full flex-1 flex ' + positionClasses + '"><div class="text-center leading-none"><p style="font-size: ' + dateSize + 'px; font-weight: ' + dateFontWeight + '; color: ' + dateColor + ';">' + dayNum + '</p>';
-    
-    if (lunarDay > 0 && lunarMonth > 0) {
-      html += '<p style="font-size: ' + lunarDateFontSize + 'px; color: ' + state.lunarDateColor + '; line-height: 1.2;">' + lunarDay + '/' + lunarMonth + '</p>';
-    }
-    
-    html += '</div></div>';
+    let html = '<div class="border-r border-b p-1 flex flex-col relative" style="border-color: ' + state.borderColor + '; border-right-width: ' + borderWidth + 'px; border-bottom-width: ' + borderWidth + 'px;">';
     
     if (hasHolidays && isCurrentMonth) {
-      html += '<div class="text-center mt-auto" style="padding-bottom: 2px;">';
+      html += '<div class="w-full flex items-start" style="min-height: ' + dateSize + 'px; gap: 4px;">';
+      html += '<div class="holiday-section" style="flex: 1 1 auto; min-width: 0; max-width: 70%;">';
       for (let i = 0; i < holidays.length; i++) {
         const holidayColor = holidays[i].isCustom ? '#6B21A8' : state.holidayColor;
-        html += '<p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + holidayColor + '; line-height: normal; padding: 0; margin: 0;">' + holidays[i].name + '</p>';
+        html += '<p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + holidayColor + '; line-height: normal; padding: 0; margin: 0; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; text-align: left;">' + holidays[i].name + '</p>';
+      }
+      html += '</div>';
+      html += '<div class="flex ' + positionClasses + '" style="flex-shrink: 0;"><div class="text-center leading-none"><p style="font-size: ' + dateSize + 'px; font-weight: ' + dateFontWeight + '; color: ' + dateColor + ';">' + dayNum + '</p>';
+      if (lunarDay > 0 && lunarMonth > 0) {
+        html += '<p style="font-size: ' + lunarDateFontSize + 'px; color: ' + state.lunarDateColor + '; line-height: 1.2;">' + lunarDay + '/' + lunarMonth + '</p>';
+      }
+      html += '</div></div>';
+      html += '</div>';
+    } else {
+      html += '<div class="w-full flex-1 flex ' + positionClasses + '"><div class="text-center leading-none"><p style="font-size: ' + dateSize + 'px; font-weight: ' + dateFontWeight + '; color: ' + dateColor + ';">' + dayNum + '</p>';
+      if (lunarDay > 0 && lunarMonth > 0) {
+        html += '<p style="font-size: ' + lunarDateFontSize + 'px; color: ' + state.lunarDateColor + '; line-height: 1.2;">' + lunarDay + '/' + lunarMonth + '</p>';
+      }
+      html += '</div></div>';
+    }
+    
+    if (state.showWritingLines) {
+      let lineCount = parseInt(state.writingLinesCount);
+      if (isNaN(lineCount) || lineCount < 2) lineCount = 3;
+      html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 50px; padding: 0 2px; pointer-events: none;">';
+      const gapCount = lineCount + 1;
+      const gapSize = 100 / gapCount;
+      for (let i = 0; i < lineCount; i++) {
+        const bottomOffset = gapSize * (i + 1);
+        html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; border-top: 1px dotted ' + state.borderColor + '; width: calc(100% - 4px);"></div>';
       }
       html += '</div>';
     }
@@ -1355,6 +1377,12 @@
         } else {
           el.value = state[key];
         }
+      }
+      
+      if (key === 'writingLinesCount') {
+        const value = state.writingLinesCount || 3;
+        el.value = value;
+        state.writingLinesCount = parseInt(value) || 3;
       }
     }
     

@@ -229,6 +229,17 @@
               <input type="checkbox" id="orientation-landscape" data-state="isLandscape" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
               <label for="orientation-landscape" class="text-xs font-medium text-gray-700 cursor-pointer">Khổ ngang (Landscape)</label>
             </div>
+            <div class="flex items-center space-x-2 pt-1">
+              <input type="checkbox" id="show-writing-lines" data-state="showWritingLines" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              <label for="show-writing-lines" class="text-xs font-medium text-gray-700 cursor-pointer">Hiển thị dòng kẻ viết</label>
+            </div>
+            <div>
+              <label class="block text-xs mb-0.5">Số dòng kẻ</label>
+              <select data-state="writingLinesCount" class="w-full p-1 border border-gray-300 rounded text-xs">
+                <option value="2">2 dòng</option>
+                <option value="3" selected>3 dòng</option>
+              </select>
+            </div>
             <div><label class="text-xs">Độ dày viền (<span data-label="borderWidth">1</span>px)</label><input type="range" data-state="borderWidth" min="0" max="10" step="0.5"></div>
           </div>
         </div>
