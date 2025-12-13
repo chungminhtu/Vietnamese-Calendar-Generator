@@ -150,6 +150,24 @@
         </div>
       </div>
       
+      <!-- Accordion Item: Custom Holidays -->
+      <div class="border-2 border-pink-300 rounded shadow-sm">
+        <button data-panel="customHolidays" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-xs rounded transition-all">
+          <span>Ngày Lễ Tùy Chỉnh</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div data-content="customHolidays" class="accordion-content active">
+          <div class="p-1.5 space-y-1.5 text-xs">
+            <div class="flex gap-1">
+              <input type="date" id="custom-holiday-date" class="flex-1 p-1 border border-gray-300 rounded text-xs" style="min-width: 0;">
+              <input type="text" id="custom-holiday-name" placeholder="Tên ngày lễ" class="flex-1 p-1 border border-gray-300 rounded text-xs" style="min-width: 0;">
+              <button id="add-custom-holiday" class="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 whitespace-nowrap">Thêm</button>
+            </div>
+            <div id="custom-holidays-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Accordion Item: Layout -->
       <div class="border-2 border-green-300 rounded shadow-sm">
         <button data-panel="layout" class="accordion-toggle w-full flex justify-between items-center p-1.5 font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-xs rounded transition-all">

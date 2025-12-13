@@ -41,10 +41,20 @@ body {
   box-sizing: border-box;
   flex-shrink: 0;
   margin: 0 auto;
+  background: transparent;
 }
 
 .calendar-month-export > * {
   box-sizing: border-box;
+}
+
+.month-bg-image {
+  background-color: transparent !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 #calendars-container {

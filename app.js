@@ -116,6 +116,7 @@
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false,
       showHolidayOptional: false, showHolidayObservance: true,
       monthBackgrounds: {},
+      customHolidays: [],
       isExporting: false, isDragging: false
     };
   };
@@ -178,28 +179,54 @@
     }
   };
 
-  const getHoliday = (date, lunarDay, lunarMonth) => {
-    if (lunarDay > 0 && lunarMonth > 0) {
-      if (lunarMonth === 1 && lunarDay <= 3) return 'Tết Nguyên Đán';
-      if (lunarMonth === 3 && lunarDay === 10) return 'Giỗ Tổ Hùng Vương';
-    }
-    if (!holidayService) return null;
-    const enabledTypes = [];
-    if (state.showHolidayPublic) enabledTypes.push('public');
-    if (state.showHolidayBank) enabledTypes.push('bank');
-    if (state.showHolidaySchool) enabledTypes.push('school');
-    if (state.showHolidayOptional) enabledTypes.push('optional');
-    if (state.showHolidayObservance) enabledTypes.push('observance');
-    if (enabledTypes.length === 0) return null;
-    try {
-      const allHolidays = holidayService.isHoliday(date);
-      if (allHolidays) {
-        const holidaysArray = Array.isArray(allHolidays) ? allHolidays : [allHolidays];
-        const matchingHoliday = holidaysArray.find(h => h && h.type && enabledTypes.includes(h.type));
-        return matchingHoliday ? matchingHoliday.name : null;
+  const getHolidays = (date, lunarDay, lunarMonth) => {
+    const holidays = [];
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    
+    if (state.customHolidays && Array.isArray(state.customHolidays)) {
+      for (let i = 0; i < state.customHolidays.length; i++) {
+        const custom = state.customHolidays[i];
+        if (custom && custom.date === dateStr && custom.name) {
+          holidays.push({ name: custom.name, isCustom: true });
+        }
       }
-    } catch (e) {}
-    return null;
+    }
+    
+    if (lunarDay > 0 && lunarMonth > 0) {
+      if (lunarMonth === 1 && lunarDay <= 3) {
+        holidays.push({ name: 'Tết Nguyên Đán', isCustom: false });
+      } else if (lunarMonth === 3 && lunarDay === 10) {
+        holidays.push({ name: 'Giỗ Tổ Hùng Vương', isCustom: false });
+      }
+    }
+    
+    if (holidayService) {
+      const enabledTypes = [];
+      if (state.showHolidayPublic) enabledTypes.push('public');
+      if (state.showHolidayBank) enabledTypes.push('bank');
+      if (state.showHolidaySchool) enabledTypes.push('school');
+      if (state.showHolidayOptional) enabledTypes.push('optional');
+      if (state.showHolidayObservance) enabledTypes.push('observance');
+      if (enabledTypes.length > 0) {
+        try {
+          const allHolidays = holidayService.isHoliday(date);
+          if (allHolidays) {
+            const holidaysArray = Array.isArray(allHolidays) ? allHolidays : [allHolidays];
+            for (let i = 0; i < holidaysArray.length; i++) {
+              const h = holidaysArray[i];
+              if (h && h.type && enabledTypes.includes(h.type) && h.name) {
+                const exists = holidays.some(existing => existing.name === h.name && !existing.isCustom);
+                if (!exists) {
+                  holidays.push({ name: h.name, isCustom: false });
+                }
+              }
+            }
+          }
+        } catch (e) {}
+      }
+    }
+    
+    return holidays.length > 0 ? holidays : null;
   };
 
   const applyColorPalette = (paletteName) => {
@@ -227,7 +254,11 @@
     startOfWeekSelect: null,
     exportBtn: null,
     calendarMain: null,
-    calendarsContainer: null
+    calendarsContainer: null,
+    customHolidayDate: null,
+    customHolidayName: null,
+    addCustomHolidayBtn: null,
+    customHolidaysList: null
   };
 
   const initDOMElements = () => {
@@ -238,13 +269,18 @@
     DOMElements.exportBtn = document.getElementById('export-btn');
     DOMElements.calendarMain = document.getElementById('calendar-main');
     DOMElements.calendarsContainer = document.getElementById('calendars-container');
+    DOMElements.customHolidayDate = document.getElementById('custom-holiday-date');
+    DOMElements.customHolidayName = document.getElementById('custom-holiday-name');
+    DOMElements.addCustomHolidayBtn = document.getElementById('add-custom-holiday');
+    DOMElements.customHolidaysList = document.getElementById('custom-holidays-list');
   };
 
   // --- RENDERING ---
   const generateDayCellHTML = (day) => {
-    const { date, lunarDay, lunarMonth, holidayName, isCurrentMonth } = day;
+    const { date, lunarDay, lunarMonth, holidays, isCurrentMonth } = day;
     const { datePosition, borderWidth, dateSize, dateFontWeight, lunarDateFontSize, holidayFontSize } = state;
-    const dateColor = isCurrentMonth ? (holidayName ? state.holidayColor : state.dateColor) : state.otherMonthDateColor;
+    const hasHolidays = holidays && holidays.length > 0;
+    const dateColor = isCurrentMonth ? (hasHolidays ? state.holidayColor : state.dateColor) : state.otherMonthDateColor;
     const positionClasses = DATE_POSITION_CLASSES[datePosition] || DATE_POSITION_CLASSES['top-right'];
     
     const dayNum = date.getDate();
@@ -256,8 +292,12 @@
     
     html += '</div></div>';
     
-    if (holidayName && isCurrentMonth) {
-      html += '<div class="text-center pb-1 mt-auto"><p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + state.holidayColor + '; line-height: normal; padding: 2px 0;">' + holidayName + '</p></div>';
+    if (hasHolidays && isCurrentMonth) {
+      html += '<div class="text-center pb-1 mt-auto">';
+      for (let i = 0; i < holidays.length; i++) {
+        html += '<p class="holiday-name" style="font-size: ' + holidayFontSize + 'px; color: ' + state.holidayColor + '; line-height: normal; padding: 1px 0;">' + holidays[i].name + '</p>';
+      }
+      html += '</div>';
     }
     
     html += '</div>';
@@ -280,9 +320,9 @@
       const date = firstDayOfMonth.add(i - 1, 'day').toDate();
       if (isNaN(date.getTime())) continue;
       const { lunarDay, lunarMonth } = getLunarDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
-      const holidayName = getHoliday(date, lunarDay, lunarMonth);
+      const holidays = getHolidays(date, lunarDay, lunarMonth);
       const isCurrentMonth = date.getMonth() === month - 1;
-      grid.push({ date, lunarDay, lunarMonth, holidayName, isCurrentMonth });
+      grid.push({ date, lunarDay, lunarMonth, holidays, isCurrentMonth });
     }
 
     const parts = [];
@@ -323,9 +363,12 @@
 
   const generateBackgroundStyle = (monthNum) => {
     const monthBg = state.monthBackgrounds[monthNum];
-    if (!monthBg || !monthBg.url) return '';
-    const url = String(monthBg.url).replace(/"/g, '&quot;').replace(/'/g, "\\'");
-    return 'background-image: url("' + url + '"); background-size: ' + (monthBg.zoom || 100) + '%; background-position: ' + (monthBg.posX || 50) + '% ' + (monthBg.posY || 50) + '%; background-repeat: no-repeat; opacity: ' + ((monthBg.opacity || 100) / 100) + '; filter: brightness(' + ((monthBg.brightness || 100) / 100) + ') saturate(' + ((monthBg.saturation || 100) / 100) + ');';
+    console.log('[RENDER] generateBackgroundStyle called for month', monthNum, 'monthBg exists:', !!monthBg, 'has URL:', !!(monthBg && monthBg.url));
+    if (!monthBg || !monthBg.url) {
+      console.log('[RENDER] No background image for month', monthNum, '- returning transparent');
+      return 'background: transparent;';
+    }
+    return 'background: transparent;';
   };
 
   const generateNavButtonsHTML = () => {
@@ -342,24 +385,127 @@
     const hasBg = !!state.monthBackgrounds[monthNum]?.url;
     const aspectRatio = state.isLandscape ? A4_LANDSCAPE_RATIO : A4_PORTRAIT_RATIO;
     
-    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: 100%; aspect-ratio: ' + aspectRatio + '; max-width: 100%; max-height: calc(100vh - 4rem); height: auto;"><div class="month-bg-image absolute inset-0 rounded-lg" style="' + bgStyle + ' cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%;"></div><div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div><div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ' + state.selectedFont + '; background-color: ' + state.backgroundColor + ';"><header class="relative text-center pb-4 flex items-center justify-center">' + generateNavButtonsHTML() + '<div class="flex-1">' + generateHeaderHTML(month, year) + '</div></header><div class="flex flex-col flex-grow"><div class="weekday-header grid grid-cols-7">' + generateWeekdayHTML() + '</div><div class="calendar-grid border-t border-l" style="border-color: ' + state.borderColor + '; border-top-width: ' + state.borderWidth + 'px; border-left-width: ' + state.borderWidth + 'px;">' + generateCalendarGrid(month, year) + '</div></div></div></div>';
+    console.log('[RENDER] generateMonthCalendarHTML for month', monthNum, 'hasBg:', hasBg, 'bgStyle length:', bgStyle.length, 'bgStyle starts with:', bgStyle.substring(0, 50));
+    
+    // --- FIX START ---
+    // If an image exists (hasBg), set the content background to transparent 
+    // so the image behind it is visible. Otherwise, use the selected background color.
+    const contentBackgroundColor = hasBg ? 'transparent' : state.backgroundColor;
+    const containerBackgroundColor = hasBg ? 'transparent' : state.backgroundColor;
+    console.log('[RENDER] Month', monthNum, 'contentBackgroundColor:', contentBackgroundColor, 'containerBackgroundColor:', containerBackgroundColor, '(hasBg:', hasBg, ')');
+    // --- FIX END ---
+    
+    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: 100%; aspect-ratio: ' + aspectRatio + '; max-width: 100%; max-height: calc(100vh - 4rem); height: auto; background-color: ' + containerBackgroundColor + ';">' +
+      // Layer 1: The Background Image
+      '<div class="month-bg-image absolute inset-0 rounded-lg" style="position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; ' + bgStyle + ' cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1 !important; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%;"></div>' +
+      // Layer 2: Overlay (hidden by default)
+      '<div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>' +
+      // Layer 3: The Content (Dates/Text) - Now uses contentBackgroundColor
+      '<div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ' + state.selectedFont + '; background-color: ' + contentBackgroundColor + ';">' +
+        '<header class="relative text-center pb-4 flex items-center justify-center">' + generateNavButtonsHTML() + '<div class="flex-1">' + generateHeaderHTML(month, year) + '</div></header>' +
+        '<div class="flex flex-col flex-grow">' +
+          '<div class="weekday-header grid grid-cols-7">' + generateWeekdayHTML() + '</div>' +
+          '<div class="calendar-grid border-t border-l" style="border-color: ' + state.borderColor + '; border-top-width: ' + state.borderWidth + 'px; border-left-width: ' + state.borderWidth + 'px;">' + generateCalendarGrid(month, year) + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  };
+
+  const applyBackgroundImages = () => {
+    const monthElements = document.querySelectorAll('.calendar-month-export');
+    for (let i = 0; i < monthElements.length; i++) {
+      const monthEl = monthElements[i];
+      const monthNum = parseInt(monthEl.dataset.month);
+      const monthBg = state.monthBackgrounds[monthNum];
+      if (monthBg && monthBg.url) {
+        const bgDiv = monthEl.querySelector('.month-bg-image');
+        if (bgDiv) {
+          const zoom = monthBg.zoom || 100;
+          const posX = monthBg.posX || 50;
+          const posY = monthBg.posY || 50;
+          const opacity = (monthBg.opacity || 100) / 100;
+          const brightness = (monthBg.brightness || 100) / 100;
+          const saturation = (monthBg.saturation || 100) / 100;
+          bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
+          bgDiv.style.backgroundSize = zoom + '%';
+          bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
+          bgDiv.style.backgroundRepeat = 'no-repeat';
+          bgDiv.style.opacity = opacity;
+          bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+          bgDiv.style.zIndex = '1';
+          console.log('[RENDER] Applied background image to month', monthNum, 'via JavaScript');
+        }
+      }
+    }
   };
 
   const renderAllMonths = () => {
     if (!DOMElements.calendarsContainer) return;
+    console.log('[RENDER] renderAllMonths() called - rendering 12 months');
     const parts = [];
     for (let month = 1; month <= 12; month++) {
       parts.push(generateMonthCalendarHTML(month, state.selectedYear));
     }
     DOMElements.calendarsContainer.innerHTML = parts.join('');
     cachedMonthElements = null;
+    applyBackgroundImages();
+    const monthsWithImages = [];
+    for (let m = 1; m <= 12; m++) {
+      if (state.monthBackgrounds[m]?.url) {
+        monthsWithImages.push(m);
+      }
+    }
+    console.log('[RENDER] renderAllMonths() completed. Months with images:', monthsWithImages.length > 0 ? monthsWithImages.join(', ') : 'none');
+    setTimeout(() => {
+      const monthEl = document.querySelector('[data-month="2"]');
+      if (monthEl) {
+        const bgDiv = monthEl.querySelector('.month-bg-image');
+        const contentDiv = monthEl.querySelector('.relative.w-full.h-full');
+        console.log('[DEBUG] Month 2 DOM check:');
+        console.log('  - Container computed background:', window.getComputedStyle(monthEl).backgroundColor);
+        console.log('  - Background div exists:', !!bgDiv);
+        if (bgDiv) {
+          console.log('  - Background div computed background-image:', window.getComputedStyle(bgDiv).backgroundImage.substring(0, 50));
+          console.log('  - Background div z-index:', window.getComputedStyle(bgDiv).zIndex);
+        }
+        console.log('  - Content div exists:', !!contentDiv);
+        if (contentDiv) {
+          console.log('  - Content div computed background:', window.getComputedStyle(contentDiv).backgroundColor);
+          console.log('  - Content div z-index:', window.getComputedStyle(contentDiv).zIndex);
+        }
+      }
+    }, 100);
     setupMonthInteractions();
   };
 
   const renderSingleMonth = () => {
     if (!DOMElements.calendarsContainer) return;
+    console.log('[RENDER] renderSingleMonth() called - rendering month', state.selectedMonth);
     DOMElements.calendarsContainer.innerHTML = generateMonthCalendarHTML(state.selectedMonth, state.selectedYear);
     cachedMonthElements = null;
+    applyBackgroundImages();
+    const hasImage = !!state.monthBackgrounds[state.selectedMonth]?.url;
+    console.log('[RENDER] renderSingleMonth() completed. Month', state.selectedMonth, 'has image:', hasImage);
+    setTimeout(() => {
+      const monthEl = document.querySelector('[data-month="' + state.selectedMonth + '"]');
+      if (monthEl) {
+        const bgDiv = monthEl.querySelector('.month-bg-image');
+        const contentDiv = monthEl.querySelector('.relative.w-full.h-full');
+        console.log('[DEBUG] Month', state.selectedMonth, 'DOM check:');
+        console.log('  - Container computed background:', window.getComputedStyle(monthEl).backgroundColor);
+        console.log('  - Background div exists:', !!bgDiv);
+        if (bgDiv) {
+          console.log('  - Background div computed background-image:', window.getComputedStyle(bgDiv).backgroundImage.substring(0, 50));
+          console.log('  - Background div z-index:', window.getComputedStyle(bgDiv).zIndex);
+          console.log('  - Background div opacity:', window.getComputedStyle(bgDiv).opacity);
+        }
+        console.log('  - Content div exists:', !!contentDiv);
+        if (contentDiv) {
+          console.log('  - Content div computed background:', window.getComputedStyle(contentDiv).backgroundColor);
+          console.log('  - Content div z-index:', window.getComputedStyle(contentDiv).zIndex);
+        }
+      }
+    }, 100);
     setupMonthInteractions();
   };
 
@@ -369,13 +515,14 @@
     }
     renderTimeout = requestAnimationFrame(() => {
       try {
+        console.log('[RENDER] render() called, showAllMonths:', state.showAllMonths);
         if (state.showAllMonths) {
           renderAllMonths();
         } else {
           renderSingleMonth();
         }
       } catch (e) {
-        console.error('Render error:', e);
+        console.error('[RENDER] Render error:', e);
       }
       renderTimeout = null;
     });
@@ -447,17 +594,29 @@
         e.preventDefault();
         monthEl.classList.remove('border-4', 'border-blue-500');
         const files = e.dataTransfer.files;
+        console.log('[DRAG-DROP] Image dropped on month', month, 'Files:', files.length, 'First file:', files[0]?.name, 'Type:', files[0]?.type, 'Size:', files[0]?.size, 'bytes');
         if (files.length > 0 && files[0].type.startsWith('image/')) {
           const reader = new FileReader();
+          reader.onerror = (err) => {
+            console.error('[DRAG-DROP] Error reading file:', err);
+          };
           reader.onload = (ev) => {
             const monthNum = parseInt(month);
+            console.log('[DRAG-DROP] FileReader loaded for month', monthNum, 'Data URL length:', ev.target.result?.length || 0, 'Starts with:', ev.target.result?.substring(0, 30) || 'N/A');
             if (!state.monthBackgrounds[monthNum]) {
               state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+              console.log('[DRAG-DROP] Created new background object for month', monthNum);
             }
             state.monthBackgrounds[monthNum].url = ev.target.result;
+            console.log('[DRAG-DROP] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
+            console.log('[DRAG-DROP] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+            console.log('[DRAG-DROP] Calling render() to update calendar...');
             render();
           };
+          console.log('[DRAG-DROP] Starting FileReader.readAsDataURL()...');
           reader.readAsDataURL(files[0]);
+        } else {
+          console.warn('[DRAG-DROP] No valid image file found. File type:', files[0]?.type);
         }
       });
       
@@ -468,16 +627,26 @@
           input.accept = 'image/*';
           input.onchange = async (ev) => {
             const file = ev.target.files[0];
+            console.log('[CLICK-UPLOAD] File selected for month', month, 'File:', file?.name, 'Type:', file?.type, 'Size:', file?.size, 'bytes');
             if (file) {
               const reader = new FileReader();
+              reader.onerror = (err) => {
+                console.error('[CLICK-UPLOAD] Error reading file:', err);
+              };
               reader.onload = (ev2) => {
                 const monthNum = parseInt(month);
+                console.log('[CLICK-UPLOAD] FileReader loaded for month', monthNum, 'Data URL length:', ev2.target.result?.length || 0, 'Starts with:', ev2.target.result?.substring(0, 30) || 'N/A');
                 if (!state.monthBackgrounds[monthNum]) {
                   state.monthBackgrounds[monthNum] = { zoom: 100, posX: 50, posY: 50, opacity: 100, brightness: 100, saturation: 100 };
+                  console.log('[CLICK-UPLOAD] Created new background object for month', monthNum);
                 }
                 state.monthBackgrounds[monthNum].url = ev2.target.result;
+                console.log('[CLICK-UPLOAD] Image URL set in state.monthBackgrounds[' + monthNum + '].url, URL exists:', !!state.monthBackgrounds[monthNum].url);
+                console.log('[CLICK-UPLOAD] Full state object:', JSON.stringify({ month: monthNum, hasUrl: !!state.monthBackgrounds[monthNum].url, zoom: state.monthBackgrounds[monthNum].zoom, posX: state.monthBackgrounds[monthNum].posX, posY: state.monthBackgrounds[monthNum].posY }));
+                console.log('[CLICK-UPLOAD] Calling render() to update calendar...');
                 render();
               };
+              console.log('[CLICK-UPLOAD] Starting FileReader.readAsDataURL()...');
               reader.readAsDataURL(file);
             }
           };
@@ -600,6 +769,40 @@
     });
   }
 
+  // --- CUSTOM HOLIDAYS ---
+  const renderCustomHolidaysList = () => {
+    if (!DOMElements.customHolidaysList) return;
+    if (!state.customHolidays || state.customHolidays.length === 0) {
+      DOMElements.customHolidaysList.innerHTML = '<p class="text-xs text-gray-500 text-center py-2">Chưa có ngày lễ tùy chỉnh</p>';
+      return;
+    }
+    const sorted = [...state.customHolidays].map((h, idx) => ({ ...h, originalIndex: idx })).sort((a, b) => a.date.localeCompare(b.date));
+    let html = '';
+    for (let i = 0; i < sorted.length; i++) {
+      const holiday = sorted[i];
+      const dateObj = new Date(holiday.date + 'T00:00:00');
+      const dateStr = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      html += '<div class="flex items-center justify-between p-1 bg-gray-50 rounded text-xs"><span>' + dateStr + ' - ' + holiday.name + '</span><button class="delete-holiday text-red-600 hover:text-red-800 px-1" data-index="' + holiday.originalIndex + '">×</button></div>';
+    }
+    DOMElements.customHolidaysList.innerHTML = html;
+    
+    const deleteButtons = DOMElements.customHolidaysList.querySelectorAll('.delete-holiday');
+    for (let i = 0; i < deleteButtons.length; i++) {
+      const btn = deleteButtons[i];
+      if (btn.dataset.listenerAdded) continue;
+      btn.dataset.listenerAdded = 'true';
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        if (index >= 0 && index < state.customHolidays.length) {
+          state.customHolidays.splice(index, 1);
+          saveState();
+          renderCustomHolidaysList();
+          render();
+        }
+      });
+    }
+  };
+
   // --- INITIALIZATION ---
   const initializeControls = () => {
     if (DOMElements.monthSelect) {
@@ -630,6 +833,13 @@
     if (DOMElements.startOfWeekSelect) {
       DOMElements.startOfWeekSelect.value = state.startOfWeek;
     }
+    
+    if (DOMElements.customHolidayDate) {
+      const today = new Date();
+      DOMElements.customHolidayDate.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    }
+    
+    renderCustomHolidaysList();
     
     const stateElements = document.querySelectorAll('[data-state]');
     for (let i = 0; i < stateElements.length; i++) {
@@ -789,6 +999,30 @@
       });
       colorInput.addEventListener('change', (e) => {
         updateStateAndRender(key, e.target.value);
+      });
+    }
+    
+    if (DOMElements.addCustomHolidayBtn && DOMElements.customHolidayDate && DOMElements.customHolidayName) {
+      DOMElements.addCustomHolidayBtn.addEventListener('click', () => {
+        const date = DOMElements.customHolidayDate.value;
+        const name = DOMElements.customHolidayName.value.trim();
+        if (date && name) {
+          if (!state.customHolidays) state.customHolidays = [];
+          const exists = state.customHolidays.some(h => h.date === date && h.name === name);
+          if (!exists) {
+            state.customHolidays.push({ date: date, name: name });
+            saveState();
+            renderCustomHolidaysList();
+            render();
+            DOMElements.customHolidayName.value = '';
+          }
+        }
+      });
+      
+      DOMElements.customHolidayName.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          DOMElements.addCustomHolidayBtn.click();
+        }
       });
     }
     
