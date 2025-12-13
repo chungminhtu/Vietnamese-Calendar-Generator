@@ -12,7 +12,7 @@
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
   const MAX_INIT_ATTEMPTS = 100;
-  const EXPORT_SCALE = 2;
+  const EXPORT_SCALE = 4;
   const DPI = 96;
   const MM_PER_INCH = 25.4;
   const A4_WIDTH_MM = 210;
@@ -1739,6 +1739,28 @@
               borderRadius: '0'
             });
             clone.querySelectorAll('.nav-button').forEach(btn => btn.style.display = 'none');
+            
+            const monthNum = parseInt(clone.dataset.month);
+            const monthBg = state.monthBackgrounds[monthNum];
+            if (monthBg && monthBg.url) {
+              const bgDiv = clone.querySelector('.month-bg-image');
+              if (bgDiv) {
+                const zoom = monthBg.zoom || 100;
+                const posX = monthBg.posX || 50;
+                const posY = monthBg.posY || 50;
+                const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
+                const brightness = (monthBg.brightness || 100) / 100;
+                const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
+                bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
+                bgDiv.style.backgroundSize = zoom + '%';
+                bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
+                bgDiv.style.backgroundRepeat = 'no-repeat';
+                bgDiv.style.opacity = opacity;
+                bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+                bgDiv.style.zIndex = '1';
+              }
+            }
+            
             if (i < monthElements.length - 1) clone.classList.add('html2pdf__page-break');
             exportContainer.appendChild(clone);
           });
@@ -1746,14 +1768,39 @@
           await html2pdf().set({
             margin: 0,
             filename: `lich-viet-${state.selectedYear}-12-thang.pdf`,
-            image: { type: 'png', quality: 1.0 },
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: { 
               scale: EXPORT_SCALE,
               useCORS: true,
               logging: false,
               allowTaint: true,
               width: a4Dims.width,
-              height: a4Dims.height
+              height: a4Dims.height,
+              onclone: (clonedDoc) => {
+                const clonedElements = clonedDoc.querySelectorAll('[data-month]');
+                clonedElements.forEach((clonedEl) => {
+                  const monthNum = parseInt(clonedEl.dataset.month);
+                  const monthBg = state.monthBackgrounds[monthNum];
+                  if (monthBg && monthBg.url) {
+                    const bgDiv = clonedEl.querySelector('.month-bg-image');
+                    if (bgDiv) {
+                      const zoom = monthBg.zoom || 100;
+                      const posX = monthBg.posX || 50;
+                      const posY = monthBg.posY || 50;
+                      const opacity = (monthBg.opacity !== undefined ? monthBg.opacity : 50) / 100;
+                      const brightness = (monthBg.brightness || 100) / 100;
+                      const saturation = (monthBg.saturation !== undefined ? monthBg.saturation : 120) / 100;
+                      bgDiv.style.backgroundImage = 'url("' + monthBg.url.replace(/"/g, '\\"') + '")';
+                      bgDiv.style.backgroundSize = zoom + '%';
+                      bgDiv.style.backgroundPosition = posX + '% ' + posY + '%';
+                      bgDiv.style.backgroundRepeat = 'no-repeat';
+                      bgDiv.style.opacity = opacity;
+                      bgDiv.style.filter = 'brightness(' + brightness + ') saturate(' + saturation + ')';
+                      bgDiv.style.zIndex = '1';
+                    }
+                  }
+                });
+              }
             },
             jsPDF: { 
               unit: 'mm', 
