@@ -11,9 +11,25 @@
   const A4_PORTRAIT_RATIO = 210 / 297;
   const A4_LANDSCAPE_RATIO = 297 / 210;
   const MAX_INIT_ATTEMPTS = 100;
-  const EXPORT_SCALE = 3;
+  const EXPORT_SCALE = 1;
   const DPI = 96;
   const MM_PER_INCH = 25.4;
+  const A4_WIDTH_MM = 210;
+  const A4_HEIGHT_MM = 297;
+  const getA4Dimensions = (isLandscape) => {
+    const pixelsPerMm = DPI / MM_PER_INCH;
+    if (isLandscape) {
+      return {
+        width: Math.round(A4_HEIGHT_MM * pixelsPerMm),
+        height: Math.round(A4_WIDTH_MM * pixelsPerMm)
+      };
+    } else {
+      return {
+        width: Math.round(A4_WIDTH_MM * pixelsPerMm),
+        height: Math.round(A4_HEIGHT_MM * pixelsPerMm)
+      };
+    }
+  };
   const RENDER_DEBOUNCE_MS = 16; // ~1 frame
   const SAVE_DEBOUNCE_MS = 300; // 300ms for localStorage
 
@@ -675,11 +691,12 @@
     if (state.showWritingLines) {
       let lineCount = parseInt(state.writingLinesCount);
       if (isNaN(lineCount) || lineCount < 2) lineCount = 3;
-      html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 50px; padding: 0 2px; pointer-events: none;">';
+      const availableHeight = 'calc(100% - 50px)';
       const gapCount = lineCount + 1;
-      const gapSize = 100 / gapCount;
+      const gapSizePercent = 100 / gapCount;
+      html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 50px; padding: 0 2px; pointer-events: none; height: ' + availableHeight + ';">';
       for (let i = 0; i < lineCount; i++) {
-        const bottomOffset = gapSize * (i + 1);
+        const bottomOffset = gapSizePercent * (i + 1);
         html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; border-top: 1px dotted ' + state.borderColor + '; width: calc(100% - 4px);"></div>';
       }
       html += '</div>';
@@ -780,7 +797,8 @@
     console.log('[RENDER] Month', monthNum, 'contentBackgroundColor:', contentBackgroundColor, 'containerBackgroundColor:', containerBackgroundColor, '(hasBg:', hasBg, ')');
     // --- FIX END ---
     
-    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: 100%; aspect-ratio: ' + aspectRatio + '; max-width: 100%; max-height: calc(100vh - 4rem); height: auto; background-color: ' + containerBackgroundColor + ';">' +
+    const a4Dims = getA4Dimensions(state.isLandscape);
+    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: ' + a4Dims.width + 'px; height: ' + a4Dims.height + 'px; max-width: 100%; max-height: calc(100vh - 4rem); background-color: ' + containerBackgroundColor + ';">' +
       // Layer 1: The Background Image
       '<div class="month-bg-image absolute inset-0 rounded-lg" style="position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; ' + bgStyle + ' cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1 !important; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%;"></div>' +
       // Layer 2: Overlay (hidden by default)
@@ -1541,7 +1559,13 @@
         if (isNumber) {
           value = parseFloat(value) || parseInt(value, 10);
         }
-        updateStateAndRender(key, value);
+        if (key === 'writingLinesCount') {
+          state.writingLinesCount = parseInt(value) || 3;
+          saveState();
+          render();
+        } else {
+          updateStateAndRender(key, value);
+        }
       });
     }
     
@@ -1653,7 +1677,7 @@
         try {
           const jsPDFLib = window.jspdf || jspdf;
           const { jsPDF } = jsPDFLib;
-          const pixelsPerMm = (DPI * EXPORT_SCALE) / MM_PER_INCH;
+          const pixelsPerMm = DPI / MM_PER_INCH;
           let pdf = null;
           const monthElements = getMonthElements();
           
@@ -1678,13 +1702,12 @@
             monthEl.style.boxSizing = 'border-box';
             monthEl.style.overflow = 'visible';
             
-            const rect = monthEl.getBoundingClientRect();
-            const elementWidth = Math.ceil(rect.width);
-            const elementHeight = Math.ceil(rect.height);
+            const a4Dims = getA4Dimensions(state.isLandscape);
+            const elementWidth = a4Dims.width;
+            const elementHeight = a4Dims.height;
             
-            const aspectRatio = state.isLandscape ? A4_LANDSCAPE_RATIO : A4_PORTRAIT_RATIO;
-            const expectedHeight = Math.ceil(elementWidth / aspectRatio);
-            const finalHeight = Math.max(elementHeight, expectedHeight);
+            monthEl.style.width = elementWidth + 'px';
+            monthEl.style.height = elementHeight + 'px';
             
             await new Promise(resolve => setTimeout(resolve, 150));
             
@@ -1697,13 +1720,13 @@
               removeContainer: false,
               imageTimeout: 20000,
               width: elementWidth,
-              height: finalHeight,
+              height: elementHeight,
               x: 0,
               y: 0,
               scrollX: 0,
               scrollY: 0,
               windowWidth: elementWidth,
-              windowHeight: finalHeight,
+              windowHeight: elementHeight,
               onclone: (clonedDoc, element) => {
                 const clonedMonth = clonedDoc.querySelector(`[data-month="${month}"]`);
                 if (clonedMonth) {
@@ -1779,12 +1802,12 @@
             monthEl.style.overflow = originalStyles.overflow;
             monthEl.style.left = '';
             monthEl.style.top = '';
+            monthEl.style.width = '';
+            monthEl.style.height = '';
             
             const imgData = canvas.toDataURL('image/png', 1.0);
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const mmWidth = canvasWidth / pixelsPerMm;
-            const mmHeight = canvasHeight / pixelsPerMm;
+            const mmWidth = state.isLandscape ? A4_HEIGHT_MM : A4_WIDTH_MM;
+            const mmHeight = state.isLandscape ? A4_WIDTH_MM : A4_HEIGHT_MM;
             
             if (i === 0) {
               pdf = new jsPDF({
