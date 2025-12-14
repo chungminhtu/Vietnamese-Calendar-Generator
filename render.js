@@ -79,30 +79,16 @@
       const lineStyle = state.writingLinesStyle || 'dotted-close';
       const showCheckboxes = state.showWritingCheckboxes || false;
       
-      const createDottedPattern = (spacing) => {
-        const encodedColor = encodeURIComponent(state.borderColor);
-        return 'url("data:image/svg+xml,%3Csvg width=\'' + spacing + '\' height=\'2\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Ccircle cx=\'1\' cy=\'1\' r=\'1\' fill=\'' + encodedColor + '\'/%3E%3C/svg%3E")';
+      const createDottedLineHTML = (spacing) => {
+        let dotsHTML = '';
+        const dotSize = 2;
+        const numDots = 200;
+        for (let j = 0; j < numDots; j++) {
+          const leftPos = (j * spacing) + 'px';
+          dotsHTML += '<div style="position: absolute; left: ' + leftPos + '; top: 50%; transform: translateY(-50%); width: ' + dotSize + 'px; height: ' + dotSize + 'px; background-color: ' + state.borderColor + '; border-radius: 50%;"></div>';
+        }
+        return dotsHTML;
       };
-      
-      let borderStyle = '';
-      let extraStyle = '';
-      if (lineStyle === 'dotted-close') {
-        borderStyle = 'border-top: 1px dotted ' + state.borderColor + ';';
-      } else if (lineStyle === 'dotted') {
-        borderStyle = 'border-top: none; height: 2px;';
-        extraStyle = 'background-image: ' + createDottedPattern(4) + '; background-repeat: repeat-x; background-size: 4px 2px;';
-      } else if (lineStyle === 'dotted-medium') {
-        borderStyle = 'border-top: none; height: 2px;';
-        extraStyle = 'background-image: ' + createDottedPattern(6) + '; background-repeat: repeat-x; background-size: 6px 2px;';
-      } else if (lineStyle === 'dotted-sparse') {
-        borderStyle = 'border-top: none; height: 2px;';
-        extraStyle = 'background-image: ' + createDottedPattern(8) + '; background-repeat: repeat-x; background-size: 8px 2px;';
-      } else if (lineStyle === 'dotted-very-sparse') {
-        borderStyle = 'border-top: none; height: 2px;';
-        extraStyle = 'background-image: ' + createDottedPattern(11) + '; background-repeat: repeat-x; background-size: 11px 2px;';
-      } else {
-        borderStyle = 'border-top: 1px dotted ' + state.borderColor + ';';
-      }
       
       html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 30px; padding: 0 2px; pointer-events: none; height: ' + availableHeight + ';">';
       for (let i = 0; i < lineCount; i++) {
@@ -110,10 +96,36 @@
         if (showCheckboxes) {
           html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; display: flex; align-items: center; width: calc(100% - 4px);">';
           html += '<input type="checkbox" style="width: 14px; height: 14px; margin-left: 4px; margin-right: 6px; pointer-events: none; flex-shrink: 0;" disabled>';
-          html += '<div style="flex: 1; min-height: 2px; ' + borderStyle + extraStyle + '"></div>';
+          html += '<div style="flex: 1; position: relative; height: 2px; overflow: hidden;">';
+          if (lineStyle === 'dotted-close') {
+            html += createDottedLineHTML(3);
+          } else if (lineStyle === 'dotted') {
+            html += createDottedLineHTML(4);
+          } else if (lineStyle === 'dotted-medium') {
+            html += createDottedLineHTML(6);
+          } else if (lineStyle === 'dotted-sparse') {
+            html += createDottedLineHTML(8);
+          } else if (lineStyle === 'dotted-very-sparse') {
+            html += createDottedLineHTML(11);
+          }
+          html += '</div>';
           html += '</div>';
         } else {
-          html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; ' + borderStyle + extraStyle + ' width: calc(100% - 4px);"></div>';
+          html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; height: 2px; width: calc(100% - 4px); overflow: hidden;">';
+          html += '<div style="position: relative; width: 100%; height: 100%;">';
+          if (lineStyle === 'dotted-close') {
+            html += createDottedLineHTML(3);
+          } else if (lineStyle === 'dotted') {
+            html += createDottedLineHTML(4);
+          } else if (lineStyle === 'dotted-medium') {
+            html += createDottedLineHTML(6);
+          } else if (lineStyle === 'dotted-sparse') {
+            html += createDottedLineHTML(8);
+          } else if (lineStyle === 'dotted-very-sparse') {
+            html += createDottedLineHTML(11);
+          }
+          html += '</div>';
+          html += '</div>';
         }
       }
       html += '</div>';

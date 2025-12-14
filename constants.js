@@ -58,7 +58,6 @@
     { name: 'Inter', family: "'Inter', sans-serif" },
     { name: 'Noto Serif', family: "'Noto Serif', serif" },
     { name: 'Nunito', family: "'Nunito', sans-serif" },
-    { name: 'Poppins', family: "'Poppins', sans-serif" },
     { name: 'Raleway', family: "'Raleway', sans-serif" },
     { name: 'Ubuntu', family: "'Ubuntu', sans-serif" },
     { name: 'Dosis', family: "'Dosis', sans-serif" },
@@ -66,7 +65,8 @@
     { name: 'Lora', family: "'Lora', serif" },
     { name: 'EB Garamond', family: "'EB Garamond', serif" },
     { name: 'Playfair Display', family: "'Playfair Display', serif" },
-    { name: 'Tinos', family: "'Tinos', serif" }
+    { name: 'Tinos', family: "'Tinos', serif" },
+    { name: 'Libre Baskerville', family: "'Libre Baskerville', serif" }
   ];
 
   const COLOR_PALETTES_DARK = {
