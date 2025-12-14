@@ -164,6 +164,42 @@
     return deduplicatedHolidays;
   };
 
+  const getAllPaletteNames = () => {
+    const paletteSelect = document.querySelector('[data-state="colorPalette"]');
+    if (!paletteSelect) {
+      const builtInPalettes = Object.keys(COLOR_PALETTES_DARK);
+      const customPalettes = Object.keys(getCustomPalettes());
+      return [...builtInPalettes, ...customPalettes];
+    }
+    const options = paletteSelect.querySelectorAll('option');
+    const paletteNames = [];
+    for (let i = 0; i < options.length; i++) {
+      paletteNames.push(options[i].value);
+    }
+    return paletteNames;
+  };
+
+  const cyclePalette = (direction) => {
+    const allPalettes = getAllPaletteNames();
+    if (allPalettes.length === 0) return;
+    
+    const currentPalette = state.colorPalette || 'default';
+    const currentIndex = allPalettes.indexOf(currentPalette);
+    
+    let nextIndex;
+    if (direction === 'next') {
+      nextIndex = (currentIndex + 1) % allPalettes.length;
+    } else {
+      nextIndex = currentIndex - 1;
+      if (nextIndex < 0) nextIndex = allPalettes.length - 1;
+    }
+    
+    const nextPalette = allPalettes[nextIndex];
+    if (nextPalette) {
+      applyColorPalette(nextPalette);
+    }
+  };
+
   const applyColorPalette = (paletteName) => {
     const paletteSet = state.isDarkTheme ? COLOR_PALETTES_DARK : COLOR_PALETTES_LIGHT;
     let palette = paletteSet[paletteName];
@@ -343,6 +379,7 @@
     getLunarDate,
     getHolidays,
     applyColorPalette,
+    cyclePalette,
     toggleTheme,
     updateStateAndRender,
     convertDateToISO,

@@ -559,6 +559,19 @@
       window.CalendarDOM.exportBtn.addEventListener('click', exportToPDF);
     }
     
+    const prevPaletteBtn = document.getElementById('prev-palette');
+    const nextPaletteBtn = document.getElementById('next-palette');
+    if (prevPaletteBtn) {
+      prevPaletteBtn.addEventListener('click', () => {
+        window.CalendarUtils.cyclePalette('prev');
+      });
+    }
+    if (nextPaletteBtn) {
+      nextPaletteBtn.addEventListener('click', () => {
+        window.CalendarUtils.cyclePalette('next');
+      });
+    }
+    
     let resizeTimeout = null;
     window.addEventListener('resize', () => {
       if (resizeTimeout) clearTimeout(resizeTimeout);
