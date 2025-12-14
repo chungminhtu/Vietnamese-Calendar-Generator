@@ -187,6 +187,7 @@
       exportContainer.style.left = '0';
       exportContainer.style.top = '0';
       exportContainer.style.overflow = 'hidden';
+      exportContainer.style.borderRadius = '0';
       document.body.appendChild(exportContainer);
       
       const processedImages = {};
@@ -223,6 +224,14 @@
           top: '0'
         });
         clone.querySelectorAll('.nav-button').forEach(btn => btn.style.display = 'none');
+        clone.querySelectorAll('.month-bg-image').forEach(bgDiv => {
+          bgDiv.style.borderRadius = '0';
+        });
+        clone.querySelectorAll('*').forEach(el => {
+          if (el.style && el.style.borderRadius) {
+            el.style.borderRadius = '0';
+          }
+        });
         
         const monthNum = parseInt(clone.dataset.month);
         const monthBg = state.monthBackgrounds[monthNum];
@@ -267,6 +276,15 @@
               clonedEl.style.padding = '0';
               clonedEl.style.left = '0';
               clonedEl.style.position = 'relative';
+              clonedEl.style.borderRadius = '0';
+              clonedEl.querySelectorAll('.month-bg-image').forEach(bgDiv => {
+                bgDiv.style.borderRadius = '0';
+              });
+              clonedEl.querySelectorAll('*').forEach(el => {
+                if (el.style) {
+                  el.style.borderRadius = '0';
+                }
+              });
               const monthNum = parseInt(clonedEl.dataset.month);
               const monthBg = state.monthBackgrounds[monthNum];
               if (monthBg && monthBg.url && processedImages[monthNum]) {

@@ -149,8 +149,8 @@
     
     const calendarWidth = calculateCalendarWidth();
     const a4AspectRatio = state.isLandscape ? 297 / 210 : 210 / 297;
-    return '<div class="calendar-month-export relative shadow-2xl rounded-lg overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: ' + calendarWidth + 'px; aspect-ratio: ' + a4AspectRatio + '; max-width: 100%; background-color: ' + containerBackgroundColor + '; box-sizing: border-box; overflow: hidden;">' +
-      '<div class="month-bg-image absolute inset-0 rounded-lg" style="position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; background: transparent; cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1 !important; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%;"></div>' +
+    return '<div class="calendar-month-export relative shadow-2xl overflow-hidden transition-all duration-300" data-month="' + month + '" style="width: ' + calendarWidth + 'px; aspect-ratio: ' + a4AspectRatio + '; max-width: 100%; background-color: ' + containerBackgroundColor + '; box-sizing: border-box; overflow: hidden; border-radius: 0;">' +
+      '<div class="month-bg-image absolute inset-0" style="position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; background: transparent; cursor: ' + (hasBg ? 'move' : 'default') + '; z-index: 1 !important; user-select: none; pointer-events: ' + (hasBg ? 'auto' : 'none') + '; width: 100%; height: 100%; border-radius: 0;"></div>' +
       '<div class="month-bg-overlay absolute inset-0 z-10 pointer-events-none" style="display: none;"></div>' +
       '<div class="relative w-full h-full flex flex-col p-4 sm:p-6" style="z-index: 2; font-family: ' + state.selectedFont + '; background-color: ' + contentBackgroundColor + '; box-sizing: border-box;">' +
         '<header class="relative text-center pb-4 flex items-center justify-center">' + generateNavButtonsHTML() + '<div class="flex-1">' + generateHeaderHTML(month, year) + '</div></header>' +
