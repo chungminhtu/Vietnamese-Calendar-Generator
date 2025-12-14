@@ -92,20 +92,30 @@
       }
     }
     
-    if (holidayService) {
+    const currentHolidayService = window.CalendarUtils?.holidayService || holidayService;
+    if (currentHolidayService) {
       const enabledTypes = [];
       if (state.showHolidayPublic) enabledTypes.push('public');
       if (state.showHolidayBank) enabledTypes.push('bank');
       if (state.showHolidaySchool) enabledTypes.push('school');
       if (state.showHolidayOptional) enabledTypes.push('optional');
       if (state.showHolidayObservance) enabledTypes.push('observance');
+      
+      console.log('[DEBUG getHolidays]', dateStr, 'enabledTypes:', enabledTypes, 'showHolidayObservance:', state.showHolidayObservance);
+      
       if (enabledTypes.length > 0) {
         try {
-          const allHolidays = holidayService.isHoliday(date);
+          const allHolidays = currentHolidayService.isHoliday(date);
+          console.log('[DEBUG getHolidays]', dateStr, 'holidayService.isHoliday result:', allHolidays);
+          
           if (allHolidays) {
             const holidaysArray = Array.isArray(allHolidays) ? allHolidays : [allHolidays];
+            console.log('[DEBUG getHolidays]', dateStr, 'holidaysArray:', holidaysArray);
+            
             for (let i = 0; i < holidaysArray.length; i++) {
               const h = holidaysArray[i];
+              console.log('[DEBUG getHolidays]', dateStr, 'checking holiday:', h, 'type:', h?.type, 'enabledTypes.includes:', enabledTypes.includes(h?.type));
+              
               if (h && h.type && enabledTypes.includes(h.type) && h.name) {
                 const hNormalized = normalizeName(h.name);
                 const exists = holidays.some(existing => {
@@ -116,16 +126,29 @@
                   return false;
                 });
                 if (!exists) {
-                  holidays.push({ name: h.name, isCustom: false, isPublic: h.type === 'public', holidayType: h.type });
+                  const holidayObj = { name: h.name, isCustom: false, isPublic: h.type === 'public', holidayType: h.type };
+                  console.log('[DEBUG getHolidays]', dateStr, 'adding holiday:', holidayObj);
+                  holidays.push(holidayObj);
+                } else {
+                  console.log('[DEBUG getHolidays]', dateStr, 'holiday already exists, skipping:', h.name);
                 }
+              } else {
+                console.log('[DEBUG getHolidays]', dateStr, 'holiday filtered out:', h, 'reason: type=' + h?.type + ', enabled=' + enabledTypes.includes(h?.type) + ', name=' + h?.name);
               }
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error('[DEBUG getHolidays]', dateStr, 'error:', e);
+        }
       }
+    } else {
+      console.log('[DEBUG getHolidays]', dateStr, 'holidayService is null/undefined', 'window.CalendarUtils.holidayService:', window.CalendarUtils?.holidayService, 'local holidayService:', holidayService);
     }
     
+    console.log('[DEBUG getHolidays]', dateStr, 'holidays before dedup:', holidays);
+    
     if (holidays.length === 0) {
+      console.log('[DEBUG getHolidays]', dateStr, 'no holidays, returning null');
       return null;
     }
     
@@ -159,12 +182,10 @@
       }
     }
     
-    const publicHolidays = deduplicatedHolidays.filter(h => h.isPublic || h.holidayType === 'public');
-    const observanceHolidays = deduplicatedHolidays.filter(h => h.holidayType === 'observance');
-    
-    if (publicHolidays.length > 0 && observanceHolidays.length > 0) {
-      return publicHolidays;
-    }
+    console.log('[DEBUG getHolidays]', dateStr, 'deduplicatedHolidays:', deduplicatedHolidays);
+    console.log('[DEBUG getHolidays]', dateStr, 'observance holidays:', deduplicatedHolidays.filter(h => h.holidayType === 'observance'));
+    console.log('[DEBUG getHolidays]', dateStr, 'public holidays:', deduplicatedHolidays.filter(h => h.isPublic || h.holidayType === 'public'));
+    console.log('[DEBUG getHolidays]', dateStr, 'FINAL RETURN:', deduplicatedHolidays);
     
     return deduplicatedHolidays;
   };
