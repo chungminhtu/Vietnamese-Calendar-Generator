@@ -55,124 +55,135 @@
     { name: 'Montserrat', family: "'Montserrat', sans-serif" },
     { name: 'Lato', family: "'Lato', sans-serif" },
     { name: 'Nunito Sans', family: "'Nunito Sans', sans-serif" },
-    { name: 'Inter', family: "'Inter', sans-serif" }
+    { name: 'Inter', family: "'Inter', sans-serif" },
+    { name: 'Noto Serif', family: "'Noto Serif', serif" },
+    { name: 'Nunito', family: "'Nunito', sans-serif" },
+    { name: 'Poppins', family: "'Poppins', sans-serif" },
+    { name: 'Raleway', family: "'Raleway', sans-serif" },
+    { name: 'Ubuntu', family: "'Ubuntu', sans-serif" },
+    { name: 'Dosis', family: "'Dosis', sans-serif" },
+    { name: 'Merriweather', family: "'Merriweather', serif" },
+    { name: 'Lora', family: "'Lora', serif" },
+    { name: 'EB Garamond', family: "'EB Garamond', serif" },
+    { name: 'Playfair Display', family: "'Playfair Display', serif" },
+    { name: 'Tinos', family: "'Tinos', serif" }
   ];
 
   const COLOR_PALETTES_DARK = {
     default: {
       dateColor: '#2563EB', otherMonthDateColor: '#DC2626',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#DBEAFE'
     },
     oceanSunset: {
       dateColor: '#0284C7', otherMonthDateColor: '#DC2626',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
-      borderColor: '#14B8A6'
+      borderColor: '#14B8A6', weekendBackgroundColor: '#DBEAFE'
     },
     fireIce: {
       dateColor: '#DC2626', otherMonthDateColor: '#0891B2',
       weekdayColor: '#65A30D', lunarDateColor: '#A855F7', holidayColor: '#D97706',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     forestGold: {
       dateColor: '#16A34A', otherMonthDateColor: '#D97706',
       weekdayColor: '#4F46E5', lunarDateColor: '#EC4899', holidayColor: '#EAB308',
-      borderColor: '#0284C7'
+      borderColor: '#0284C7', weekendBackgroundColor: '#D1FAE5'
     },
     purplePink: {
       dateColor: '#9333EA', otherMonthDateColor: '#F472B6',
       weekdayColor: '#10B981', lunarDateColor: '#DC2626', holidayColor: '#D97706',
-      borderColor: '#7C3AED'
+      borderColor: '#7C3AED', weekendBackgroundColor: '#EDE9FE'
     },
     sunset: {
       dateColor: '#C2410C', otherMonthDateColor: '#EC4899',
       weekdayColor: '#0891B2', lunarDateColor: '#7C3AED', holidayColor: '#16A34A',
-      borderColor: '#DC2626'
+      borderColor: '#DC2626', weekendBackgroundColor: '#FEE2E2'
     },
     tealCoral: {
       dateColor: '#14B8A6', otherMonthDateColor: '#F472B6',
       weekdayColor: '#4F46E5', lunarDateColor: '#DC2626', holidayColor: '#D97706',
-      borderColor: '#EAB308'
+      borderColor: '#EAB308', weekendBackgroundColor: '#FEF3C7'
     },
     indigoRose: {
       dateColor: '#4F46E5', otherMonthDateColor: '#F472B6',
       weekdayColor: '#10B981', lunarDateColor: '#C2410C', holidayColor: '#0891B2',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#E0E7FF'
     },
     emeraldOrange: {
       dateColor: '#10B981', otherMonthDateColor: '#F97316',
       weekdayColor: '#4F46E5', lunarDateColor: '#DC2626', holidayColor: '#EC4899',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#D1FAE5'
     },
     violetYellow: {
       dateColor: '#7C3AED', otherMonthDateColor: '#EAB308',
       weekdayColor: '#14B8A6', lunarDateColor: '#DC2626', holidayColor: '#0891B2',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     crimsonCyan: {
       dateColor: '#DC2626', otherMonthDateColor: '#0891B2',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#D97706',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     limePurple: {
       dateColor: '#65A30D', otherMonthDateColor: '#A855F7',
       weekdayColor: '#0284C7', lunarDateColor: '#DC2626', holidayColor: '#F97316',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#D1FAE5'
     },
     amberBlue: {
       dateColor: '#D97706', otherMonthDateColor: '#2563EB',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#D1FAE5'
     },
     magentaGreen: {
       dateColor: '#EC4899', otherMonthDateColor: '#16A34A',
       weekdayColor: '#4F46E5', lunarDateColor: '#0284C7', holidayColor: '#D97706',
-      borderColor: '#F472B6'
+      borderColor: '#F472B6', weekendBackgroundColor: '#FCE7F3'
     },
     redYellow: {
       dateColor: '#DC2626', otherMonthDateColor: '#EAB308',
       weekdayColor: '#2563EB', lunarDateColor: '#14B8A6', holidayColor: '#9333EA',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     blueGreen: {
       dateColor: '#2563EB', otherMonthDateColor: '#059669',
       weekdayColor: '#EC4899', lunarDateColor: '#D97706', holidayColor: '#DC2626',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#E0E7FF'
     },
     royalPlum: {
       dateColor: '#7C3AED', otherMonthDateColor: '#F97316',
       weekdayColor: '#0891B2', lunarDateColor: '#EC4899', holidayColor: '#16A34A',
-      borderColor: '#DC2626'
+      borderColor: '#DC2626', weekendBackgroundColor: '#FEE2E2'
     },
     mintCherry: {
       dateColor: '#10B981', otherMonthDateColor: '#F472B6',
       weekdayColor: '#2563EB', lunarDateColor: '#EAB308', holidayColor: '#9333EA',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#F3F4F6'
     },
     sapphireAmber: {
       dateColor: '#2563EB', otherMonthDateColor: '#F59E0B',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#E0E7FF'
     },
     jadeRose: {
       dateColor: '#059669', otherMonthDateColor: '#F472B6',
       weekdayColor: '#4F46E5', lunarDateColor: '#0891B2', holidayColor: '#EA580C',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#E0E7FF'
     },
     cobaltCoral: {
       dateColor: '#1E40AF', otherMonthDateColor: '#FB7185',
       weekdayColor: '#10B981', lunarDateColor: '#A855F7', holidayColor: '#F59E0B',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#F3F4F6'
     },
     emeraldFuchsia: {
       dateColor: '#10B981', otherMonthDateColor: '#D946EF',
       weekdayColor: '#2563EB', lunarDateColor: '#F59E0B', holidayColor: '#0891B2',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     navyPeach: {
       dateColor: '#1E3A8A', otherMonthDateColor: '#FB923C',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#16A34A',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#FED7AA'
     }
   };
 
@@ -180,118 +191,131 @@
     default: {
       dateColor: '#2563EB', otherMonthDateColor: '#DC2626',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#DBEAFE'
     },
     oceanSunset: {
       dateColor: '#0284C7', otherMonthDateColor: '#DC2626',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
-      borderColor: '#14B8A6'
+      borderColor: '#14B8A6', weekendBackgroundColor: '#FEF3C7'
     },
     fireIce: {
       dateColor: '#DC2626', otherMonthDateColor: '#0891B2',
       weekdayColor: '#65A30D', lunarDateColor: '#A855F7', holidayColor: '#D97706',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FED7AA'
     },
     forestGold: {
       dateColor: '#16A34A', otherMonthDateColor: '#D97706',
       weekdayColor: '#4F46E5', lunarDateColor: '#EC4899', holidayColor: '#EAB308',
-      borderColor: '#0284C7'
+      borderColor: '#0284C7', weekendBackgroundColor: '#FEF3C7'
     },
     purplePink: {
       dateColor: '#9333EA', otherMonthDateColor: '#F472B6',
       weekdayColor: '#10B981', lunarDateColor: '#DC2626', holidayColor: '#D97706',
-      borderColor: '#7C3AED'
+      borderColor: '#7C3AED', weekendBackgroundColor: '#FCE7F3'
     },
     sunset: {
       dateColor: '#C2410C', otherMonthDateColor: '#EC4899',
       weekdayColor: '#0891B2', lunarDateColor: '#7C3AED', holidayColor: '#16A34A',
-      borderColor: '#DC2626'
+      borderColor: '#DC2626', weekendBackgroundColor: '#FED7AA'
     },
     tealCoral: {
       dateColor: '#14B8A6', otherMonthDateColor: '#F472B6',
       weekdayColor: '#4F46E5', lunarDateColor: '#DC2626', holidayColor: '#D97706',
-      borderColor: '#EAB308'
+      borderColor: '#EAB308', weekendBackgroundColor: '#CCFBF1'
     },
     indigoRose: {
       dateColor: '#4F46E5', otherMonthDateColor: '#F472B6',
       weekdayColor: '#10B981', lunarDateColor: '#C2410C', holidayColor: '#0891B2',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#FCE7F3'
     },
     emeraldOrange: {
       dateColor: '#10B981', otherMonthDateColor: '#F97316',
       weekdayColor: '#4F46E5', lunarDateColor: '#DC2626', holidayColor: '#EC4899',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#FED7AA'
     },
     violetYellow: {
       dateColor: '#7C3AED', otherMonthDateColor: '#EAB308',
       weekdayColor: '#14B8A6', lunarDateColor: '#DC2626', holidayColor: '#0891B2',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#EDE9FE'
     },
     crimsonCyan: {
       dateColor: '#DC2626', otherMonthDateColor: '#0891B2',
       weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#D97706',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#CFFAFE'
     },
     limePurple: {
       dateColor: '#65A30D', otherMonthDateColor: '#A855F7',
       weekdayColor: '#0284C7', lunarDateColor: '#DC2626', holidayColor: '#F97316',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#EDE9FE'
     },
     amberBlue: {
       dateColor: '#D97706', otherMonthDateColor: '#2563EB',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
-      borderColor: '#16A34A'
+      borderColor: '#16A34A', weekendBackgroundColor: '#DBEAFE'
     },
     magentaGreen: {
       dateColor: '#EC4899', otherMonthDateColor: '#16A34A',
       weekdayColor: '#4F46E5', lunarDateColor: '#0284C7', holidayColor: '#D97706',
-      borderColor: '#F472B6'
+      borderColor: '#F472B6', weekendBackgroundColor: '#D1FAE5'
     },
     redYellow: {
       dateColor: '#DC2626', otherMonthDateColor: '#EAB308',
       weekdayColor: '#2563EB', lunarDateColor: '#14B8A6', holidayColor: '#9333EA',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FEF3C7'
     },
     blueGreen: {
       dateColor: '#2563EB', otherMonthDateColor: '#059669',
       weekdayColor: '#EC4899', lunarDateColor: '#D97706', holidayColor: '#DC2626',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#CCFBF1'
     },
     royalPlum: {
       dateColor: '#7C3AED', otherMonthDateColor: '#F97316',
       weekdayColor: '#0891B2', lunarDateColor: '#EC4899', holidayColor: '#16A34A',
-      borderColor: '#DC2626'
+      borderColor: '#DC2626', weekendBackgroundColor: '#FCE7F3'
     },
     mintCherry: {
       dateColor: '#10B981', otherMonthDateColor: '#F472B6',
       weekdayColor: '#2563EB', lunarDateColor: '#EAB308', holidayColor: '#9333EA',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#FEF3C7'
     },
     sapphireAmber: {
       dateColor: '#2563EB', otherMonthDateColor: '#F59E0B',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#FED7AA'
     },
     jadeRose: {
       dateColor: '#059669', otherMonthDateColor: '#F472B6',
       weekdayColor: '#4F46E5', lunarDateColor: '#0891B2', holidayColor: '#EA580C',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#FCE7F3'
     },
     cobaltCoral: {
       dateColor: '#1E40AF', otherMonthDateColor: '#FB7185',
       weekdayColor: '#10B981', lunarDateColor: '#A855F7', holidayColor: '#F59E0B',
-      borderColor: '#0891B2'
+      borderColor: '#0891B2', weekendBackgroundColor: '#DBEAFE'
     },
     emeraldFuchsia: {
       dateColor: '#10B981', otherMonthDateColor: '#D946EF',
       weekdayColor: '#2563EB', lunarDateColor: '#F59E0B', holidayColor: '#0891B2',
-      borderColor: '#EC4899'
+      borderColor: '#EC4899', weekendBackgroundColor: '#FCE7F3'
     },
     navyPeach: {
       dateColor: '#1E3A8A', otherMonthDateColor: '#FB923C',
       weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#16A34A',
-      borderColor: '#9333EA'
+      borderColor: '#9333EA', weekendBackgroundColor: '#FED7AA'
     }
+  };
+
+  const WEEKEND_COLOR_PRESETS = {
+    default: { color: '#F3F4F6' },
+    blue: { color: '#DBEAFE' },
+    purple: { color: '#EDE9FE' },
+    teal: { color: '#CCFBF1' },
+    yellow: { color: '#FEF3C7' },
+    green: { color: '#D1FAE5' },
+    indigo: { color: '#E0E7FF' },
+    pink: { color: '#FCE7F3' },
+    cyan: { color: '#CFFAFE' },
+    gray: { color: '#F3F4F6' }
   };
 
   const DATE_POSITION_CLASSES = {
@@ -323,6 +347,7 @@
     FONTS,
     COLOR_PALETTES_DARK,
     COLOR_PALETTES_LIGHT,
-    DATE_POSITION_CLASSES
+    DATE_POSITION_CLASSES,
+    WEEKEND_COLOR_PRESETS
   };
 })();

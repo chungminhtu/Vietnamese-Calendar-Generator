@@ -2,6 +2,11 @@
 (function() {
   'use strict';
 
+  if (!window.CalendarConstants) {
+    console.error('CalendarConstants not loaded. Make sure constants.js is loaded before storage.js');
+    return;
+  }
+
   const { STORAGE_KEY, ACCORDION_STATE_KEY, CUSTOM_PALETTES_KEY, DB_NAME, DB_VERSION, STORE_NAME, SAVE_DEBOUNCE_MS } = window.CalendarConstants;
 
   const defaultState = () => {
@@ -20,7 +25,8 @@
       borderColor: '#4B5563', colorPalette: 'oceanSunset',
       datePosition: 'top-right', monthYearLayout: 'double', borderWidth: 1,
       showOtherMonthDates: true, isLandscape: false, showAllMonths: false,
-      showWritingLines: true, writingLinesCount: 3,
+      showWritingLines: true, writingLinesCount: 3, writingLinesStyle: 'dotted-close', showWritingCheckboxes: false,
+      showWeekendBackground: false, weekendBackgroundColor: '#F3F4F6',
       showHolidayPublic: true, showHolidayBank: false, showHolidaySchool: false,
       showHolidayOptional: false, showHolidayObservance: true,
       monthBackgrounds: {},
@@ -140,6 +146,16 @@
         const state = { ...defaultState(), ...parsed };
         state.monthBackgrounds = {};
         if (!state.writingLinesCount) state.writingLinesCount = 3;
+        if (!state.writingLinesStyle) state.writingLinesStyle = 'dotted-close';
+        if (state.showWritingCheckboxes === undefined) state.showWritingCheckboxes = false;
+        if (state.showWeekendBackground === undefined) state.showWeekendBackground = false;
+        if (!state.weekendBackgroundColor) state.weekendBackgroundColor = '#F3F4F6';
+        if (state.saturdayBackgroundColor && !state.weekendBackgroundColor) {
+          state.weekendBackgroundColor = state.saturdayBackgroundColor;
+        }
+        if (state.sundayBackgroundColor && !state.weekendBackgroundColor) {
+          state.weekendBackgroundColor = state.sundayBackgroundColor;
+        }
         return state;
       }
     } catch (e) {

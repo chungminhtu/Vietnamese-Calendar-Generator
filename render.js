@@ -9,6 +9,22 @@
 
   let localRenderTimeout = null;
 
+  const hexToRgba = (hex, alpha) => {
+    if (!hex || !hex.startsWith('#')) return 'rgba(243, 244, 246, ' + alpha + ')';
+    let r, g, b;
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else {
+      r = parseInt(hex.slice(1, 3), 16);
+      g = parseInt(hex.slice(3, 5), 16);
+      b = parseInt(hex.slice(5, 7), 16);
+    }
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return 'rgba(243, 244, 246, ' + alpha + ')';
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+  };
+
   const generateDayCellHTML = (day) => {
     const { date, lunarDay, lunarMonth, holidays, isCurrentMonth } = day;
     const { datePosition, borderWidth, dateSize, dateFontWeight, lunarDateFontSize, holidayFontSize } = state;
@@ -17,7 +33,20 @@
     const positionClasses = DATE_POSITION_CLASSES[datePosition] || DATE_POSITION_CLASSES['top-right'];
     
     const dayNum = date.getDate();
-    let html = '<div class="border-r border-b p-1 flex flex-col relative" style="border-color: ' + state.borderColor + '; border-right-width: ' + borderWidth + 'px; border-bottom-width: ' + borderWidth + 'px;">';
+    const dayOfWeek = date.getDay();
+    let cellStyle = 'border-color: ' + state.borderColor + '; border-right-width: ' + borderWidth + 'px; border-bottom-width: ' + borderWidth + 'px;';
+    
+    if (state.showWeekendBackground) {
+      const isWeekend = dayOfWeek === 6 || dayOfWeek === 0;
+      if (isWeekend) {
+        if (state.showOtherMonthDates || isCurrentMonth) {
+          const weekendColor = state.weekendBackgroundColor || '#F3F4F6';
+          cellStyle += ' background-color: ' + hexToRgba(weekendColor, 0.5) + ';';
+        }
+      }
+    }
+    
+    let html = '<div class="border-r border-b p-1 flex flex-col relative" style="' + cellStyle + '">';
     
     if (hasHolidays && isCurrentMonth) {
       html += '<div class="w-full flex items-start" style="min-height: ' + dateSize + 'px; gap: 4px;">';
@@ -47,10 +76,45 @@
       const availableHeight = 'calc(100% - 30px)';
       const gapCount = lineCount + 1;
       const gapSizePercent = 100 / gapCount;
+      const lineStyle = state.writingLinesStyle || 'dotted-close';
+      const showCheckboxes = state.showWritingCheckboxes || false;
+      
+      const createDottedPattern = (spacing) => {
+        const encodedColor = encodeURIComponent(state.borderColor);
+        return 'url("data:image/svg+xml,%3Csvg width=\'' + spacing + '\' height=\'2\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Ccircle cx=\'1\' cy=\'1\' r=\'1\' fill=\'' + encodedColor + '\'/%3E%3C/svg%3E")';
+      };
+      
+      let borderStyle = '';
+      let extraStyle = '';
+      if (lineStyle === 'dotted-close') {
+        borderStyle = 'border-top: 1px dotted ' + state.borderColor + ';';
+      } else if (lineStyle === 'dotted') {
+        borderStyle = 'border-top: none; height: 2px;';
+        extraStyle = 'background-image: ' + createDottedPattern(4) + '; background-repeat: repeat-x; background-size: 4px 2px;';
+      } else if (lineStyle === 'dotted-medium') {
+        borderStyle = 'border-top: none; height: 2px;';
+        extraStyle = 'background-image: ' + createDottedPattern(6) + '; background-repeat: repeat-x; background-size: 6px 2px;';
+      } else if (lineStyle === 'dotted-sparse') {
+        borderStyle = 'border-top: none; height: 2px;';
+        extraStyle = 'background-image: ' + createDottedPattern(8) + '; background-repeat: repeat-x; background-size: 8px 2px;';
+      } else if (lineStyle === 'dotted-very-sparse') {
+        borderStyle = 'border-top: none; height: 2px;';
+        extraStyle = 'background-image: ' + createDottedPattern(11) + '; background-repeat: repeat-x; background-size: 11px 2px;';
+      } else {
+        borderStyle = 'border-top: 1px dotted ' + state.borderColor + ';';
+      }
+      
       html += '<div class="writing-lines" style="position: absolute; bottom: 0; left: 0; right: 0; top: 30px; padding: 0 2px; pointer-events: none; height: ' + availableHeight + ';">';
       for (let i = 0; i < lineCount; i++) {
         const bottomOffset = gapSizePercent * (i + 1);
-        html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; border-top: 1px dotted ' + state.borderColor + '; width: calc(100% - 4px);"></div>';
+        if (showCheckboxes) {
+          html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; display: flex; align-items: center; width: calc(100% - 4px);">';
+          html += '<input type="checkbox" style="width: 14px; height: 14px; margin-left: 4px; margin-right: 6px; pointer-events: none; flex-shrink: 0;" disabled>';
+          html += '<div style="flex: 1; min-height: 2px; ' + borderStyle + extraStyle + '"></div>';
+          html += '</div>';
+        } else {
+          html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; ' + borderStyle + extraStyle + ' width: calc(100% - 4px);"></div>';
+        }
       }
       html += '</div>';
     }

@@ -2,6 +2,11 @@
 (function() {
   'use strict';
 
+  if (!window.CalendarConstants) {
+    console.error('CalendarConstants not loaded. Make sure constants.js is loaded before utils.js');
+    return;
+  }
+
   const { COLOR_PALETTES_DARK, COLOR_PALETTES_LIGHT } = window.CalendarConstants;
   const { loadState, saveState, getCustomPalettes, deleteCustomPalette } = window.CalendarStorage;
 
@@ -201,6 +206,7 @@
   };
 
   const cycleFont = (direction) => {
+    if (!window.CalendarConstants || !window.CalendarConstants.FONTS) return;
     const { FONTS } = window.CalendarConstants;
     if (!FONTS || FONTS.length === 0) return;
     
@@ -223,6 +229,7 @@
       }
     }
   };
+
 
   const applyColorPalette = (paletteName) => {
     const paletteSet = state.isDarkTheme ? COLOR_PALETTES_DARK : COLOR_PALETTES_LIGHT;
@@ -259,8 +266,13 @@
   
   const toggleTheme = (isDark) => {
     state.isDarkTheme = isDark;
+    saveState();
     const currentPalette = state.colorPalette || 'default';
     applyColorPalette(currentPalette);
+    const checkbox = document.querySelector('#theme-toggle');
+    if (checkbox) {
+      checkbox.checked = isDark;
+    }
   };
 
   const updateStateAndRender = (key, value) => {

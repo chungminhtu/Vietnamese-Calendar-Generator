@@ -472,6 +472,10 @@
           state.writingLinesCount = parseInt(value) || 3;
           saveState();
           render();
+        } else if (key === 'writingLinesStyle') {
+          state.writingLinesStyle = value;
+          saveState();
+          render();
         } else {
           updateStateAndRender(key, value);
         }
@@ -584,6 +588,7 @@
         window.CalendarUtils.cycleFont('next');
       });
     }
+    
     
     const panStep = 2;
     const zoomStep = 2;
