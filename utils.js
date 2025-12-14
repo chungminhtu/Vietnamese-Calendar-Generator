@@ -187,6 +187,11 @@
         }
       }
       
+      const paletteSelect = document.querySelector('[data-state="colorPalette"]');
+      if (paletteSelect) {
+        paletteSelect.value = paletteName;
+      }
+      
       saveState();
       window.CalendarRender.render();
     }

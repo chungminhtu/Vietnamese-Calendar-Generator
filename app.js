@@ -81,6 +81,9 @@
     try {
       initDOMElements();
       initializeControls();
+      if (state.colorPalette && state.colorPalette !== 'default') {
+        window.CalendarUtils.applyColorPalette(state.colorPalette);
+      }
       setupEventListeners();
       window.CalendarUtils.renderCustomPalettesList();
       loadBackgroundImages().then((images) => {
