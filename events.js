@@ -539,6 +539,14 @@
     if (window.CalendarDOM.exportBtn) {
       window.CalendarDOM.exportBtn.addEventListener('click', exportToPDF);
     }
+    
+    let resizeTimeout = null;
+    window.addEventListener('resize', () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        render();
+      }, 150);
+    });
   };
 
   window.CalendarEvents = {
