@@ -572,6 +572,81 @@
       });
     }
     
+    const prevFontBtn = document.getElementById('prev-font');
+    const nextFontBtn = document.getElementById('next-font');
+    if (prevFontBtn) {
+      prevFontBtn.addEventListener('click', () => {
+        window.CalendarUtils.cycleFont('prev');
+      });
+    }
+    if (nextFontBtn) {
+      nextFontBtn.addEventListener('click', () => {
+        window.CalendarUtils.cycleFont('next');
+      });
+    }
+    
+    const panStep = 2;
+    const zoomStep = 2;
+    
+    const bgZoomInBtn = document.getElementById('bg-zoom-in');
+    const bgZoomOutBtn = document.getElementById('bg-zoom-out');
+    const bgPanUpBtn = document.getElementById('bg-pan-up');
+    const bgPanDownBtn = document.getElementById('bg-pan-down');
+    const bgPanLeftBtn = document.getElementById('bg-pan-left');
+    const bgPanRightBtn = document.getElementById('bg-pan-right');
+    
+    const adjustBackgroundZoom = (direction) => {
+      const month = state.selectedMonth;
+      if (!state.monthBackgrounds[month] || !state.monthBackgrounds[month].url) return;
+      const bg = state.monthBackgrounds[month];
+      if (!bg.zoom) bg.zoom = 100;
+      const newZoom = direction === 'in' ? bg.zoom + zoomStep : bg.zoom - zoomStep;
+      bg.zoom = Math.max(10, Math.min(500, newZoom));
+      window.CalendarStorage.saveBackgroundImage(month, bg);
+      window.CalendarRender.applyBackgroundImages();
+      updateBackgroundControls(month);
+      const label = document.querySelector(`[data-label="bgZoom"]`);
+      if (label) label.textContent = bg.zoom;
+    };
+    
+    const adjustBackgroundPan = (direction) => {
+      const month = state.selectedMonth;
+      if (!state.monthBackgrounds[month] || !state.monthBackgrounds[month].url) return;
+      const bg = state.monthBackgrounds[month];
+      if (bg.posX === undefined) bg.posX = 50;
+      if (bg.posY === undefined) bg.posY = 50;
+      if (direction === 'up') {
+        bg.posY = Math.max(0, bg.posY - panStep);
+      } else if (direction === 'down') {
+        bg.posY = Math.min(100, bg.posY + panStep);
+      } else if (direction === 'left') {
+        bg.posX = Math.max(0, bg.posX - panStep);
+      } else if (direction === 'right') {
+        bg.posX = Math.min(100, bg.posX + panStep);
+      }
+      window.CalendarStorage.saveBackgroundImage(month, bg);
+      window.CalendarRender.applyBackgroundImages();
+    };
+    
+    if (bgZoomInBtn) {
+      bgZoomInBtn.addEventListener('click', () => adjustBackgroundZoom('in'));
+    }
+    if (bgZoomOutBtn) {
+      bgZoomOutBtn.addEventListener('click', () => adjustBackgroundZoom('out'));
+    }
+    if (bgPanUpBtn) {
+      bgPanUpBtn.addEventListener('click', () => adjustBackgroundPan('up'));
+    }
+    if (bgPanDownBtn) {
+      bgPanDownBtn.addEventListener('click', () => adjustBackgroundPan('down'));
+    }
+    if (bgPanLeftBtn) {
+      bgPanLeftBtn.addEventListener('click', () => adjustBackgroundPan('left'));
+    }
+    if (bgPanRightBtn) {
+      bgPanRightBtn.addEventListener('click', () => adjustBackgroundPan('right'));
+    }
+    
     let resizeTimeout = null;
     window.addEventListener('resize', () => {
       if (resizeTimeout) clearTimeout(resizeTimeout);

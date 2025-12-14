@@ -200,6 +200,30 @@
     }
   };
 
+  const cycleFont = (direction) => {
+    const { FONTS } = window.CalendarConstants;
+    if (!FONTS || FONTS.length === 0) return;
+    
+    const currentFont = state.selectedFont || FONTS[0].family;
+    const currentIndex = FONTS.findIndex(f => f.family === currentFont);
+    
+    let nextIndex;
+    if (direction === 'next') {
+      nextIndex = (currentIndex + 1) % FONTS.length;
+    } else {
+      nextIndex = currentIndex - 1;
+      if (nextIndex < 0) nextIndex = FONTS.length - 1;
+    }
+    
+    const nextFont = FONTS[nextIndex];
+    if (nextFont) {
+      updateStateAndRender('selectedFont', nextFont.family);
+      if (window.CalendarDOM.fontSelect) {
+        window.CalendarDOM.fontSelect.value = nextFont.family;
+      }
+    }
+  };
+
   const applyColorPalette = (paletteName) => {
     const paletteSet = state.isDarkTheme ? COLOR_PALETTES_DARK : COLOR_PALETTES_LIGHT;
     let palette = paletteSet[paletteName];
@@ -380,6 +404,7 @@
     getHolidays,
     applyColorPalette,
     cyclePalette,
+    cycleFont,
     toggleTheme,
     updateStateAndRender,
     convertDateToISO,

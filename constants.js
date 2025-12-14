@@ -60,9 +60,9 @@
 
   const COLOR_PALETTES_DARK = {
     default: {
-      dateColor: '#334155', otherMonthDateColor: '#64748B',
-      weekdayColor: '#475569', lunarDateColor: '#475569', holidayColor: '#DC2626',
-      borderColor: '#475569'
+      dateColor: '#2563EB', otherMonthDateColor: '#DC2626',
+      weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
+      borderColor: '#0891B2'
     },
     oceanSunset: {
       dateColor: '#0284C7', otherMonthDateColor: '#DC2626',
@@ -137,15 +137,50 @@
     blueGreen: {
       dateColor: '#2563EB', otherMonthDateColor: '#059669',
       weekdayColor: '#EC4899', lunarDateColor: '#D97706', holidayColor: '#DC2626',
+      borderColor: '#9333EA'
+    },
+    royalPlum: {
+      dateColor: '#7C3AED', otherMonthDateColor: '#F97316',
+      weekdayColor: '#0891B2', lunarDateColor: '#EC4899', holidayColor: '#16A34A',
+      borderColor: '#DC2626'
+    },
+    mintCherry: {
+      dateColor: '#10B981', otherMonthDateColor: '#F472B6',
+      weekdayColor: '#2563EB', lunarDateColor: '#EAB308', holidayColor: '#9333EA',
+      borderColor: '#0891B2'
+    },
+    sapphireAmber: {
+      dateColor: '#2563EB', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
+      borderColor: '#9333EA'
+    },
+    jadeRose: {
+      dateColor: '#059669', otherMonthDateColor: '#F472B6',
+      weekdayColor: '#4F46E5', lunarDateColor: '#0891B2', holidayColor: '#EA580C',
+      borderColor: '#9333EA'
+    },
+    cobaltCoral: {
+      dateColor: '#1E40AF', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#10B981', lunarDateColor: '#A855F7', holidayColor: '#F59E0B',
+      borderColor: '#0891B2'
+    },
+    emeraldFuchsia: {
+      dateColor: '#10B981', otherMonthDateColor: '#D946EF',
+      weekdayColor: '#2563EB', lunarDateColor: '#F59E0B', holidayColor: '#0891B2',
+      borderColor: '#EC4899'
+    },
+    navyPeach: {
+      dateColor: '#1E3A8A', otherMonthDateColor: '#FB923C',
+      weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#16A34A',
       borderColor: '#9333EA'
     }
   };
 
   const COLOR_PALETTES_LIGHT = {
     default: {
-      dateColor: '#475569', otherMonthDateColor: '#94A3B8',
-      weekdayColor: '#64748B', lunarDateColor: '#334155', holidayColor: '#DC2626',
-      borderColor: '#1E293B'
+      dateColor: '#2563EB', otherMonthDateColor: '#DC2626',
+      weekdayColor: '#16A34A', lunarDateColor: '#9333EA', holidayColor: '#EA580C',
+      borderColor: '#0891B2'
     },
     oceanSunset: {
       dateColor: '#0284C7', otherMonthDateColor: '#DC2626',
@@ -220,6 +255,41 @@
     blueGreen: {
       dateColor: '#2563EB', otherMonthDateColor: '#059669',
       weekdayColor: '#EC4899', lunarDateColor: '#D97706', holidayColor: '#DC2626',
+      borderColor: '#9333EA'
+    },
+    royalPlum: {
+      dateColor: '#7C3AED', otherMonthDateColor: '#F97316',
+      weekdayColor: '#0891B2', lunarDateColor: '#EC4899', holidayColor: '#16A34A',
+      borderColor: '#DC2626'
+    },
+    mintCherry: {
+      dateColor: '#10B981', otherMonthDateColor: '#F472B6',
+      weekdayColor: '#2563EB', lunarDateColor: '#EAB308', holidayColor: '#9333EA',
+      borderColor: '#0891B2'
+    },
+    sapphireAmber: {
+      dateColor: '#2563EB', otherMonthDateColor: '#F59E0B',
+      weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#DC2626',
+      borderColor: '#9333EA'
+    },
+    jadeRose: {
+      dateColor: '#059669', otherMonthDateColor: '#F472B6',
+      weekdayColor: '#4F46E5', lunarDateColor: '#0891B2', holidayColor: '#EA580C',
+      borderColor: '#9333EA'
+    },
+    cobaltCoral: {
+      dateColor: '#1E40AF', otherMonthDateColor: '#FB7185',
+      weekdayColor: '#10B981', lunarDateColor: '#A855F7', holidayColor: '#F59E0B',
+      borderColor: '#0891B2'
+    },
+    emeraldFuchsia: {
+      dateColor: '#10B981', otherMonthDateColor: '#D946EF',
+      weekdayColor: '#2563EB', lunarDateColor: '#F59E0B', holidayColor: '#0891B2',
+      borderColor: '#EC4899'
+    },
+    navyPeach: {
+      dateColor: '#1E3A8A', otherMonthDateColor: '#FB923C',
+      weekdayColor: '#EC4899', lunarDateColor: '#14B8A6', holidayColor: '#16A34A',
       borderColor: '#9333EA'
     }
   };

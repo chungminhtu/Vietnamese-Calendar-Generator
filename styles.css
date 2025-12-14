@@ -89,11 +89,15 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .color-picker-wrapper label {
   margin: 0;
   flex-shrink: 0;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 input[type="color"] {
@@ -104,6 +108,7 @@ input[type="color"] {
   cursor: pointer;
   padding: 0;
   background: none;
+  flex-shrink: 0;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {

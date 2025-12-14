@@ -153,7 +153,7 @@
         
         if (!bg.zoom) bg.zoom = 100;
         const currentZoom = bg.zoom;
-        const zoomFactor = 1.15;
+        const zoomFactor = 1.05;
         const minZoom = 10;
         const maxZoom = 500;
         
