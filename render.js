@@ -95,7 +95,7 @@
         const bottomOffset = gapSizePercent * (i + 1);
         if (showCheckboxes) {
           html += '<div style="position: absolute; bottom: ' + bottomOffset + '%; left: 2px; right: 2px; display: flex; align-items: center; width: calc(100% - 4px);">';
-          html += '<input type="checkbox" style="width: 14px; height: 14px; margin-left: 4px; margin-right: 6px; pointer-events: none; flex-shrink: 0;" disabled>';
+          html += '<input type="checkbox" style="width: 14px; height: 14px; margin-left: 4px; margin-right: 6px; pointer-events: none; flex-shrink: 0; background-color: white; border: 1px solid ' + state.borderColor + '; accent-color: ' + state.borderColor + ';" disabled>';
           html += '<div style="flex: 1; position: relative; height: 2px; overflow: hidden;">';
           if (lineStyle === 'dotted-close') {
             html += createDottedLineHTML(3);
