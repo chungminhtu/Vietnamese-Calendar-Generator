@@ -3,7 +3,7 @@
   'use strict';
 
   const { state } = window.CalendarState;
-  const { dragState, shiftPressedMonths, cachedMonthElements, throttle, initializeBackgroundForMonth } = window.CalendarUtils;
+  const { throttle, initializeBackgroundForMonth } = window.CalendarUtils;
   const { saveBackgroundImage, deleteBackgroundImage } = window.CalendarStorage;
   const { render } = window.CalendarRender;
 
@@ -109,6 +109,7 @@
           const monthNum = parseInt(month);
           const bg = state.monthBackgrounds[monthNum];
           if (!bg?.url) return;
+          const dragState = window.CalendarUtils.dragState;
           dragState.isDragging = true;
           dragState.monthNum = monthNum;
           dragState.monthEl = monthEl;
@@ -128,6 +129,7 @@
           const bg = state.monthBackgrounds[monthNum];
           if (!bg?.url) return;
           e.preventDefault();
+          const dragState = window.CalendarUtils.dragState;
           dragState.isDragging = true;
           dragState.monthNum = monthNum;
           dragState.monthEl = monthEl;
@@ -144,7 +146,7 @@
         const monthNum = parseInt(month);
         const bg = state.monthBackgrounds[monthNum];
         if (!bg?.url) return;
-        if (dragState.isDragging) return;
+        if (window.CalendarUtils.dragState.isDragging) return;
         if (!e.shiftKey) return;
         e.preventDefault();
         e.stopPropagation();
@@ -190,6 +192,7 @@
           const bg = state.monthBackgrounds[monthNum];
           if (!bg?.url) return;
           e.preventDefault();
+          const dragState = window.CalendarUtils.dragState;
           dragState.isDragging = true;
           dragState.monthNum = monthNum;
           dragState.monthEl = monthEl;
@@ -230,6 +233,7 @@
     window.monthInteractionsSetup = true;
     
     const throttledMouseMove = throttle((e) => {
+      const dragState = window.CalendarUtils.dragState;
       if (!dragState.isDragging || !dragState.monthNum) return;
       const bg = state.monthBackgrounds[dragState.monthNum];
       if (!bg?.url || !dragState.monthEl || !dragState.bgDiv) return;
@@ -250,7 +254,7 @@
           const monthNum = parseInt(monthEl.dataset.month);
           const bg = state.monthBackgrounds[monthNum];
           if (bg?.url) {
-            shiftPressedMonths.add(monthNum);
+            window.CalendarUtils.shiftPressedMonths.add(monthNum);
             const overlay = monthEl.querySelector('.month-bg-overlay');
             if (overlay) {
               overlay.style.display = 'block';
@@ -265,7 +269,7 @@
     
     document.addEventListener('keyup', (e) => {
       if (e.key === 'Shift') {
-        shiftPressedMonths.forEach(monthNum => {
+        window.CalendarUtils.shiftPressedMonths.forEach(monthNum => {
           const monthEl = document.querySelector(`[data-month="${monthNum}"]`);
           if (monthEl) {
             const overlay = monthEl.querySelector('.month-bg-overlay');
@@ -276,7 +280,8 @@
             monthEl.style.cursor = 'default';
           }
         });
-        shiftPressedMonths.clear();
+        window.CalendarUtils.shiftPressedMonths.clear();
+        const dragState = window.CalendarUtils.dragState;
         if (dragState.isDragging) {
           dragState.isDragging = false;
         }
@@ -286,6 +291,7 @@
     document.addEventListener('mousemove', throttledMouseMove);
     
     document.addEventListener('mouseup', (e) => {
+      const dragState = window.CalendarUtils.dragState;
       if (dragState.isDragging) {
         dragState.isDragging = false;
         if (dragState.monthEl) {

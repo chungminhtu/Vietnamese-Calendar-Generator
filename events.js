@@ -4,7 +4,7 @@
 
   const { FONTS, EXPORT_SCALE, getA4Dimensions } = window.CalendarConstants;
   const { state } = window.CalendarState;
-  const { cachedLabels, convertDateToISO, formatDateInput, processImageWithFilters, updateStateAndRender, applyColorPalette, toggleTheme, initializeBackgroundForMonth } = window.CalendarUtils;
+  const { convertDateToISO, formatDateInput, processImageWithFilters, updateStateAndRender, applyColorPalette, toggleTheme, initializeBackgroundForMonth } = window.CalendarUtils;
   const { saveState, getCustomPalettes, saveCustomPalette, deleteCustomPalette, loadAccordionState, saveAccordionState, removeAllBackgroundImages } = window.CalendarStorage;
   const { render, renderCustomHolidaysList } = window.CalendarRender;
   const { getMonthElements } = window.CalendarInteractions;
@@ -425,6 +425,7 @@
           state[key] = value;
         }
         
+        const cachedLabels = window.CalendarUtils.cachedLabels;
         const label = cachedLabels.get(key) || document.querySelector(`[data-label="${key}"]`);
         if (label) {
           if (!cachedLabels.has(key)) cachedLabels.set(key, label);
