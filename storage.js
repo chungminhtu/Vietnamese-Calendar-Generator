@@ -14,7 +14,7 @@
       monthFontSize: 36, yearFontSize: 20, weekdayFontSize: 12, dateSize: 16,
       lunarDateFontSize: 10, holidayFontSize: 12, monthFontWeight: 700,
       yearFontWeight: 400, weekdayFontWeight: 600, dateFontWeight: 400,
-      monthTextTransform: 'uppercase', weekdayTextTransform: 'uppercase',
+      monthTextTransform: 'uppercase', weekdayTextTransform: 'capitalize',
       backgroundColor: '#FFFFFF', dateColor: '#1F2937', otherMonthDateColor: '#6B7280',
       weekdayColor: '#111827', lunarDateColor: '#374151', holidayColor: '#DC2626',
       borderColor: '#4B5563', colorPalette: 'oceanSunset',

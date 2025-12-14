@@ -2,7 +2,7 @@
 (function() {
   'use strict';
 
-  const { FONTS, EXPORT_SCALE, getA4Dimensions } = window.CalendarConstants;
+  const { FONTS, EXPORT_SCALE, getA4Dimensions, A4_WIDTH_MM, A4_HEIGHT_MM } = window.CalendarConstants;
   const { state } = window.CalendarState;
   const { convertDateToISO, formatDateInput, processImageWithFilters, updateStateAndRender, applyColorPalette, toggleTheme, initializeBackgroundForMonth } = window.CalendarUtils;
   const { saveState, getCustomPalettes, saveCustomPalette, deleteCustomPalette, loadAccordionState, saveAccordionState, removeAllBackgroundImages } = window.CalendarStorage;
@@ -247,7 +247,7 @@
       });
       
       await html2pdf().set({
-        margin: 0,
+        margin: [0, 0, 0, 0],
         filename: `lich-viet-${state.selectedYear}-12-thang.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { 
@@ -299,7 +299,8 @@
         jsPDF: { 
           unit: 'mm', 
           format: 'a4',
-          orientation: state.isLandscape ? 'landscape' : 'portrait'
+          orientation: state.isLandscape ? 'landscape' : 'portrait',
+          compress: true
         },
         pagebreak: { mode: ['css', 'legacy'] }
       }).from(exportContainer).save();
